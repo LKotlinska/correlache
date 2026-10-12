@@ -4,7 +4,11 @@ import { AppService } from './app.service.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config'
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+// ESM has no __dirname
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 @Module({
   imports: [
@@ -13,15 +17,15 @@ import { join } from 'path';
       type: 'mysql',
       url: process.env.JAWSDB_URL,
       host: process.env.DB_HOST,
-      port: Number(process.env.PORT),
+      port: Number(process.env.DB_PORT),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [], // Fill with your entities 
+      entities: [], 
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV !== 'production',
     }),
-    // Lets Nest server hand out Angular app, so one Heroku app serves both the website and the API.
+    // Lets Nest server hand out Angular app, so Heroku serves both the website and the API.
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend', 'dist', 'frontend', 'browser'),
       exclude: ['/api/{*path}'],
