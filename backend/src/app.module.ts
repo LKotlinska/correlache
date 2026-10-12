@@ -22,7 +22,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
       useFactory: () => ({
         ...dbConfig(process.env),
         autoLoadEntities: true,
-        synchronize: process.env.NODE_ENV === 'development',
+        migrations: [join(__dirname, 'migrations', '*.js')],
+        migrationsRun: true,
+        synchronize: false,
       }),
 }),
     // Lets Nest server hand out Angular app, so Heroku serves both the website and the API.
