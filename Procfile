@@ -1,2 +1,2 @@
-release: npm run migration:run --prefix backend
+# release: npm run migration:run --prefix backend
 web: npm start
