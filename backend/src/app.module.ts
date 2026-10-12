@@ -24,7 +24,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
         const base = {
           type: 'mysql' as const,
           autoLoadEntities: true,
-          synchronize: process.env.NODE_ENV !== 'production',
+          synchronize: process.env.NODE_ENV === 'development',
         };
         return url ? { ...base, url } : {
           ...base,
