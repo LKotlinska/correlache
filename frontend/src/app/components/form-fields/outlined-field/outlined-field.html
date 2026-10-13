@@ -1,0 +1,13 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ label() }}</mat-label>
+  <input
+    [type]="type()"
+    matInput
+    [formControl]="myControl()"
+    /* Attribute binding allows to skip it when it's not given */
+    [attr.placeholder]="placeholder() || null"
+  />
+  @if (getErrorMessage(); as message) {
+    <mat-error>{{ message }}</mat-error>
+  }
+</mat-form-field>
