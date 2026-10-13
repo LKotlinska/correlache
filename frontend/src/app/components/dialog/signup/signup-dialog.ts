@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
-import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {FormControl, Validators, ReactiveFormsModule} from '@angular/forms';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatInputModule} from '@angular/material/input';
 import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Dialog } from '../dialog';
@@ -15,10 +13,7 @@ import { Button } from '../../button/button/button';
   templateUrl: './signup-dialog.html',
   imports: [
     MatDialogModule, 
-    MatButtonModule, 
-    MatInputModule, 
     ReactiveFormsModule, 
-    FormsModule, 
     OutlinedField, 
     MatCheckboxModule, 
     Dialog, 
