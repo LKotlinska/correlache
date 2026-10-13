@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity.js';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto.js';
-import { doesNotThrow } from 'assert';
 import { hashPassword } from '../common/password.js';
 
 @Injectable()
