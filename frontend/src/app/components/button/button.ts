@@ -13,4 +13,5 @@ export class Button {
   type = input<ButtonType>('button');
   appearance = input<MatButtonAppearance>('filled');
   isFullWidth = input<boolean>(false);
+  disabled = input<boolean>(false);
 }

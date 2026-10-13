@@ -42,7 +42,12 @@
     </div>
 
     <div class="button-container">
-      <app-button label="Create account" type="submit" [isFullWidth]="true" />
+      <app-button
+        label="Create account"
+        type="submit"
+        [isFullWidth]="true"
+        [disabled]="isSubmitting()"
+      />
     </div>
   </form>
   <p class="dialog-foot">Already registered? Sign in</p>

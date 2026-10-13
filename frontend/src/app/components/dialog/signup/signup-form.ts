@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {FormControl, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
 import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -31,36 +31,45 @@ export class SignupDialog {
   private dialogRef = inject(MatDialogRef<SignupDialog>);
   private snackBar = inject(MatSnackBar);
 
+  isSubmitting = signal(false);
+
   addUserForm = new FormGroup({
-    nameFormControl: new FormControl('', [Validators.required, Validators.maxLength(25),]),
-    emailFormControl: new FormControl('', [Validators.required, Validators.email]),
-    passwordFormControl: new FormControl('', [Validators.required, Validators.minLength(8)]),
+    nameFormControl: new FormControl('', [Validators.required, Validators.maxLength(50)]),
+    emailFormControl: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(255)]),
+    passwordFormControl: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(128)]),
     termsFormControl: new FormControl(false, [Validators.requiredTrue]),
   });
 
   onSubmit(){
+    if (this.isSubmitting()) {
+      return;
+    }
     if (this.addUserForm.invalid) {
       // Shows error when an invalid form is submitted
       this.addUserForm.markAllAsTouched();
       return;
     }
     const { nameFormControl, emailFormControl, passwordFormControl } = this.addUserForm.value;
+    this.isSubmitting.set(true);
     this.userService.createUser({
       name: nameFormControl!,
       email: emailFormControl!,
       password: passwordFormControl!,
     }).subscribe({
       next: () => {
-        this.dialogRef.close()
-        this.snackBar.open('Registered successfully', 'Close', { panelClass: 'snackbar-success' })
+        this.dialogRef.close();
+        this.snackBar.open('Registered successfully', 'Close', {
+          duration: 5000,
+          panelClass: 'snackbar-success',
+        });
       },
       error: (err) => {
-        const errMsg = err.error?.message;
-        this.snackBar.open(
-          Array.isArray(errMsg) ? errMsg[0] : (errMsg ?? 'Something went wrong. Please try again.'),
-          'Close',
-          { panelClass: 'snackbar-error' },
-        )
+        this.isSubmitting.set(false);
+        const msg = err.error?.message;
+        const text = Array.isArray(msg)
+          ? msg.join('. ')
+          : (msg ?? 'Something went wrong. Please try again.');
+        this.snackBar.open(text, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
       },
     });
   }
