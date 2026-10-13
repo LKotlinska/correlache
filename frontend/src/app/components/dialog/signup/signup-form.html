@@ -1,23 +1,27 @@
 <app-dialog heading="Create your account">
-  <form class="signup-form">
+  <form class="signup-form" [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
     <app-outlined-field
       label="Name"
       type="text"
       placeholder="e.g. John"
-      [myControl]="nameFormControl"
+      [myControl]="addUserForm.controls.nameFormControl"
     />
 
     <app-outlined-field
       label="Email"
       type="email"
       placeholder="e.g. john@example"
-      [myControl]="emailFormControl"
+      [myControl]="addUserForm.controls.emailFormControl"
     />
 
-    <app-outlined-field label="Password" type="password" [myControl]="passwordFormControl" />
+    <app-outlined-field
+      label="Password"
+      type="password"
+      [myControl]="addUserForm.controls.passwordFormControl"
+    />
 
     <p>
-      <mat-checkbox [formControl]="termsFormControl">
+      <mat-checkbox [formControl]="addUserForm.controls.termsFormControl">
         I have read and agree to the Terms of Service and Privacy Policy
       </mat-checkbox>
     </p>

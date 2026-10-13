@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl, Validators, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
 import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Dialog } from '../dialog';
@@ -19,8 +19,14 @@ import { Button } from '../../button/button/button';
   ],
 })
 export class SignupDialog {
-  nameFormControl = new FormControl('', [Validators.required]);
-  emailFormControl = new FormControl('', [Validators.required, Validators.email]);
-  passwordFormControl = new FormControl('', [Validators.required, Validators.minLength(8)]);
-  termsFormControl = new FormControl(false, [Validators.requiredTrue]);
+  addUserForm = new FormGroup({
+    nameFormControl: new FormControl('', [Validators.required]),
+    emailFormControl: new FormControl('', [Validators.required, Validators.email]),
+    passwordFormControl: new FormControl('', [Validators.required, Validators.minLength(8)]),
+    termsFormControl: new FormControl(false, [Validators.requiredTrue]),
+  });
+
+  onSubmit(){
+    
+  }
 }
