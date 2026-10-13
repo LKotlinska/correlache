@@ -1,6 +1,11 @@
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+
+  h2 {
+    margin: 0;
+    padding: 0;
+  }
 }

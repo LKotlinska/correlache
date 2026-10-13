@@ -1,0 +1,7 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  // Let mat-dialog-content scroll inside the dialog container
+  max-height: inherit;
+  min-height: 0;
+}
