@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { SignupDialog } from '../components/dialog/signup/signup-dialog';
+import { SignupDialog } from '../components/dialog/signup/signup-form';
 
 @Component({
   imports: [MatButtonModule, MatDialogModule],

@@ -7,9 +7,9 @@ import { Button } from '../../button/button/button';
 
 
 @Component({
-  selector: 'app-signup-dialog',
-  styleUrl: './signup-dialog.scss',
-  templateUrl: './signup-dialog.html',
+  selector: 'app-signup-form',
+  styleUrl: './signup-form.scss',
+  templateUrl: './signup-form.html',
   imports: [
     ReactiveFormsModule, 
     OutlinedField, 
