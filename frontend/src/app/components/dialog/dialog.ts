@@ -1,22 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { SignupDialog } from './signup/signup-dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { DialogHeader } from './dialog-header/dialog-header';
 
 @Component({
-  imports: [MatButtonModule, MatDialogModule],
+  imports: [MatButtonModule, MatDialogModule, DialogHeader],
   selector: 'app-dialog',
   styleUrl: './dialog.scss',
   templateUrl: './dialog.html',
 })
 export class Dialog {
-  readonly dialog = inject(MatDialog);
-
-  openDialog() {
-    const dialogRef = this.dialog.open(SignupDialog);
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
-  }
+  heading = input.required<string>();
 }
