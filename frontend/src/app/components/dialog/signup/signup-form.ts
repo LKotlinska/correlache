@@ -23,7 +23,7 @@ export class SignupDialog {
   private userService = inject(UserService);
 
   addUserForm = new FormGroup({
-    nameFormControl: new FormControl('', [Validators.required]),
+    nameFormControl: new FormControl('', [Validators.required, Validators.maxLength(25),]),
     emailFormControl: new FormControl('', [Validators.required, Validators.email]),
     passwordFormControl: new FormControl('', [Validators.required, Validators.minLength(8)]),
     termsFormControl: new FormControl(false, [Validators.requiredTrue]),
