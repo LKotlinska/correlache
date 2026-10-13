@@ -3,11 +3,12 @@ import {FormControl, Validators, ReactiveFormsModule, FormGroup} from '@angular/
 import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Dialog } from '../dialog';
-import { Button } from '../../button/button/button';
+import { Button } from '../../button/button';
 import { UserService } from '../../../services/user-service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -28,6 +29,7 @@ import { MatInput } from '@angular/material/input';
 export class SignupDialog {
   private userService = inject(UserService);
   private dialogRef = inject(MatDialogRef<SignupDialog>);
+  private snackBar = inject(MatSnackBar);
 
   addUserForm = new FormGroup({
     nameFormControl: new FormControl('', [Validators.required, Validators.maxLength(25),]),
@@ -50,9 +52,15 @@ export class SignupDialog {
     }).subscribe({
       next: () => {
         this.dialogRef.close()
+        this.snackBar.open('Registered successfully', 'Close', { panelClass: 'snackbar-success' })
       },
       error: (err) => {
-        console.error(err.error?.message ?? err);
+        const errMsg = err.error?.message;
+        this.snackBar.open(
+          Array.isArray(errMsg) ? errMsg[0] : (errMsg ?? 'Something went wrong. Please try again.'),
+          'Close',
+          { panelClass: 'snackbar-error' },
+        )
       },
     });
   }
