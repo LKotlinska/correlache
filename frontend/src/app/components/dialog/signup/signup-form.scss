@@ -1,3 +1,24 @@
+.terms-field {
+    margin: 1em 0;
+}
+
+// Only the error subscript of this form field should be visible
+.terms-error-field {
+    display: block;
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+        display: none;
+    }
+}
+
 .dialog-foot {
     text-align: center;
+}
+
+// Same condition as the error message: invalid and touched (or form submitted)
+mat-checkbox.ng-invalid.ng-touched {
+    --mat-checkbox-unselected-icon-color: var(--mat-sys-error);
+    --mat-checkbox-unselected-hover-icon-color: var(--mat-sys-error);
+    --mat-checkbox-unselected-focus-icon-color: var(--mat-sys-error);
+    --mat-checkbox-unselected-pressed-icon-color: var(--mat-sys-error);
 }
