@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { MatButton, MatButtonAppearance } from '@angular/material/button';
 
+export type ButtonType = 'button' | 'submit' | 'reset';
 @Component({
   imports: [MatButton],
   selector: 'app-button',
@@ -8,8 +9,8 @@ import { MatButton, MatButtonAppearance } from '@angular/material/button';
   templateUrl: './button.html',
 })
 export class Button {
-  label = input<string>();
-  type = input<string>('button');
+  label = input.required<string>();
+  type = input<ButtonType>('button');
   appearance = input<MatButtonAppearance>('filled');
   isFullWidth = input<boolean>(false);
 }
