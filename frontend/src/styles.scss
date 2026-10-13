@@ -17,6 +17,7 @@ html {
       density: 0,
     )
   );
+  @include mat.form-field-density(-1);
 }
 
 body {

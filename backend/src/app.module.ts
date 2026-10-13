@@ -6,7 +6,6 @@ import { ConfigModule } from '@nestjs/config'
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { UserController } from './user/user.controller.js';
 import { UserModule } from './user/user.module.js';
 import { dbConfig } from './db.config.js';
 
@@ -34,7 +33,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
     }),
     UserModule,
   ],
-  controllers: [AppController, UserController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

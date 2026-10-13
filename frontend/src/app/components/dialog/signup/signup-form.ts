@@ -1,9 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormControl, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
 import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Dialog } from '../dialog';
 import { Button } from '../../button/button/button';
+import { UserService } from '../../../services/user-service';
 
 
 @Component({
@@ -19,6 +20,8 @@ import { Button } from '../../button/button/button';
   ],
 })
 export class SignupDialog {
+  private userService = inject(UserService);
+
   addUserForm = new FormGroup({
     nameFormControl: new FormControl('', [Validators.required]),
     emailFormControl: new FormControl('', [Validators.required, Validators.email]),
@@ -27,6 +30,14 @@ export class SignupDialog {
   });
 
   onSubmit(){
-    
+    if (this.addUserForm.invalid) {
+      return
+    }
+    const { nameFormControl, emailFormControl, passwordFormControl } = this.addUserForm.value;
+    this.userService.createUser({
+      name: nameFormControl!,
+      email: emailFormControl!,
+      password: passwordFormControl!,
+    })
   }
 }
