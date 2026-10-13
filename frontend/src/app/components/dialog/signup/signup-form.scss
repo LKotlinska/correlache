@@ -2,13 +2,10 @@
     margin: 1em 0;
 }
 
-// Only the error subscript of this form field should be visible
-.terms-error-field {
-    display: block;
-
-    ::ng-deep .mat-mdc-text-field-wrapper {
-        display: none;
-    }
+.terms-error {
+    margin: 0.25em 0 0 0.75em;
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-error);
 }
 
 .button-container {

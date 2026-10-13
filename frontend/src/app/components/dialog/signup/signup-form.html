@@ -21,24 +21,17 @@
     />
 
     <div class="terms-field">
-      <mat-checkbox [formControl]="addUserForm.controls.termsFormControl">
+      <mat-checkbox
+        [formControl]="addUserForm.controls.termsFormControl"
+        [attr.aria-describedby]="termsInvalid ? 'terms-error' : null"
+      >
         I have read and agree to the Terms of Service and Privacy Policy
       </mat-checkbox>
-      <!--
-        mat-error only gets its animation inside a mat-form-field, which needs a
-        MatFormFieldControl. The hidden input shares the checkbox's control so the
-        form field tracks its error state; the visible box itself is hidden in the scss.
-      -->
-      <mat-form-field class="terms-error-field" subscriptSizing="dynamic">
-        <input
-          matInput
-          type="text"
-          tabindex="-1"
-          aria-hidden="true"
-          [formControl]="addUserForm.controls.termsFormControl"
-        />
-        <mat-error>This field is required</mat-error>
-      </mat-form-field>
+      @if (termsInvalid) {
+        <p id="terms-error" class="terms-error" role="alert">
+          You must accept the terms to create an account
+        </p>
+      }
     </div>
 
     <div class="button-container">

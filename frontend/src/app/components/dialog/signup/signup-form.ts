@@ -6,8 +6,6 @@ import { Dialog } from '../dialog';
 import { Button } from '../../button/button';
 import { UserService } from '../../../services/user-service';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatError, MatFormField } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 
@@ -21,14 +19,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatCheckboxModule,
     Dialog,
     Button,
-    MatError,
-    MatFormField,
-    MatInput,
 ],
 })
-export class SignupDialog {
+export class SignupForm {
   private userService = inject(UserService);
-  private dialogRef = inject(MatDialogRef<SignupDialog>);
+  private dialogRef = inject(MatDialogRef<SignupForm>);
   private snackBar = inject(MatSnackBar);
 
   isSubmitting = signal(false);
@@ -39,6 +34,11 @@ export class SignupDialog {
     passwordFormControl: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(128)]),
     termsFormControl: new FormControl(false, [Validators.requiredTrue]),
   });
+
+  get termsInvalid() {
+    const terms = this.addUserForm.controls.termsFormControl;
+    return terms.invalid && terms.touched;
+  }
 
   onSubmit(){
     if (this.isSubmitting()) {
