@@ -1,0 +1,30 @@
+<app-dialog heading="Create your account">
+  <mat-dialog-content>
+    <form class="signup-form">
+      <app-outlined-field
+        label="Name"
+        type="text"
+        placeholder="e.g. John"
+        [myControl]="nameFormControl"
+      />
+
+      <app-outlined-field
+        label="Email"
+        type="email"
+        placeholder="e.g. john@example"
+        [myControl]="emailFormControl"
+      />
+
+      <app-outlined-field label="Password" type="password" [myControl]="passwordFormControl" />
+
+      <p>
+        <mat-checkbox [formControl]="termsFormControl">
+          I have read and agree to the Terms of Service and Privacy Policy
+        </mat-checkbox>
+      </p>
+
+      <app-button label="Create account" type="submit" [isFullWidth]="true" />
+    </form>
+    <p class="dialog-foot">Already registered? Sign in</p>
+  </mat-dialog-content>
+</app-dialog>
