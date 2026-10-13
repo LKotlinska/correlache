@@ -14,3 +14,5 @@ npm install
 cd ../frontend
 npm install
 ```
+
+Create MYSQL database - 'correlache'
