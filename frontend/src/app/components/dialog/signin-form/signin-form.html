@@ -12,6 +12,9 @@
       type="password"
       [myControl]="signInForm.controls.passwordFormConrol"
     />
+    @if (errorMessage()) {
+      <p class="form-error" role="alert">{{ errorMessage() }}</p>
+    }
     <app-button label="Sign in" type="submit" [isFullWidth]="true" [disabled]="isSubmitting()" />
 
     <p class="dialog-foot">

@@ -20,4 +20,7 @@ export class UserService {
     authUser(payload: authUserPayload) {
         return this.http.post('/api/auth/login', payload);
     }
+    me() {
+        return this.http.get('/api/auth/me');
+    }
 }
