@@ -7,6 +7,7 @@ import { Button } from '../../button/button';
 import { UserService } from '../../../services/user-service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DialogKey, DialogService } from '../dialog.service';
 
 
 @Component({
@@ -23,6 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class SignupForm {
   private userService = inject(UserService);
+  private dialogService = inject(DialogService);
   private dialogRef = inject(MatDialogRef<SignupForm>);
   private snackBar = inject(MatSnackBar);
 
@@ -38,6 +40,10 @@ export class SignupForm {
   get termsInvalid() {
     const terms = this.addUserForm.controls.termsFormControl;
     return terms.invalid && terms.touched;
+  }
+
+  switchDialog(key: DialogKey){
+    this.dialogService.switch(this.dialogRef, key)
   }
 
   onSubmit(){
@@ -58,18 +64,20 @@ export class SignupForm {
     }).subscribe({
       next: () => {
         this.dialogRef.close();
-        this.snackBar.open('Registered successfully', 'Close', {
-          duration: 5000,
-          panelClass: 'snackbar-success',
-        });
+        this.snackBar.open('Registered successfully', 'Close', { panelClass: 'snackbar-success',});
       },
       error: (err) => {
         this.isSubmitting.set(false);
+
+        if (err.status === 409 && err.error?.code === 'EMAIL_TAKEN') {
+          this.addUserForm.controls.emailFormControl.setErrors({ emailTaken: true });
+          return; // no snackbar
+        }
         const msg = err.error?.message;
         const text = Array.isArray(msg)
           ? msg.join('. ')
           : (msg ?? 'Something went wrong. Please try again.');
-        this.snackBar.open(text, 'Close', { duration: 5000, panelClass: 'snackbar-error' });
+        this.snackBar.open(text, 'Close', { panelClass: 'snackbar-error' });
       },
     });
   }

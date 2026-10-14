@@ -11,6 +11,7 @@ describe('UserService', () => {
     findOneBy: vi.fn(),
     create: vi.fn(),
     save: vi.fn(),
+    createQueryBuilder: vi.fn(),
   };
 
   const dto = { name: 'Jane', email: 'jane@example.com', password: 'supersecret' };
@@ -53,6 +54,14 @@ describe('UserService', () => {
     expect(repo.save).not.toHaveBeenCalled();
   });
 
+  it('flags the conflict with a code and field the client can map to the email input', async () => {
+    repo.findOneBy.mockResolvedValue({ id: 'existing' });
+
+    const error = await service.create(dto).catch((e) => e);
+
+    expect(error.getResponse()).toMatchObject({ code: 'EMAIL_TAKEN', field: 'email' });
+  });
+
   it('trims and lowercases the email before lookup and save', async () => {
     repo.findOneBy.mockResolvedValue(null);
     repo.create.mockImplementation((u) => u);
@@ -83,5 +92,27 @@ describe('UserService', () => {
     repo.save.mockRejectedValue(boom);
 
     await expect(service.create(dto)).rejects.toBe(boom);
+  });
+
+  it('findByEmail normalizes the email before lookup', async () => {
+    repo.findOneBy.mockResolvedValue(null);
+
+    await service.findByEmail('  Jane@Example.COM ');
+
+    expect(repo.findOneBy).toHaveBeenCalledWith({ email: 'jane@example.com' });
+  });
+
+  it('findCredentials selects the hash and looks up the normalized email', async () => {
+    const user = { id: 'uuid-1', password_hash: 'salt:hash' };
+    const qb = {
+      addSelect: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      getOne: vi.fn().mockResolvedValue(user),
+    };
+    repo.createQueryBuilder.mockReturnValue(qb);
+
+    await expect(service.findCredentials('  Jane@Example.COM ')).resolves.toBe(user);
+    expect(qb.addSelect).toHaveBeenCalledWith('user.password_hash');
+    expect(qb.where).toHaveBeenCalledWith('user.email = :email', { email: 'jane@example.com' });
   });
 });

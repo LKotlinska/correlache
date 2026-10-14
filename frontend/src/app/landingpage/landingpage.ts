@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { SignupForm } from '../components/dialog/signup/signup-form';
+import { MatDialogModule } from '@angular/material/dialog';
+import { DialogKey, DialogService } from '../components/dialog/dialog.service';
 
 @Component({
   imports: [MatButtonModule, MatDialogModule],
@@ -10,13 +10,9 @@ import { SignupForm } from '../components/dialog/signup/signup-form';
   templateUrl: './landingpage.html',
 })
 export class Landingpage {
-  readonly dialog = inject(MatDialog);
+  private dialogService = inject(DialogService);
 
-  openDialog() {
-    const dialogRef = this.dialog.open(SignupForm);
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
+  openDialog(key: DialogKey) {
+    this.dialogService.open(key);
   }
 }

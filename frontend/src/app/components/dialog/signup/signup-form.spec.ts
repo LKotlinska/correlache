@@ -114,6 +114,19 @@ describe('SignupForm', () => {
     expect(component.isSubmitting()).toBe(false);
   });
 
+  it('flags the email field instead of showing a snackbar when the email is taken', () => {
+    userService.createUser.mockReturnValue(
+      throwError(() => ({ status: 409, error: { code: 'EMAIL_TAKEN', message: 'Email already registered' } })),
+    );
+    fillValidForm();
+
+    component.onSubmit();
+
+    expect(component.addUserForm.controls.emailFormControl.errors).toEqual({ emailTaken: true });
+    expect(snackBar.open).not.toHaveBeenCalled();
+    expect(component.isSubmitting()).toBe(false);
+  });
+
   it('joins an array of validation messages', () => {
     userService.createUser.mockReturnValue(
       throwError(() => ({ error: { message: ['name is too long', 'email must be an email'] } })),

@@ -2,8 +2,16 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity.js';
 import { QueryFailedError, Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto.js';
+import { CreateUserDto } from './dto/user.dto.js';
 import { hashPassword } from '../common/password.js';
+
+const emailTaken = () =>
+  new ConflictException({
+    statusCode: 409,
+    code: 'EMAIL_TAKEN',
+    field: 'email',
+    message: 'Email already registered',
+  });
 
 @Injectable()
 export class UserService {
@@ -13,10 +21,10 @@ export class UserService {
   ) {}
 
   async create(dto: CreateUserDto) {
-    const email = dto.email.trim().toLowerCase();
-    const existing = await this.userRepository.findOneBy({ email });
+    const email = normalize(dto.email);
+    const existing = await this.findByEmail(email);
     if (existing) {
-        throw new ConflictException('Email already registered');
+        throw emailTaken();
     }
 
     const user = this.userRepository.create({
@@ -31,7 +39,7 @@ export class UserService {
     } catch (err) {
         // Two concurrent signups can both pass the check above; the unique constraint catches the second.
         if (err instanceof QueryFailedError && (err as { code?: string }).code === 'ER_DUP_ENTRY') {
-            throw new ConflictException('Email already registered');
+            throw emailTaken();
         }
         throw err;
     }
@@ -39,4 +47,24 @@ export class UserService {
     return { id: saved.id, username: saved.username, email: saved.email }
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOneBy({ email: normalize(email) })
+  }
+  
+  async findById(id: string): Promise<User | null> {
+    return this.userRepository.findOneBy({
+        id
+    })
+  }
+
+  /** Like `findByEmail`, but also selects `password_hash`, which is excluded by default. */
+  async findCredentials(email: string): Promise<User | null> {
+    return this.userRepository
+        .createQueryBuilder('user')
+        .addSelect('user.password_hash')
+        .where('user.email = :email', { email: normalize(email) })
+        .getOne();
+  }
 }
+
+const normalize = (email: string) => email.trim().normalize('NFC').toLowerCase();
