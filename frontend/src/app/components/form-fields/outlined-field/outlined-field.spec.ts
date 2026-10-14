@@ -21,4 +21,10 @@ describe('OutlinedField', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('shows the email-taken message once the control carries that error', () => {
+    component.myControl().setErrors({ emailTaken: true });
+
+    expect(component.getErrorMessage()).toBe('This email is already registered');
+  });
 });
