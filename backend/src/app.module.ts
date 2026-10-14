@@ -29,6 +29,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
       }),
     }),
     AuthenticationModule.forRoot({
+      // No persistent SessionStore yet: sessions live in memory, so they are lost on dyno restart.
+      // Required here because the module refuses in-memory storage when NODE_ENV=production.
+      allowInMemoryStorage: true,
       session: {
         absoluteTtl: '14d', // signed out after 14 days, however active
         idleTtl: '3d', // or after 3 days without a request
