@@ -10,7 +10,7 @@ import { DialogKey, DialogService } from '../components/dialog/dialog.service';
   templateUrl: './landingpage.html',
 })
 export class Landingpage {
-  dialogService = inject(DialogService);
+  private dialogService = inject(DialogService);
 
   openDialog(key: DialogKey) {
     this.dialogService.open(key);

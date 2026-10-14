@@ -43,5 +43,8 @@
       />
     </div>
   </form>
-  <p class="dialog-foot">Already registered? Sign in</p>
+  <p class="dialog-foot">
+    Already registered?
+    <app-button label="Sign in" appearance="text" (click)="switchDialog('signin')" />
+  </p>
 </app-dialog>

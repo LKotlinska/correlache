@@ -1,1 +1,22 @@
-<p>signin-form works!</p>
+<app-dialog heading="Sign in">
+  <form [formGroup]="signInForm">
+    <app-outlined-field
+      label="Email"
+      type="email"
+      placeholder="e.g. john@example.com"
+      [myControl]="signInForm.controls.emailFormControl"
+    />
+
+    <app-outlined-field
+      label="Password"
+      type="password"
+      [myControl]="signInForm.controls.passwordFormConrol"
+    />
+
+    <app-button label="Sign in" type="submit" [isFullWidth]="true" />
+    <p class="dialog-foot">
+      New here?
+      <app-button label="Create your account" appearance="text" (click)="switchDialog('signup')" />
+    </p>
+  </form>
+</app-dialog>
