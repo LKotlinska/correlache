@@ -68,6 +68,11 @@ export class SignupForm {
       },
       error: (err) => {
         this.isSubmitting.set(false);
+
+        if (err.status === 409 && err.error?.code === 'EMAIL_TAKEN') {
+          this.addUserForm.controls.emailFormControl.setErrors({ emailTaken: true });
+          return; // no snackbar
+        }
         const msg = err.error?.message;
         const text = Array.isArray(msg)
           ? msg.join('. ')

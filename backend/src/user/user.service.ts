@@ -5,6 +5,14 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/user.dto.js';
 import { hashPassword } from '../common/password.js';
 
+const emailTaken = () =>
+  new ConflictException({
+    statusCode: 409,
+    code: 'EMAIL_TAKEN',
+    field: 'email',
+    message: 'Email already registered',
+  });
+
 @Injectable()
 export class UserService {
   constructor(
@@ -13,10 +21,10 @@ export class UserService {
   ) {}
 
   async create(dto: CreateUserDto) {
-    const email = dto.email;
+    const email = normalize(dto.email);
     const existing = await this.findByEmail(email);
     if (existing) {
-        throw new ConflictException('Email already registered');
+        throw emailTaken();
     }
 
     const user = this.userRepository.create({
@@ -31,7 +39,7 @@ export class UserService {
     } catch (err) {
         // Two concurrent signups can both pass the check above; the unique constraint catches the second.
         if (err instanceof QueryFailedError && (err as { code?: string }).code === 'ER_DUP_ENTRY') {
-            throw new ConflictException('Email already registered');
+            throw emailTaken();
         }
         throw err;
     }
@@ -55,9 +63,10 @@ export class UserService {
     let user = await this.userRepository
         .createQueryBuilder('user')
         .addSelect('user.password_hash')
-        .where('user.email = :email', { email: email.trim().toLowerCase() })
+        .where('user.email = :email', { email: normalize(email) })
         .getOne();
     return user ? { id: user.id, username: user.username, email: user.email, password_hash: user.password_hash} : null
   }
-
 }
+
+const normalize = (email: string) => email.trim().normalize('NFC').toLowerCase();

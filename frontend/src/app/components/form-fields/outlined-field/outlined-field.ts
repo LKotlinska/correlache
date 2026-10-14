@@ -20,6 +20,7 @@ export class OutlinedField {
     required: 'This field is required',
     email: 'Please enter a valid email adress',
     minlength: 'Value is too short',
+    emailTaken: 'This email is already registered',
   };
 
   getErrorMessage(): string | null {
