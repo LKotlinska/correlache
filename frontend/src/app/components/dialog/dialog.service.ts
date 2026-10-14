@@ -1,7 +1,7 @@
 import { inject, Service, Type } from "@angular/core";
 import { SignupForm } from "./signup/signup-form";
 import { SigninForm } from "./signin-form/signin-form";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 
 export type DialogKey ='signup' | 'signin';
 
@@ -16,5 +16,9 @@ export class DialogService {
 
   open(key: DialogKey) {
     return this.dialog.open(DialogComponents[key]);
+  }
+  switch(dialogRef: MatDialogRef<unknown>, key: DialogKey) {
+    dialogRef.close();
+    return this.open(key);
   }
 }
