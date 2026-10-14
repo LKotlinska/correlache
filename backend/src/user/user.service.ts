@@ -48,9 +48,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOneBy({
-        email: email.trim().toLowerCase(),
-    })
+    return this.userRepository.findOneBy({ email: normalize(email) })
   }
   
   async findById(id: string): Promise<User | null> {
@@ -59,13 +57,13 @@ export class UserService {
     })
   }
 
-  async findCredentials(email: string): Promise<Omit<User, 'created_at'> | null> {
-    let user = await this.userRepository
+  /** Like `findByEmail`, but also selects `password_hash`, which is excluded by default. */
+  async findCredentials(email: string): Promise<User | null> {
+    return this.userRepository
         .createQueryBuilder('user')
         .addSelect('user.password_hash')
         .where('user.email = :email', { email: normalize(email) })
         .getOne();
-    return user ? { id: user.id, username: user.username, email: user.email, password_hash: user.password_hash} : null
   }
 }
 
