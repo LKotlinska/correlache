@@ -2,7 +2,6 @@ import { inject, Service, Type } from "@angular/core";
 import { SignupForm } from "./signup/signup-form";
 import { SigninForm } from "./signin-form/signin-form";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { DIALOG_SCROLL_STRATEGY } from "@angular/cdk/dialog";
 
 export type DialogKey ='signup' | 'signin';
 
