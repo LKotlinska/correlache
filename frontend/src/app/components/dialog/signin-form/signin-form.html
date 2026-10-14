@@ -1,5 +1,5 @@
 <app-dialog heading="Sign in">
-  <form [formGroup]="signInForm">
+  <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
     <app-outlined-field
       label="Email"
       type="email"
@@ -12,8 +12,8 @@
       type="password"
       [myControl]="signInForm.controls.passwordFormConrol"
     />
+    <app-button label="Sign in" type="submit" [isFullWidth]="true" [disabled]="isSubmitting()" />
 
-    <app-button label="Sign in" type="submit" [isFullWidth]="true" />
     <p class="dialog-foot">
       New here?
       <app-button label="Create your account" appearance="text" (click)="switchDialog('signup')" />
