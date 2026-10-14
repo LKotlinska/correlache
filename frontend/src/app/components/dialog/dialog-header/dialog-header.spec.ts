@@ -12,6 +12,7 @@ describe('DialogHeader', () => {
 
     fixture = TestBed.createComponent(DialogHeader);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('heading', 'Sign up');
     await fixture.whenStable();
   });
 

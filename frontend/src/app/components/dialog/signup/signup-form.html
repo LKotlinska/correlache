@@ -1,0 +1,47 @@
+<app-dialog heading="Create your account">
+  <form class="signup-form" [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
+    <app-outlined-field
+      label="Name"
+      type="text"
+      placeholder="e.g. John"
+      [myControl]="addUserForm.controls.nameFormControl"
+    />
+
+    <app-outlined-field
+      label="Email"
+      type="email"
+      placeholder="e.g. john@example"
+      [myControl]="addUserForm.controls.emailFormControl"
+    />
+
+    <app-outlined-field
+      label="Password"
+      type="password"
+      [myControl]="addUserForm.controls.passwordFormControl"
+    />
+
+    <div class="terms-field">
+      <mat-checkbox
+        [formControl]="addUserForm.controls.termsFormControl"
+        [attr.aria-describedby]="termsInvalid ? 'terms-error' : null"
+      >
+        I have read and agree to the Terms of Service and Privacy Policy
+      </mat-checkbox>
+      @if (termsInvalid) {
+        <p id="terms-error" class="terms-error" role="alert">
+          You must accept the terms to create an account
+        </p>
+      }
+    </div>
+
+    <div class="button-container">
+      <app-button
+        label="Create account"
+        type="submit"
+        [isFullWidth]="true"
+        [disabled]="isSubmitting()"
+      />
+    </div>
+  </form>
+  <p class="dialog-foot">Already registered? Sign in</p>
+</app-dialog>
