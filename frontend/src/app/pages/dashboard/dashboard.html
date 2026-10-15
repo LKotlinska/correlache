@@ -1,4 +1,12 @@
 <div class="page-wrapper">
+  <header>
+    <div class="header-content">
+      <div class="primary-icon">
+        <mat-icon class="mat-icon">{{ activeItem()?.icon }}</mat-icon>
+      </div>
+      <h1>{{ activeItem()?.label }}</h1>
+    </div>
+  </header>
   <main class="page-content">
     <mat-tab-nav-panel #tabPanel>
       <router-outlet />
@@ -10,7 +18,7 @@
       <a mat-tab-link [routerLink]="item.path" routerLinkActive="active">
         <div class="nav-tab">
           <mat-icon>{{ item.icon }}</mat-icon>
-          <span>{{ item.label }}</span>
+          <span class="label">{{ item.label }}</span>
         </div>
       </a>
     }

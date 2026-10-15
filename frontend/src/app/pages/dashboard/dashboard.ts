@@ -1,7 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {MatIconModule} from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import { filter, map, startWith } from 'rxjs';
 
 const items = [
   {label: 'Diary', icon: ' note_alt', path: 'diary'},
@@ -17,4 +19,13 @@ const items = [
 })
 export class Dashboard {
   protected readonly items = items;
+  private router = inject(Router);
+
+  protected readonly activeItem = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      startWith(null),
+      map(() => items.find(i => this.router.url.includes('/' + i.path))),
+    ),
+  );
 }
