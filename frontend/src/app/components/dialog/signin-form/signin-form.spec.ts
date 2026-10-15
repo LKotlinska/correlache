@@ -58,7 +58,7 @@ describe('SigninForm', () => {
       password: 'supersecret',
     });
     expect(dialogRef.close).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard/insights']);
   });
 
   it('shows a credentials message and re-enables submit on 401', () => {
