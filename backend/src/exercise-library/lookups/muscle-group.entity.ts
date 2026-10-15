@@ -5,6 +5,6 @@ export class MuscleGroup {
     @PrimaryColumn("int")
     id: number
 
-    @Column("varchar", { length: 50 })
+    @Column("varchar", { length: 50, unique: true })
     name: string
 }

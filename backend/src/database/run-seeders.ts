@@ -15,7 +15,7 @@ const dataSource = new DataSource({
 try {
   await dataSource.initialize();
   await runSeeders(dataSource, {
-    seeds: [join(__dirname, 'seeds', '*{.ts,.js}')],
+    seeds: [join(__dirname, 'seeds', '*.seed{.ts,.js}')],
   });
 } finally {
   if (dataSource.isInitialized) await dataSource.destroy();

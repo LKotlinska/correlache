@@ -6,10 +6,10 @@ export class Muscle {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column("varchar", { length: 50 })
+    @Column("varchar", { length: 50, unique: true })
     name: string
 
-    @ManyToOne(() => MuscleGroup, (group) => group.name, { nullable: false })
+    @ManyToOne(() => MuscleGroup, { nullable: false })
     @JoinColumn({ name: 'muscle_group_id' })
     muscleGroup: MuscleGroup
 }

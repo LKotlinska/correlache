@@ -9,5 +9,5 @@ export class Location {
     name: string
 
     @Column("varchar", { length: 255, nullable: true})
-    image: string
+    image: string | null
 }
