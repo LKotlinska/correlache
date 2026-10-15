@@ -28,15 +28,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
         synchronize: false,
       }),
     }),
-    AuthenticationModule.forRoot({
-      // No persistent SessionStore yet: sessions live in memory, so they are lost on dyno restart.
-      // Required here because the module refuses in-memory storage when NODE_ENV=production.
-      allowInMemoryStorage: true,
-      session: {
-        absoluteTtl: '14d', // signed out after 14 days, however active
-        idleTtl: '3d', // or after 3 days without a request
-      },
-    }),
+    // Stateless auth: the JWT cookie (see auth/jwt-cookie.service.ts) needs no session store.
+    AuthenticationModule.forRoot({}),
     // Lets Nest server hand out Angular app, so Heroku serves both the website and the API.
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend', 'dist', 'frontend', 'browser'),

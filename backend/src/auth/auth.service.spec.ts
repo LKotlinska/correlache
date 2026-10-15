@@ -1,14 +1,14 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignInService } from '@nestjs/authentication';
 import { AuthService } from './auth.service.js';
 import { UserService } from '../user/user.service.js';
 import { hashPassword } from '../common/password.js';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
   let service: AuthService;
   const userService = { create: vi.fn(), findCredentials: vi.fn() };
-  const signInService = { signIn: vi.fn() };
+  const jwtService = { signAsync: vi.fn() };
 
   const credentials = { email: 'jane@example.com', password: 'supersecret' };
 
@@ -19,7 +19,7 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: UserService, useValue: userService },
-        { provide: SignInService, useValue: signInService },
+        { provide: JwtService, useValue: jwtService },
       ],
     }).compile();
 
@@ -34,7 +34,7 @@ describe('AuthService', () => {
     expect(userService.create).toHaveBeenCalledWith(dto);
   });
 
-  it('signs in and returns the user without the hash on valid credentials', async () => {
+  it('issues a token and returns the user without the hash on valid credentials', async () => {
     userService.findCredentials.mockResolvedValue({
       id: 'uuid-1',
       username: 'Jane',
@@ -42,10 +42,15 @@ describe('AuthService', () => {
       password_hash: await hashPassword(credentials.password),
     });
 
+    jwtService.signAsync.mockResolvedValue('signed-token');
+
     const result = await service.login(credentials);
 
-    expect(result).toEqual({ id: 'uuid-1', username: 'Jane', email: credentials.email });
-    expect(signInService.signIn).toHaveBeenCalledWith('uuid-1');
+    expect(result).toEqual({
+      user: { id: 'uuid-1', username: 'Jane', email: credentials.email },
+      token: 'signed-token',
+    });
+    expect(jwtService.signAsync).toHaveBeenCalledWith({ sub: 'uuid-1' });
   });
 
   it('rejects a wrong password without signing in', async () => {
@@ -57,13 +62,13 @@ describe('AuthService', () => {
     });
 
     await expect(service.login(credentials)).rejects.toBeInstanceOf(UnauthorizedException);
-    expect(signInService.signIn).not.toHaveBeenCalled();
+    expect(jwtService.signAsync).not.toHaveBeenCalled();
   });
 
   it('rejects an unknown email with the same error as a wrong password', async () => {
     userService.findCredentials.mockResolvedValue(null);
 
     await expect(service.login(credentials)).rejects.toThrow('Invalid credentials');
-    expect(signInService.signIn).not.toHaveBeenCalled();
+    expect(jwtService.signAsync).not.toHaveBeenCalled();
   });
 });

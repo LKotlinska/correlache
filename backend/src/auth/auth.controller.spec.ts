@@ -3,10 +3,12 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { User } from '../user/user.entity.js';
+import { AUTH_COOKIE, authCookieOptions } from './auth-cookie.js';
 
 describe('AuthController', () => {
   let controller: AuthController;
   const authService = { register: vi.fn(), login: vi.fn() };
+  const res = { cookie: vi.fn(), clearCookie: vi.fn() };
 
   beforeEach(async () => {
     vi.resetAllMocks();
@@ -31,12 +33,20 @@ describe('AuthController', () => {
     expect(authService.register).toHaveBeenCalledWith(dto);
   });
 
-  it('delegates login to the service', async () => {
+  it('logs in, sets the auth cookie and returns the user', async () => {
     const dto = { email: 'jane@example.com', password: 'supersecret' };
-    authService.login.mockResolvedValue({ id: '1', username: 'Jane', email: dto.email });
+    const user = { id: '1', username: 'Jane', email: dto.email };
+    authService.login.mockResolvedValue({ user, token: 'signed-token' });
 
-    await expect(controller.login(dto)).resolves.toEqual({ id: '1', username: 'Jane', email: dto.email });
+    await expect(controller.login(dto, res as never)).resolves.toEqual(user);
     expect(authService.login).toHaveBeenCalledWith(dto);
+    expect(res.cookie).toHaveBeenCalledWith(AUTH_COOKIE, 'signed-token', authCookieOptions());
+  });
+
+  it('clears the auth cookie on logout', () => {
+    controller.logout(res as never);
+
+    expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE, expect.objectContaining({ httpOnly: true, path: '/' }));
   });
 
   it('returns only the public fields of the current user', () => {
