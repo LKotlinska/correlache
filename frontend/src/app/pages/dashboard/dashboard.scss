@@ -1,3 +1,22 @@
-.page-wrapper main {
-    height: 100%;
+.page-wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    .page-content {
+        height: 100%;
+    }
+
+    .nav-wrapper {
+        padding: 1em;
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25em;
+        }
+    }
 }
+

@@ -1,15 +1,17 @@
 <div class="page-wrapper">
-  <main>
+  <main class="page-content">
     <mat-tab-nav-panel #tabPanel>
       <router-outlet />
     </mat-tab-nav-panel>
   </main>
 
-  <nav mat-tab-nav-bar [tabPanel]="tabPanel" headerPosition="below">
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel" headerPosition="below" class="nav-wrapper">
     @for (item of items; track item.path) {
       <a mat-tab-link [routerLink]="item.path" routerLinkActive="active">
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.label }}</span>
+        <div class="nav-tab">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </div>
       </a>
     }
   </nav>

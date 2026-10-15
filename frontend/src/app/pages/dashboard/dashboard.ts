@@ -4,8 +4,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 
 const items = [
-  {label: 'Diary', icon: 'book', path: 'diary'},
-  {label: 'Insights', icon: 'bar_chart', path: 'insights'},
+  {label: 'Diary', icon: ' note_alt', path: 'diary'},
+  {label: 'Insights', icon: 'analytics', path: 'insights'},
   {label: 'Settings', icon: 'settings', path: 'settings'},
 ] as const;
 
