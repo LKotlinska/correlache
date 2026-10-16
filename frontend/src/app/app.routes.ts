@@ -12,7 +12,7 @@ export const routes: Routes = [
         component: Landingpage,
     },
     {
-        path: 'dashboard',
+        path: 'user',
         component: Dashboard,
         canActivate: [authGuard],
         children: [
