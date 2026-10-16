@@ -23,7 +23,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
       useFactory: () => ({
         ...dbConfig(process.env),
         autoLoadEntities: true,
-        migrations: [join(__dirname, 'migrations', '*.js')],
+        migrations: [join(__dirname, 'database', 'migrations', '*.js')],
         migrationsRun: true,
         synchronize: false,
       }),
