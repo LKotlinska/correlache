@@ -14,6 +14,9 @@ export class User {
     @Column("varchar", { length: 255, select: false })
     password_hash: string
 
+    @Column("number")
+    tokenVersion: number
+    
     @CreateDateColumn()
     created_at: Date
 }

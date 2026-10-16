@@ -28,10 +28,10 @@ export class AuthController {
         return user;
     }
 
-    @Public()
     @Post('logout')
     @HttpCode(204)
-    logout(@Res({ passthrough: true }) res: Response) {
+    async logout(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
+        await this.authService.logout(user.id);
         // Same attributes as when set, or the browser keeps the cookie.
         const { maxAge: _, ...options } = authCookieOptions();
         res.clearCookie(AUTH_COOKIE, options);
