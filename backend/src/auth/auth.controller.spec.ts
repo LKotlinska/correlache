@@ -7,7 +7,7 @@ import { AUTH_COOKIE, authCookieOptions } from './auth-cookie.js';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  const authService = { register: vi.fn(), login: vi.fn() };
+  const authService = { register: vi.fn(), login: vi.fn(), logout: vi.fn() };
   const res = { cookie: vi.fn(), clearCookie: vi.fn() };
 
   beforeEach(async () => {
@@ -43,9 +43,12 @@ describe('AuthController', () => {
     expect(res.cookie).toHaveBeenCalledWith(AUTH_COOKIE, 'signed-token', authCookieOptions());
   });
 
-  it('clears the auth cookie on logout', () => {
-    controller.logout(res as never);
+  it('revokes the session and clears the auth cookie on logout', async () => {
+    authService.logout.mockResolvedValue(undefined);
 
+    await controller.logout({ id: '1' } as User, res as never);
+
+    expect(authService.logout).toHaveBeenCalledWith('1');
     expect(res.clearCookie).toHaveBeenCalledWith(AUTH_COOKIE, expect.objectContaining({ httpOnly: true, path: '/' }));
   });
 
