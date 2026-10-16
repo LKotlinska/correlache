@@ -35,16 +35,13 @@
     </div>
 
     <div class="button-container">
-      <app-button
-        label="Create account"
-        type="submit"
-        [isFullWidth]="true"
-        [disabled]="isSubmitting()"
-      />
+      <app-button type="submit" [isFullWidth]="true" [disabled]="isSubmitting()"
+        >Create account</app-button
+      >
     </div>
   </form>
   <p class="dialog-foot">
     Already registered?
-    <app-button label="Sign in" appearance="text" (click)="switchDialog('signin')" />
+    <app-button appearance="text" (click)="switchDialog('signin')">Sign in</app-button>
   </p>
 </app-dialog>

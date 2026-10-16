@@ -9,7 +9,6 @@ export type ButtonType = 'button' | 'submit' | 'reset';
   templateUrl: './button.html',
 })
 export class Button {
-  label = input.required<string>();
   type = input<ButtonType>('button');
   appearance = input<MatButtonAppearance>('filled');
   isFullWidth = input<boolean>(false);
