@@ -1,0 +1,26 @@
+<div class="page-wrapper">
+  <header>
+    <div class="header-content">
+      <div class="primary-icon">
+        <mat-icon class="mat-icon">{{ activeItem()?.icon }}</mat-icon>
+      </div>
+      <h1>{{ activeItem()?.label }}</h1>
+    </div>
+  </header>
+  <main class="page-content">
+    <mat-tab-nav-panel #tabPanel>
+      <router-outlet />
+    </mat-tab-nav-panel>
+  </main>
+
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel" headerPosition="below" class="nav-wrapper">
+    @for (item of items; track item.path) {
+      <a mat-tab-link [routerLink]="item.path" routerLinkActive="active">
+        <div class="nav-tab">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span class="label">{{ item.label }}</span>
+        </div>
+      </a>
+    }
+  </nav>
+</div>

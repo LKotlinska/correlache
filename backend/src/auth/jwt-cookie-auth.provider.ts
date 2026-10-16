@@ -21,7 +21,7 @@ export class JwtCookieAuth extends AuthenticationProvider<User, { sub: string }>
     const token = tokenFromCookieHeader(this.header(context, 'cookie'));
     if (!token) return null;
 
-    let payload: { sub: string };
+    let payload: { sub: string, tv: number };
     try {
       payload = await this.jwtService.verifyAsync(token);
     } catch {
@@ -30,6 +30,7 @@ export class JwtCookieAuth extends AuthenticationProvider<User, { sub: string }>
     }
     // A deleted user ends the session: the token outlives the account otherwise.
     const user = await this.userService.findById(payload.sub);
-    return user ? { user, session: payload } : null;
+    if (!user || user.tokenVersion !== payload.tv) return null;
+    return { user, session: payload };
   }
 }

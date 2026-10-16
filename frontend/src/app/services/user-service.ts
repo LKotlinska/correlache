@@ -20,6 +20,11 @@ export class UserService {
     authUser(payload: authUserPayload) {
         return this.http.post('/api/auth/login', payload);
     }
+
+    logoutUser() {
+        return this.http.post('/api/auth/logout', null);
+    }
+
     me() {
         return this.http.get('/api/auth/me');
     }
