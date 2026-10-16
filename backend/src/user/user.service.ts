@@ -65,6 +65,11 @@ export class UserService {
         .where('user.email = :email', { email: normalize(email) })
         .getOne();
   }
+  
+  /** Invalidates every token issued before now. */
+  async revokeTokens(id: string): Promise<void> {
+    await this.userRepository.increment({ id }, 'tokenVersion', 1);
+  }
 }
 
 const normalize = (email: string) => email.trim().normalize('NFC').toLowerCase();

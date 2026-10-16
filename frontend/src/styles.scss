@@ -5,6 +5,8 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+@use 'variables' as *;
+
 .mat-mdc-snack-bar-handset .mat-mdc-snack-bar-container {
   width: auto;
   max-width: max-content;
@@ -25,6 +27,36 @@ html {
     )
   );
   @include mat.form-field-density(-1);
+
+  // Figma palette, applied on top of the generated Material theme.
+  @include mat.theme-overrides(
+    (
+      primary: $brand-primary,
+      on-primary: $white,
+      primary-container: $brand-tint,
+      on-primary-container: $text-strong,
+      secondary-container: $brand-tint,
+      on-secondary-container: $text-strong,
+      surface: $surface,
+      background: $surface,
+      surface-container-lowest: $white,
+      surface-container-low: $surface-low,
+      surface-container: $surface-low,
+      surface-container-high: $surface-high,
+      surface-container-highest: $surface-high,
+      surface-variant: $surface-high,
+      on-surface: $text-strong,
+      on-surface-variant: $text-strong,
+      outline: $outline,
+      outline-variant: $disabled,
+    )
+  );
+
+  // Extra design tokens not covered by Material's system variables.
+  --app-primary-alt: #{$primary-alt};
+  --app-disabled: #{$disabled};
+  --app-surface-low: #{$surface-low};
+  --app-brand-tint: #{$brand-tint};
 }
 
 body {

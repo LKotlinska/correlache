@@ -1,0 +1,45 @@
+@use '../../../variables' as p;
+
+.page-wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+        padding: 0.5em 1em;
+
+        .primary-icon {
+            display: flex;
+            padding: 0.4em;
+            border-radius: 50%;
+            background-color: p.$brand-primary;
+
+            .mat-icon {
+                color: p.$white;
+                font-weight: 400;
+            }
+
+        }
+    }
+
+    .page-content {
+        height: 100%;
+    }
+
+    .nav-wrapper {
+        padding: 1em;
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25em;
+
+        }
+    }
+}
+

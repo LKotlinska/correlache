@@ -27,7 +27,11 @@ export class AuthService {
     }
     return {
       user: { id: found.id, username: found.username, email: found.email },
-      token: await this.jwtService.signAsync({ sub: found.id }),
+      token: await this.jwtService.signAsync({ sub: found.id, tv: found.tokenVersion }),
     };
+  }
+  /** Ends every session of the user: tokens issued before this call stop validating. */
+  async logout(userId: string) {
+    await this.userService.revokeTokens(userId);
   }
 }
