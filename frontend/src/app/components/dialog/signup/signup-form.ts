@@ -8,6 +8,8 @@ import { UserService } from '../../../services/user-service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogKey, DialogService } from '../dialog.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { getErrorMessage } from '../../../utils/error-message';
 
 
 @Component({
@@ -66,18 +68,14 @@ export class SignupForm {
         this.dialogRef.close();
         this.snackBar.open('Registered successfully', 'Close', { panelClass: 'snackbar-success',});
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
 
         if (err.status === 409 && err.error?.code === 'EMAIL_TAKEN') {
           this.addUserForm.controls.emailFormControl.setErrors({ emailTaken: true });
           return; // no snackbar
         }
-        const msg = err.error?.message;
-        const text = Array.isArray(msg)
-          ? msg.join('. ')
-          : (msg ?? 'Something went wrong. Please try again.');
-        this.snackBar.open(text, 'Close', { panelClass: 'snackbar-error' });
+        this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
       },
     });
   }

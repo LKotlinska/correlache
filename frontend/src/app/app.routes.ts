@@ -2,9 +2,7 @@ import { Routes } from '@angular/router';
 import { Landingpage } from './pages/landingpage/landingpage';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './guards/auth-guard';
-import { Diary } from './pages/diary/diary';
-import { Insights } from './pages/insights/insights';
-import { Settings } from './pages/settings/settings';
+import { NotFoundError } from 'rxjs';
 
 export const routes: Routes = [
     {
@@ -15,18 +13,21 @@ export const routes: Routes = [
         path: 'user',
         component: Dashboard,
         canActivate: [authGuard],
+        canActivateChild: [authGuard],
         children: [
+            { path: '', redirectTo: 'diary', pathMatch: 'full' },
             {
                 path: 'diary',
-                component: Diary,
+                // Lazy loading keeps the bundle small
+                loadComponent: () => import('./pages/diary/diary').then(m => m.Diary),
             },
             {
                 path: 'insights',
-                component: Insights,
+                loadComponent: () => import('./pages/insights/insights').then(m => m.Insights),
             },
             {
                 path: 'settings',
-                component: Settings,
+                loadComponent: () => import('./pages/settings/settings').then(m => m.Settings),
             }
         ]
     },
