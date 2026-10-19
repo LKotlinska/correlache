@@ -1,6 +1,6 @@
 import type { DataSource } from 'typeorm';
 import type { Seeder } from 'typeorm-extension';
-import { Location } from '../../headaches/lookups/location.entity.js';
+import { HeadacheLocation } from '../../headaches/lookups/headache-location.entity.js';
 import { ReliefMeasure } from '../../headaches/lookups/relief-measure.entity.js';
 import { Symptom } from '../../headaches/lookups/symptom.entity.js';
 import { Trigger } from '../../headaches/lookups/trigger.entity.js';
@@ -150,7 +150,7 @@ export const TriggerSeed = [
 export default class HeadacheLookupSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<void> {
         // name is unique, so upsert keeps re-runs idempotent
-        await dataSource.getRepository(Location).upsert(LocationSeed, ['name']);
+        await dataSource.getRepository(HeadacheLocation).upsert(LocationSeed, ['name']);
         await dataSource.getRepository(ReliefMeasure).upsert(ReliefMeasureSeed, ['name']);
         await dataSource.getRepository(Symptom).upsert(SymptomSeed, ['name']);
         await dataSource.getRepository(Trigger).upsert(TriggerSeed, ['name']);
