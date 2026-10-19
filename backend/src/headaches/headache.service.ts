@@ -1,9 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
-import { UpdateHeadacheDto } from './dto/update-headache.dto.js';
+import { UpdateHeadacheDto } from './dto/update-headache.dto.js'
+import { HeadacheOptionsDto } from './dto/headache-options.dto.js';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Headache } from './entities/headache.entity.js';
+import { Repository } from 'typeorm';
+import { Trigger } from './lookups/trigger.entity.js';
+import { Symptom } from './lookups/symptom.entity.js';
+import { ReliefMeasure } from './lookups/relief-measure.entity.js';
+import { HeadacheLocation } from './lookups/headache-location.entity.js';
 
 @Injectable()
 export class HeadacheService {
+  @InjectRepository(Trigger)
+  private readonly triggerRepo: Repository<Trigger>
+
+  @InjectRepository(Symptom)
+  private readonly symptomRepo: Repository<Symptom>
+
+  @InjectRepository(ReliefMeasure)
+  private readonly reliefRepo: Repository<ReliefMeasure>
+
+  @InjectRepository(HeadacheLocation)
+  private readonly locationRepo: Repository<HeadacheLocation>
+
   create(createHeadacheDto: CreateHeadacheDto) {
     return 'This action adds a new headache';
   }
@@ -24,7 +44,13 @@ export class HeadacheService {
     return `This action removes a #${id} headache`;
   }
 
-  getOptions(){
-
+  async getOptions(): Promise<HeadacheOptionsDto>{
+    const [triggers, symptoms, reliefMeasures, headacheLocations ] = await Promise.all([
+      this.triggerRepo.find(),
+      this.symptomRepo.find(),
+      this.reliefRepo.find(),
+      this.locationRepo.find(),
+    ])
+    return { triggers, symptoms, reliefMeasures, headacheLocations };
   }
 }

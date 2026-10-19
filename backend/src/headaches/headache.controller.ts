@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { HeadacheService } from './headache.service.js';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
 import { UpdateHeadacheDto } from './dto/update-headache.dto.js';
+import { HeadacheOptionsDto } from './dto/headache-options.dto.js';
 
-@Controller('headache')
+@Controller('headaches')
 export class HeadacheController {
   constructor(private readonly headacheService: HeadacheService) {}
 
@@ -15,6 +16,11 @@ export class HeadacheController {
   @Get()
   findAll() {
     return this.headacheService.findAll();
+  }
+  
+  @Get('options')
+  async getOptions(): Promise<HeadacheOptionsDto> {
+    return await this.headacheService.getOptions();
   }
 
   @Get(':id')
@@ -31,4 +37,6 @@ export class HeadacheController {
   remove(@Param('id') id: string) {
     return this.headacheService.remove(+id);
   }
+
+
 }
