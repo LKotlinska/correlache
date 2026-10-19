@@ -8,39 +8,47 @@ import { Trigger } from '../../headaches/lookups/trigger.entity.js';
 export const LocationSeed = [
     {
         name: 'Forehead band',
-        image: 'forehead.png'
+        image: 'forehead.svg'
     },
     {
-        name: 'One side',
-        image: 'oneside.png'
+        name: 'Left side',
+        image: 'leftside.svg'
+    },
+        {
+        name: 'Right side',
+        image: 'rightside.svg'
     },
     {
-        name: 'Around eye',
-        image: 'aroundeye.png'
-    },    
+        name: 'Behind left eye',
+        image: 'lefteye.svg'
+    },   
     {
-        name: 'Behind eye',
-        image: 'behindeye.png'
-    },    
+        name: 'Around right eye',
+        image: 'righteye.svg'
+    },  
+    {
+        name: 'Whole head',
+        image: 'wholehead.svg'
+    },  
     {
         name: 'Scattered, top of head',
-        image: 'tophead.png'
+        image: 'tophead.svg'
     },    
     {
         name: 'Scattered, scalp and neck',
-        image: 'scalpneck.png'
+        image: 'scalpneck.svg'
     },    
     {
         name: 'Sinus area',
-        image: 'sinus.png'
+        image: 'sinus.svg'
     },    
     {
         name: 'Back of head',
-        image: 'backhead.png'
+        image: 'backhead.svg'
     },    
     {
         name: 'Neck to temple',
-        image: 'necktemple.png'
+        image: 'necktemple.svg'
     },    
 ]
 
