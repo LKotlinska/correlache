@@ -3,12 +3,11 @@ import { FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModul
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTimepickerModule } from '@angular/material/timepicker';
-import { Button } from '../../../components/button/button';
 
 @Component({
   imports: [
@@ -22,8 +21,7 @@ import { Button } from '../../../components/button/button';
     MatDatepickerModule,
     MatNativeDateModule,
     MatTimepickerModule,
-    MatSliderModule,
-    Button
+    MatSliderModule
 ],
   selector: 'app-headache-form',
   styleUrl: './headache-form.scss',
@@ -40,7 +38,7 @@ export class HeadacheForm {
 
   endDateFilter = (d: Date | null): boolean => {
     const day = new Date();
-    // Prevent Saturday and Sunday from being selected.
+    // Prevent end date from traveling back in time.
     return d !== null && d >= this.headacheForm.controls.startDate.value;
   };
 }
