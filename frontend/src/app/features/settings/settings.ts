@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Button } from '../../components/button/button';
-import { UserService } from '../../services/user-service';
+import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';

@@ -7,7 +7,7 @@ import { DialogKey, DialogService } from '../dialog.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { UserService } from '../../../services/user-service';
+import { UserService } from '../../../services/user.service';
 import { email } from '@angular/forms/signals';
 
 @Component({

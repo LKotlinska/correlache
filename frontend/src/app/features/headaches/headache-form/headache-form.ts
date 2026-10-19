@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTimepickerModule } from '@angular/material/timepicker';
+import { HeadacheService } from '../../../services/headache.service';
 
 @Component({
   imports: [
@@ -28,6 +29,9 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
   templateUrl: './headache-form.html',
 })
 export class HeadacheForm {
+  private headacheService = inject(HeadacheService);
+  options = this.headacheService.getOptions();
+
   headacheForm = new FormGroup({
     startDate: new FormControl(),
     startTime: new FormControl(),

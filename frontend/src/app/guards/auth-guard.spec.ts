@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom, Observable, of, throwError } from 'rxjs';
-import { UserService } from '../services/user-service';
+import { UserService } from '../services/user.service';
 import { authGuard } from './auth-guard';
 
 describe('authGuard', () => {
