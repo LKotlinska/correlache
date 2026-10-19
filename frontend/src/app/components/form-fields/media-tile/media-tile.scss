@@ -1,0 +1,44 @@
+@use '../../../variables' as p;
+
+:host {
+  display: block;
+}
+
+
+.checkbox-card {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 2px solid p.$surface-high;
+  background: p.$surface-low;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 1em;
+  border-radius: p.$card-border;
+ 
+  // Selected
+  &:has(input:checked) {
+    border-color: p.$brand-primary;
+  }
+ 
+  // Keyboard focus (the native checkbox is hidden, so show it on the card)
+  &:has(input:focus-visible) {
+    outline: 2px solid p.$outline;
+    outline-offset: 2px;
+  }
+  
+  &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .image {
+        width: 100%;
+    }
+    
+    .image-context {
+        padding: 0.25em 0;
+    }
+}

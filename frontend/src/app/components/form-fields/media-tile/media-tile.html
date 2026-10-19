@@ -1,0 +1,10 @@
+<label class="checkbox-card">
+  <input type="checkbox" class="visually-hidden" [checked]="checked()" (change)="toggle($event)" />
+  <img class="image" [src]="image()" [alt]="altText()" />
+  <div class="image-context">
+    <span class="title">{{ title() }}</span>
+    @if (subtitle()) {
+      <span class="subtitle">{{ subtitle() }}</span>
+    }
+  </div>
+</label>
