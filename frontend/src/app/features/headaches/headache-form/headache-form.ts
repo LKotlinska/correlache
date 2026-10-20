@@ -51,7 +51,7 @@ export class HeadacheForm {
     startTime: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
     endDate: new FormControl<Date | null>(null),
     endTime: new FormControl<Date | null>(null),
-    painLevel: new FormControl<number>(1, { nonNullable: true }),
+    painLevel: new FormControl<number>(1, { validators: [Validators.required], nonNullable: true }),
     locationIds: new FormControl<number[]>([], { nonNullable: true }),
     triggerIds: new FormControl<number[]>([], { nonNullable: true }),
     symptomIds: new FormControl<number[]>([], { nonNullable: true }),
