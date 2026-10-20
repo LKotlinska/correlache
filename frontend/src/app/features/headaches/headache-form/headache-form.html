@@ -51,6 +51,7 @@
               [formControl]="headacheForm.controls.endTime"
               matInput
               [matTimepicker]="timepicker"
+              [matTimepickerMin]="endTimeMin"
             />
             <mat-timepicker-toggle matIconSuffix [for]="timepicker" />
             <mat-timepicker #timepicker />
@@ -64,7 +65,7 @@
         </mat-slider>
       </div>
       <div class="btn-container">
-        <button matButton="filled" matStepperNext>Next</button>
+        <button matButton="filled" type="button" matStepperNext>Next</button>
       </div>
     </mat-step>
 
@@ -88,8 +89,8 @@
       </div>
 
       <div class="btn-container">
-        <button matButton="filled" matStepperPrevious>Back</button>
-        <button matButton="filled" matStepperNext>Next</button>
+        <button matButton="filled" type="button" matStepperPrevious>Back</button>
+        <button matButton="filled" type="button" matStepperNext>Next</button>
       </div>
     </mat-step>
 
@@ -122,11 +123,16 @@
 
       <h3>Additional notes</h3>
       <mat-form-field appearance="outline">
-        <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
+        <textarea
+          [formControl]="headacheForm.controls.notes"
+          maxlength="300"
+          matInput
+          placeholder="Ex. It makes me feel..."
+        ></textarea>
       </mat-form-field>
       <div class="btn-container">
-        <button matButton="filled" matStepperPrevious>Back</button>
-        <button matButton="filled" matStepperNext>Next</button>
+        <button matButton="filled" type="button" matStepperPrevious>Back</button>
+        <button matButton="filled" type="button" matStepperNext>Next</button>
       </div>
     </mat-step>
 

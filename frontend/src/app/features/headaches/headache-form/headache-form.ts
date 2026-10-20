@@ -13,6 +13,10 @@ import { AsyncPipe } from '@angular/common';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
 import { ChipList } from '../../../components/chip-list/chip-list';
 import { Button } from '../../../components/button/button';
+import { combineDateTime } from '../../../utils/combine-date-time';
+import { CreateHeadachePayload } from '../../../models/headache.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   imports: [
@@ -38,6 +42,7 @@ import { Button } from '../../../components/button/button';
 })
 export class HeadacheForm {
   private headacheService = inject(HeadacheService);
+  private snackBar = inject(MatSnackBar); // temporary snackbar
   options = this.headacheService.getOptions();
   isSubmitting = signal(false);
 
@@ -71,15 +76,63 @@ export class HeadacheForm {
     }
   }
 
+  /** Earliest selectable end time: the start time, but only when both fall on the same day. */
+  get endTimeMin(): Date | null {
+    const { startDate, startTime, endDate } = this.headacheForm.controls;
+    if (startDate.value && endDate.value && startTime.value && this.isSameDay(startDate.value, endDate.value)) {
+      return startTime.value;
+    }
+    return null;
+  }
+
+  private isSameDay(a: Date, b: Date): boolean {
+    return a.getFullYear() === b.getFullYear()
+      && a.getMonth() === b.getMonth()
+      && a.getDate() === b.getDate();
+  }
+
   endDateFilter = (d: Date | null): boolean => {
-    const day = new Date();
     // Prevent end date from traveling back in time.
-    return d !== null && d >= this.headacheForm.controls.startDate.value!;
+    const start = this.headacheForm.controls.startDate.value;
+    if (d === null) {
+      return false;
+    }
+    if (!start) {
+      return true;
+    }
+    // Compare by calendar day so the same day stays selectable.
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    return day >= startDay;
   };
 
   onSubmit() {
     if (this.isSubmitting()) {
       return;
     }
+    if (this.headacheForm.invalid) { 
+      this.headacheForm.markAllAsTouched(); 
+      return; 
+    }
+    const { startDate, startTime, endDate, endTime, ...fields} = this.headacheForm.getRawValue();
+
+    const payload: CreateHeadachePayload = {
+      ...fields,
+      startedAt: combineDateTime(startDate!, startTime),
+      endedAt: endDate ? combineDateTime(endDate, endTime) : undefined,
+    };
+
+    this.isSubmitting.set(true);
+    this.headacheService.create(payload).subscribe({
+      next: () => {
+        // Temporary snackbar - should redirect to headache view
+        this.snackBar.open('Headache has been added', 'Close', { panelClass: 'snackbar-success',});
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isSubmitting.set(false);
+        // Temporary error - should show in component
+        this.snackBar.open(err.error?.message?.[0] ?? 'Something went wrong', 'Close', { panelClass: 'snackbar-error' });
+      }
+    });
   }
 }

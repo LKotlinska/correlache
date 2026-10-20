@@ -17,7 +17,7 @@ export class CreateHeadacheDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(5000)
+  @MaxLength(300)
   notes?: string;
 
   @IsArray()

@@ -12,6 +12,9 @@ import { HeadacheLocation } from './lookups/headache-location.entity.js';
 
 @Injectable()
 export class HeadacheService {
+  @InjectRepository(Headache)
+  private readonly headacheRepo: Repository<Headache>
+
   @InjectRepository(Trigger)
   private readonly triggerRepo: Repository<Trigger>
 
@@ -24,8 +27,17 @@ export class HeadacheService {
   @InjectRepository(HeadacheLocation)
   private readonly locationRepo: Repository<HeadacheLocation>
 
-  create(createHeadacheDto: CreateHeadacheDto) {
-    return 'This action adds a new headache';
+  async create(userId: string, dto: CreateHeadacheDto): Promise<Headache> {
+    const { triggerIds, symptomIds, locationIds, reliefIds, ...fields } = dto;
+    const headache = this.headacheRepo.create({
+      ...fields,
+      userId,
+      locations: locationIds.map((id) => ({ id })),
+      triggers: triggerIds.map((id) => ({ id })),
+      symptoms: symptomIds.map((id) => ({ id })),
+      reliefMeasures: reliefIds.map((id) => ({ id })),
+    })
+    return this.headacheRepo.save(headache);
   }
 
   findAll() {

@@ -1,4 +1,5 @@
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import type { Relation } from "typeorm";
 import { User } from "../../user/entities/user.entity.js";
 import { Trigger } from "../lookups/trigger.entity.js";
 import { Symptom } from "../lookups/symptom.entity.js";
@@ -18,7 +19,7 @@ export class Headache {
         nullable: false,
     })
     @JoinColumn({ name: 'user_id' })
-    user: User;
+    user: Relation<User>;
 
     @Column({ name: 'started_at', type: 'datetime' })
     startedAt: Date;
@@ -26,7 +27,7 @@ export class Headache {
     @Column({ name: 'ended_at', type: 'datetime', nullable: true })
     endedAt: Date | null;
 
-    @Column({ name: 'pain_level'})
+    @Column({ name: 'pain_level', type: 'tinyint' })
     painLevel: number;
 
     @Column({ type: 'text', nullable: true })

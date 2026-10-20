@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { HeadacheOptions } from '../models/headache.model';
+import { CreateHeadachePayload, Headache, HeadacheOptions } from '../models/headache.model';
 import { Observable } from 'rxjs';
 
 
@@ -8,7 +8,11 @@ import { Observable } from 'rxjs';
 export class HeadacheService {
     private http = inject(HttpClient)
 
+    create(payload: CreateHeadachePayload){
+        return this.http.post<Headache>('/api/headaches', payload);
+    };
+
     getOptions(): Observable<HeadacheOptions> {
-        return this.http.get<HeadacheOptions>('/api/headaches/options')
-    }
+        return this.http.get<HeadacheOptions>('/api/headaches/options');
+    };
 }

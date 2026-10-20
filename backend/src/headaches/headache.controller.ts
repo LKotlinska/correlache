@@ -1,4 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { CurrentUser } from '@nestjs/authentication';
+import { User } from '../user/entities/user.entity.js';
 import { HeadacheService } from './headache.service.js';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
 import { UpdateHeadacheDto } from './dto/update-headache.dto.js';
@@ -9,8 +11,8 @@ export class HeadacheController {
   constructor(private readonly headacheService: HeadacheService) {}
 
   @Post()
-  create(@Body() createHeadacheDto: CreateHeadacheDto) {
-    return this.headacheService.create(createHeadacheDto);
+  create(@CurrentUser() user: User, @Body() dto: CreateHeadacheDto) {
+    return this.headacheService.create(user.id, dto);
   }
 
   @Get()

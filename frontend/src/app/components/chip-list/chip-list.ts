@@ -8,7 +8,7 @@ import { DialogService } from '../dialog/dialog.service';
 import { OptionPicker, OptionPickerData } from './option-picker/option-picker';
 
 @Component({
-  imports: [MatButtonModule, MatIcon, MatChipListbox, MatChipOption, MatChip],
+  imports: [MatButtonModule, MatIcon, MatChip],
   selector: 'app-chip-list',
   styleUrl: './chip-list.scss',
   templateUrl: './chip-list.html',

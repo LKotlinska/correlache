@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Headache } from "../../headaches/entities/headache.entity.js";
 
 @Entity('users')
 export class User {
@@ -17,6 +18,9 @@ export class User {
     @Column({ type: 'int', default: 0 })
     tokenVersion: number
     
+    @OneToMany(() => Headache, (headache) => headache.user)
+    headaches: Headache[]
+
     @CreateDateColumn()
     created_at: Date
 }
