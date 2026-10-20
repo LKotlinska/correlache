@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
-import { UpdateHeadacheDto } from './dto/update-headache.dto.js'
 import { HeadacheOptionsDto } from './dto/headache-options.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Headache } from './entities/headache.entity.js';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Trigger } from './lookups/trigger.entity.js';
 import { Symptom } from './lookups/symptom.entity.js';
 import { ReliefMeasure } from './lookups/relief-measure.entity.js';
@@ -28,32 +27,38 @@ export class HeadacheService {
   private readonly locationRepo: Repository<HeadacheLocation>
 
   async create(userId: string, dto: CreateHeadacheDto): Promise<Headache> {
-    const { triggerIds, symptomIds, locationIds, reliefIds, ...fields } = dto;
+    const { triggerIds, symptomIds, locationIds, reliefIds, notes, ...fields } = dto;
+    const [locations, triggers, symptoms, reliefMeasures] = await Promise.all([
+      this.findAllByIds(this.locationRepo, locationIds, 'location'),
+      this.findAllByIds(this.triggerRepo, triggerIds, 'trigger'),
+      this.findAllByIds(this.symptomRepo, symptomIds, 'symptom'),
+      this.findAllByIds(this.reliefRepo, reliefIds, 'relief measure'),
+    ]);
+
     const headache = this.headacheRepo.create({
       ...fields,
+      notes: notes?.trim() || null,
       userId,
-      locations: locationIds.map((id) => ({ id })),
-      triggers: triggerIds.map((id) => ({ id })),
-      symptoms: symptomIds.map((id) => ({ id })),
-      reliefMeasures: reliefIds.map((id) => ({ id })),
+      locations,
+      triggers,
+      symptoms,
+      reliefMeasures,
     })
-    return this.headacheRepo.save(headache);
+    const saved = await this.headacheRepo.save(headache);
+    // Return only the headache's own columns, not the userId or the lookup rows.
+    return this.headacheRepo.findOneOrFail({ where: { id: saved.id }, select: { id: true, startedAt: true, endedAt: true, painLevel: true, notes: true } });
   }
 
-  findAll() {
-    return `This action returns all headache`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} headache`;
-  }
-
-  update(id: number, updateHeadacheDto: UpdateHeadacheDto) {
-    return `This action updates a #${id} headache`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} headache`;
+  /** Loads the lookup rows for `ids`, throwing a 400 when any id does not exist. */
+  private async findAllByIds<T extends { id: number }>(repo: Repository<T>, ids: number[], label: string): Promise<T[]> {
+    if (ids.length === 0) return [];
+    const rows = await repo.find({ where: { id: In(ids) } as never });
+    if (rows.length !== ids.length) {
+      const found = new Set(rows.map((r) => r.id));
+      const missing = ids.filter((id) => !found.has(id));
+      throw new BadRequestException(`Unknown ${label} id(s): ${missing.join(', ')}`);
+    }
+    return rows;
   }
 
   async getOptions(): Promise<HeadacheOptionsDto>{

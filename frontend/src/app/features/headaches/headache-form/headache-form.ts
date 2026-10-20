@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule, FormControl, Validators } from '@angular/forms';
+import { AbstractControl, FormGroup,ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -48,7 +48,7 @@ export class HeadacheForm {
 
   headacheForm = new FormGroup({
     startDate: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
-    startTime: new FormControl<Date | null>(new Date()),
+    startTime: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
     endDate: new FormControl<Date | null>(null),
     endTime: new FormControl<Date | null>(null),
     painLevel: new FormControl<number>(1, { nonNullable: true }),
@@ -57,7 +57,32 @@ export class HeadacheForm {
     symptomIds: new FormControl<number[]>([], { nonNullable: true }),
     reliefIds: new FormControl<number[]>([], { nonNullable: true }),
     notes: new FormControl<string>('', { nonNullable: true })
-  })
+  }, { validators: [(group: AbstractControl) => this.endNotBeforeStart(group)] })
+
+  /** Group validator: the combined end datetime must not be before the combined start datetime. */
+  private endNotBeforeStart(group: AbstractControl): ValidationErrors | null {
+    const startDate: Date | null = group.get('startDate')?.value ?? null;
+    const startTime: Date | null = group.get('startTime')?.value ?? null;
+    const endDate: Date | null = group.get('endDate')?.value ?? null;
+    const endTime: Date | null = group.get('endTime')?.value ?? null;
+    if (!startDate || !startTime) {
+      return null;
+    }
+    const { startedAt, endedAt } = this.buildTimestamps(startDate, startTime, endDate, endTime);
+    // Angular validators return null when valid, or an error object when invalid.
+    // Invalid here is an end datetime exists and is earlier than the start datetime.
+    return endedAt && new Date(endedAt) < new Date(startedAt) ? { endBeforeStart: true } : null;
+  }
+
+  /** Combines the date and time controls into ISO strings. A same-day end with no end time uses the start time, not midnight. */
+  private buildTimestamps(startDate: Date, startTime: Date | null, endDate: Date | null, endTime: Date | null) {
+    const startedAt = combineDateTime(startDate, startTime);
+    if (!endDate) {
+      return { startedAt, endedAt: undefined };
+    }
+    const resolvedEndTime = !endTime && this.isSameDay(startDate, endDate) ? startTime : endTime;
+    return { startedAt, endedAt: combineDateTime(endDate, resolvedEndTime) };
+  }
 
   isSelected(id: number) {
     return this.headacheForm.controls.locationIds.value.includes(id);
@@ -118,8 +143,7 @@ export class HeadacheForm {
 
     const payload: CreateHeadachePayload = {
       ...fields,
-      startedAt: combineDateTime(startDate!, startTime),
-      endedAt: endDate ? combineDateTime(endDate, endTime) : undefined,
+      ...this.buildTimestamps(startDate!, startTime, endDate, endTime),
     };
 
     this.isSubmitting.set(true);
@@ -131,7 +155,8 @@ export class HeadacheForm {
       error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
         // Temporary error - should show in component
-        this.snackBar.open(err.error?.message?.[0] ?? 'Something went wrong', 'Close', { panelClass: 'snackbar-error' });
+        const message = err.error?.message;
+        this.snackBar.open((Array.isArray(message) ? message[0] : message) ?? 'Something went wrong', 'Close', { panelClass: 'snackbar-error' });
       }
     });
   }
