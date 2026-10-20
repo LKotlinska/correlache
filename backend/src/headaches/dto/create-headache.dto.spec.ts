@@ -29,6 +29,12 @@ describe('CreateHeadacheDto', () => {
     expect(await errorsFor({ startedAt: '2026-01-01T10:00:00' })).toContain('startedAt');
   });
 
+  it('rejects dates in the future', async () => {
+    const future = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    expect(await errorsFor({ startedAt: future, endedAt: undefined })).toContain('startedAt');
+    expect(await errorsFor({ endedAt: future })).toContain('endedAt');
+  });
+
   it('rejects an end before the start', async () => {
     expect(await errorsFor({ endedAt: '2026-01-01T09:00:00.000Z' })).toContain('endedAt');
   });

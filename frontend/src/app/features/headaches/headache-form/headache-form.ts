@@ -45,6 +45,8 @@ export class HeadacheForm {
   private snackBar = inject(MatSnackBar); // temporary snackbar
   options = this.headacheService.getOptions();
   isSubmitting = signal(false);
+  /** Latest selectable date: headaches can't be logged in the future. */
+  today = new Date();
 
   headacheForm = new FormGroup({
     startDate: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
@@ -57,7 +59,24 @@ export class HeadacheForm {
     symptomIds: new FormControl<number[]>([], { nonNullable: true }),
     reliefIds: new FormControl<number[]>([], { nonNullable: true }),
     notes: new FormControl<string>('', { nonNullable: true })
-  }, { validators: [(group: AbstractControl) => this.endNotBeforeStart(group)] })
+  }, { validators: [
+    (group: AbstractControl) => this.endNotBeforeStart(group),
+    (group: AbstractControl) => this.notInFuture(group),
+  ] })
+
+  /** Group validator: neither the start nor the end datetime may be in the future (the date picker only blocks future days, not later times today). */
+  private notInFuture(group: AbstractControl): ValidationErrors | null {
+    const startDate: Date | null = group.get('startDate')?.value ?? null;
+    const startTime: Date | null = group.get('startTime')?.value ?? null;
+    const endDate: Date | null = group.get('endDate')?.value ?? null;
+    const endTime: Date | null = group.get('endTime')?.value ?? null;
+    if (!startDate || !startTime) {
+      return null;
+    }
+    const { startedAt, endedAt } = this.buildTimestamps(startDate, startTime, endDate, endTime);
+    const now = Date.now();
+    return new Date(startedAt).getTime() > now || (endedAt && new Date(endedAt).getTime() > now) ? { futureDate: true } : null;
+  }
 
   /** Group validator: the combined end datetime must not be before the combined start datetime. */
   private endNotBeforeStart(group: AbstractControl): ValidationErrors | null {
@@ -108,6 +127,21 @@ export class HeadacheForm {
       return startTime.value;
     }
     return null;
+  }
+
+  /** Latest selectable start time: now, but only when the start date is today. */
+  get startTimeMax(): Date | null {
+    return this.maxTimeFor(this.headacheForm.controls.startDate.value);
+  }
+
+  /** Latest selectable end time: now, but only when the end date is today. */
+  get endTimeMax(): Date | null {
+    return this.maxTimeFor(this.headacheForm.controls.endDate.value);
+  }
+
+  private maxTimeFor(date: Date | null): Date | null {
+    const now = new Date();
+    return date && this.isSameDay(date, now) ? now : null;
   }
 
   private isSameDay(a: Date, b: Date): boolean {

@@ -13,6 +13,7 @@
               [formControl]="headacheForm.controls.startDate"
               matInput
               [matDatepicker]="startDatePicker"
+              [max]="today"
             />
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
@@ -24,6 +25,7 @@
               [formControl]="headacheForm.controls.startTime"
               matInput
               [matTimepicker]="startTimePicker"
+              [matTimepickerMax]="startTimeMax"
             />
             <mat-timepicker-toggle matIconSuffix [for]="startTimePicker" />
             <mat-timepicker #startTimePicker />
@@ -40,6 +42,7 @@
               matInput
               [matDatepickerFilter]="endDateFilter"
               [matDatepicker]="endDatePicker"
+              [max]="today"
             />
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
@@ -52,11 +55,18 @@
               matInput
               [matTimepicker]="timepicker"
               [matTimepickerMin]="endTimeMin"
+              [matTimepickerMax]="endTimeMax"
             />
             <mat-timepicker-toggle matIconSuffix [for]="timepicker" />
             <mat-timepicker #timepicker />
           </mat-form-field>
         </div>
+        @if (headacheForm.hasError('endBeforeStart')) {
+          <p class="form-error" role="alert">The end can't be before the start.</p>
+        }
+        @if (headacheForm.hasError('futureDate')) {
+          <p class="form-error" role="alert">Headaches can't be logged in the future.</p>
+        }
       </div>
       <div>
         <h3>Pain level *</h3>

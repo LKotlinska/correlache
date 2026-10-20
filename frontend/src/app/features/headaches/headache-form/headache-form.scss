@@ -37,3 +37,7 @@
 .mat-vertical-content {
     padding: 0 24px 24px 0px;
 }
+.form-error {
+    color: var(--mat-sys-error, #b3261e);
+    margin: 0.5em 0 0;
+}
