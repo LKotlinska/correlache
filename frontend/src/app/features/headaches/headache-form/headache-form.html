@@ -1,4 +1,4 @@
-<form [formGroup]="headacheForm">
+<form [formGroup]="headacheForm" (ngSubmit)="onSubmit()">
   <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
     <mat-step>
       <ng-template matStepLabel>
@@ -59,7 +59,7 @@
       </div>
       <div>
         <h3>Pain level</h3>
-        <mat-slider class="slider" min="0" max="10" step="1" showTickMarks discrete>
+        <mat-slider class="slider" min="1" max="10" step="1" showTickMarks discrete>
           <input [formControl]="headacheForm.controls.painLevel" matSliderThumb />
         </mat-slider>
       </div>
@@ -69,7 +69,23 @@
     </mat-step>
 
     <mat-step>
-      <ng-template matStepLabel>Location</ng-template>
+      <ng-template matStepLabel>
+        <h2>Location</h2>
+      </ng-template>
+
+      <div class="picker-grid">
+        @if (options | async; as opts) {
+          @for (loc of opts.headacheLocations; track loc.id) {
+            <app-media-tile
+              [title]="loc.name"
+              [image]="'/images/' + loc.image"
+              [altText]="'Headache location:' + loc.name"
+              [checked]="isSelected(loc.id)"
+              (checkedChange)="toggleLocation(loc.id, $event)"
+            />
+          }
+        }
+      </div>
 
       <div class="btn-container">
         <button matButton="filled" matStepperPrevious>Back</button>
@@ -78,8 +94,36 @@
     </mat-step>
 
     <mat-step>
-      <ng-template matStepLabel>Triggers and symptoms</ng-template>
+      <ng-template matStepLabel>
+        <h2>Triggers and symptoms</h2>
+      </ng-template>
+      @if (options | async; as opts) {
+        <app-chip-list
+          heading="Triggers"
+          [options]="opts.triggers"
+          [selected]="headacheForm.controls.triggerIds.value"
+          (selectedChange)="headacheForm.controls.triggerIds.setValue($event)"
+        />
 
+        <app-chip-list
+          heading="Symptoms"
+          [options]="opts.symptoms"
+          [selected]="headacheForm.controls.symptomIds.value"
+          (selectedChange)="headacheForm.controls.symptomIds.setValue($event)"
+        />
+
+        <app-chip-list
+          heading="Relief measures"
+          [options]="opts.reliefMeasures"
+          [selected]="headacheForm.controls.reliefIds.value"
+          (selectedChange)="headacheForm.controls.reliefIds.setValue($event)"
+        />
+      }
+
+      <h3>Additional notes</h3>
+      <mat-form-field appearance="outline">
+        <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
+      </mat-form-field>
       <div class="btn-container">
         <button matButton="filled" matStepperPrevious>Back</button>
         <button matButton="filled" matStepperNext>Next</button>
@@ -87,11 +131,11 @@
     </mat-step>
 
     <mat-step>
-      <ng-template matStepLabel>Done</ng-template>
-      <p>You are now done.</p>
-      <div>
-        <button matButton matStepperPrevious>Back</button>
-        <button matButton (click)="stepper.reset()">Reset</button>
+      <ng-template matStepLabel>
+        <h2>Save your headache</h2>
+      </ng-template>
+      <div class="btn-container">
+        <app-button type="submit" ngForm="sub" [disabled]="isSubmitting()">Save</app-button>
       </div>
     </mat-step>
   </mat-stepper>

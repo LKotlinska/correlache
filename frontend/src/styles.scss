@@ -83,5 +83,18 @@ body {
   .snackbar-success { --mat-snack-bar-container-color: #2e7d32; --mat-snack-bar-supporting-text-color: #fff; }
   .snackbar-error   { --mat-snack-bar-container-color: #c62828; --mat-snack-bar-supporting-text-color: #fff; }
 
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  .mat-vertical-content {
+    padding: 12px 24px 0 24px;
+}
 }
 /* You can add global styles to this file, and also import other style files */
