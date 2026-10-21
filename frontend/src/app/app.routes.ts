@@ -4,7 +4,6 @@ import { Dashboard } from './layout/dashboard/dashboard';
 import { authGuard } from './guards/auth-guard';
 import { NotFoundError } from 'rxjs';
 import { Headaches } from './features/headaches/headaches';
-import { HeadacheForm } from './features/headaches/headache-form/headache-form';
 
 export const routes: Routes = [
     {
@@ -31,7 +30,7 @@ export const routes: Routes = [
                 path: 'headache',
                 component: Headaches,
                 children: [
-                    { path: 'add', component: HeadacheForm},
+                    { path: 'add', loadComponent: () => import('./features/headaches/headache-form/headache-form').then(m => m.HeadacheForm)},
                     // { path: 'view'},
                     // { path: 'edit'},
                 ]
