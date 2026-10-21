@@ -4,6 +4,7 @@ import { User } from '../user/entities/user.entity.js';
 import { HeadacheService } from './headache.service.js';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
 import { HeadacheOptionsDto } from './dto/headache-options.dto.js';
+import { Headache } from './entities/headache.entity.js';
 
 @Controller('headaches')
 export class HeadacheController {
@@ -17,5 +18,10 @@ export class HeadacheController {
   @Get('options')
   async getOptions(): Promise<HeadacheOptionsDto> {
     return await this.headacheService.getOptions();
+  }
+
+  @Get('')
+  async getHeadaches(@CurrentUser() user: User): Promise<Headache[]> {
+    return await this.headacheService.getHeadaches(user.id);
   }
 }

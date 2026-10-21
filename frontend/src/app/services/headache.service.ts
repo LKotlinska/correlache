@@ -15,4 +15,8 @@ export class HeadacheService {
     getOptions(): Observable<HeadacheOptions> {
         return this.http.get<HeadacheOptions>('/api/headaches/options');
     };
+
+    getHeadaches(): Observable<Headache> {
+        return this.http.get<Headache>('/api/headaches');
+    }
 }
