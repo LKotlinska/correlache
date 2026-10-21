@@ -1,9 +1,0 @@
-import { Component } from '@angular/core';
-
-@Component({
-  imports: [],
-  selector: 'app-diary',
-  styleUrl: './diary.scss',
-  templateUrl: './diary.html',
-})
-export class Diary {}

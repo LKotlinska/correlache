@@ -4,7 +4,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { CurrentUser, Public } from '@nestjs/authentication';
 import { AuthService } from './auth.service.js';
 import { CreateUserDto, LoginDto } from '../user/dto/user.dto.js';
-import { User } from '../user/user.entity.js';
+import { User } from '../user/entities/user.entity.js';
 import { AUTH_COOKIE, authCookieOptions } from './auth-cookie.js';
 
 @Controller('auth')

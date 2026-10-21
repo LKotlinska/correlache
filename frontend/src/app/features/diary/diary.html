@@ -1,0 +1,19 @@
+@if (headaches.isLoading()) {
+  <p>Loading…</p>
+} @else if (headaches.error()) {
+  <p>Couldn't load headaches.</p>
+} @else {
+  @for (headache of headaches.value(); track headache.id) {
+    <app-list-item
+      [link]="['/headache', headache.id]"
+      [title]="'Attack - ' + headache.painLevel + '/10'"
+      tone="attack"
+    />
+
+    @for (loc of headache.locations; track loc.id) {
+      <p></p>
+    }
+  } @empty {
+    <p>No headaches logged yet.</p>
+  }
+}

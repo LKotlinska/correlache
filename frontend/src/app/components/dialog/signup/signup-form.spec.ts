@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, Subject, throwError } from 'rxjs';
-import { UserService } from '../../../services/user-service';
+import { UserService } from '../../../services/user.service';
 import { SignupForm } from './signup-form';
 
 describe('SignupForm', () => {

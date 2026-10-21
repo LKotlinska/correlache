@@ -1,0 +1,23 @@
+@use '../../../variables' as p;
+
+
+.chip-heading {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .filled-icon-btn {
+      background-color: var(--mat-sys-primary);
+      color: var(--mat-sys-on-primary);
+    }
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  padding: 0;
+  margin: 0.65em 0;
+  list-style: none;
+}

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
-import { User } from '../user/user.entity.js';
+import { User } from '../user/entities/user.entity.js';
 import { AUTH_COOKIE, authCookieOptions } from './auth-cookie.js';
 
 describe('AuthController', () => {

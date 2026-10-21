@@ -1,7 +1,7 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserService } from '../services/user-service';
+import { UserService } from '../services/user.service';
 import { inject } from '@angular/core';
 import { catchError, map, of } from 'rxjs';
 

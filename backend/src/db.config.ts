@@ -1,7 +1,7 @@
 import type { DataSourceOptions } from 'typeorm';
 
 export function dbConfig(env: NodeJS.ProcessEnv): DataSourceOptions {
-  const base = { type: 'mysql' as const };
+  const base = { type: 'mysql' as const, timezone: 'Z' };
   return env.JAWSDB_URL
     ? { ...base, url: env.JAWSDB_URL }
     : {
