@@ -1,0 +1,61 @@
+@use '../../../variables' as p;
+
+.link-wrapper {
+    box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: p.$nav-padding;
+  color: p.$text-strong;
+  border: 1px solid transparent;
+  border-radius: p.$card-border;
+  text-decoration: none;
+
+  .content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75em;
+  }
+
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: 50%;
+  }
+
+  .text-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-weight: 500;
+  }
+
+  .line {
+    font-size: 0.875em;
+  }
+
+  // Colors per tone
+  &.attack {
+    background: #fff1ec;
+    border-color: #f6d3c8;
+
+    .icon-container {
+      background: #f2d4cc;
+    }
+  }
+
+  &.activity {
+    background: p.$surface-low;
+    border-color: p.$surface-high;
+
+    .icon-container {
+      background: p.$brand-tint;
+    }
+  }
+}
