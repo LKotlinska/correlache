@@ -1,0 +1,158 @@
+<form [formGroup]="headacheForm" (ngSubmit)="onSubmit()">
+  <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
+    <mat-step>
+      <ng-template matStepLabel>
+        <h2>When did it start?</h2>
+      </ng-template>
+      <div>
+        <h3>Start *</h3>
+        <div class="picker-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Pick a date</mat-label>
+            <input
+              [formControl]="headacheForm.controls.startDate"
+              matInput
+              [matDatepicker]="startDatePicker"
+              [max]="today"
+            />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Pick a time</mat-label>
+            <input
+              [formControl]="headacheForm.controls.startTime"
+              matInput
+              [matTimepicker]="startTimePicker"
+              [matTimepickerMax]="startTimeMax"
+            />
+            <mat-timepicker-toggle matIconSuffix [for]="startTimePicker" />
+            <mat-timepicker #startTimePicker />
+          </mat-form-field>
+        </div>
+      </div>
+      <div>
+        <h3>End</h3>
+        <div class="picker-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Pick a date</mat-label>
+            <input
+              [formControl]="headacheForm.controls.endDate"
+              matInput
+              [matDatepickerFilter]="endDateFilter"
+              [matDatepicker]="endDatePicker"
+              [max]="today"
+            />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Pick a time</mat-label>
+            <input
+              [formControl]="headacheForm.controls.endTime"
+              matInput
+              [matTimepicker]="timepicker"
+              [matTimepickerMin]="endTimeMin"
+              [matTimepickerMax]="endTimeMax"
+            />
+            <mat-timepicker-toggle matIconSuffix [for]="timepicker" />
+            <mat-timepicker #timepicker />
+          </mat-form-field>
+        </div>
+        @if (headacheForm.hasError('endBeforeStart')) {
+          <p class="form-error" role="alert">The end can't be before the start.</p>
+        }
+        @if (headacheForm.hasError('futureDate')) {
+          <p class="form-error" role="alert">Headaches can't be logged in the future.</p>
+        }
+      </div>
+      <div>
+        <h3>Pain level *</h3>
+        <mat-slider class="slider" min="1" max="10" step="1" showTickMarks discrete>
+          <input [formControl]="headacheForm.controls.painLevel" matSliderThumb />
+        </mat-slider>
+      </div>
+      <div class="btn-container">
+        <button matButton="filled" type="button" matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>
+        <h2>Location</h2>
+      </ng-template>
+
+      <div class="picker-grid">
+        @if (options | async; as opts) {
+          @for (loc of opts.headacheLocations; track loc.id) {
+            <app-media-tile
+              [title]="loc.name"
+              [image]="'/images/' + loc.image"
+              [altText]="'Headache location:' + loc.name"
+              [checked]="isSelected(loc.id)"
+              (checkedChange)="toggleLocation(loc.id, $event)"
+            />
+          }
+        }
+      </div>
+
+      <div class="btn-container">
+        <button matButton="filled" type="button" matStepperPrevious>Back</button>
+        <button matButton="filled" type="button" matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>
+        <h2>Triggers and symptoms</h2>
+      </ng-template>
+      @if (options | async; as opts) {
+        <app-chip-list
+          heading="Triggers"
+          [options]="opts.triggers"
+          [selected]="headacheForm.controls.triggerIds.value"
+          (selectedChange)="headacheForm.controls.triggerIds.setValue($event)"
+        />
+
+        <app-chip-list
+          heading="Symptoms"
+          [options]="opts.symptoms"
+          [selected]="headacheForm.controls.symptomIds.value"
+          (selectedChange)="headacheForm.controls.symptomIds.setValue($event)"
+        />
+
+        <app-chip-list
+          heading="Relief measures"
+          [options]="opts.reliefMeasures"
+          [selected]="headacheForm.controls.reliefIds.value"
+          (selectedChange)="headacheForm.controls.reliefIds.setValue($event)"
+        />
+      }
+
+      <h3>Additional notes</h3>
+      <mat-form-field appearance="outline">
+        <textarea
+          [formControl]="headacheForm.controls.notes"
+          maxlength="300"
+          matInput
+          placeholder="Ex. It makes me feel..."
+        ></textarea>
+      </mat-form-field>
+      <div class="btn-container">
+        <button matButton="filled" type="button" matStepperPrevious>Back</button>
+        <button matButton="filled" type="button" matStepperNext>Next</button>
+      </div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>
+        <h2>Save your headache</h2>
+      </ng-template>
+      <div class="btn-container">
+        <app-button type="submit" ngForm="sub" [disabled]="isSubmitting()">Save</app-button>
+      </div>
+    </mat-step>
+  </mat-stepper>
+</form>

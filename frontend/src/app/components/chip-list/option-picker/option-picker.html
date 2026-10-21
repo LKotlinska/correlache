@@ -1,0 +1,15 @@
+<app-dialog [heading]="data.heading">
+  <mat-chip-listbox multiple [aria-label]="data.heading">
+    @for (option of data.options; track option.id) {
+      <mat-chip-option
+        [selected]="selected().includes(option.id)"
+        (selectionChange)="toggle(option.id, $event.selected)"
+      >
+        {{ option.name }}
+      </mat-chip-option>
+    }
+  </mat-chip-listbox>
+  <div class="btn-container">
+    <button matButton="filled" [mat-dialog-close]="selected()">Done</button>
+  </div>
+</app-dialog>

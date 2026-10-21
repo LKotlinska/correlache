@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
-import { UserService } from '../../../services/user-service';
+import { UserService } from '../../../services/user.service';
 import { SigninForm } from './signin-form';
 
 describe('SigninForm', () => {

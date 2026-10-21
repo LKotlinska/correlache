@@ -1,0 +1,43 @@
+.picker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 1em;
+}
+
+.slider {
+    display: flex;
+    // Gradient lives on the full-width inactive track; the active fill is hidden on top of it
+    ::ng-deep .mdc-slider__track--inactive {
+        opacity: 1;
+        background: linear-gradient(to right, #5cb338, #cdcd22, #ffa51f, #c00000);
+    }
+
+    ::ng-deep .mdc-slider__track--active_fill {
+        border-color: transparent;
+    }
+
+    ::ng-deep .mdc-slider__tick-mark--active,
+    ::ng-deep .mdc-slider__tick-mark--inactive {
+        height: 5em;
+        display: none;
+    }
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+}
+
+.btn-container:has(> :only-child) {
+    justify-content: end;
+}
+
+.mat-vertical-content {
+    padding: 0 24px 24px 0px;
+}
+.form-error {
+    color: var(--mat-sys-error, #b3261e);
+    margin: 0.5em 0 0;
+}

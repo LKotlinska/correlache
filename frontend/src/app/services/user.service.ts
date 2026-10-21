@@ -1,13 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-
-export interface CreateUserPayload {
-    name: string;
-    email: string;
-    password: string;
-}
-
-export type authUserPayload = Omit<CreateUserPayload, 'name'>;
+import { authUserPayload, CreateUserPayload } from '../models/user.model';
 
 @Service()
 export class UserService {

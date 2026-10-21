@@ -1,6 +1,6 @@
 import type { DataSource } from 'typeorm';
 import type { Seeder } from 'typeorm-extension';
-import { Location } from '../../headaches/lookups/location.entity.js';
+import { HeadacheLocation } from '../../headaches/lookups/headache-location.entity.js';
 import { ReliefMeasure } from '../../headaches/lookups/relief-measure.entity.js';
 import { Symptom } from '../../headaches/lookups/symptom.entity.js';
 import { Trigger } from '../../headaches/lookups/trigger.entity.js';
@@ -8,39 +8,47 @@ import { Trigger } from '../../headaches/lookups/trigger.entity.js';
 export const LocationSeed = [
     {
         name: 'Forehead band',
-        image: 'forehead.png'
+        image: 'forehead.svg'
     },
     {
-        name: 'One side',
-        image: 'oneside.png'
+        name: 'Left side',
+        image: 'leftside.svg'
+    },
+        {
+        name: 'Right side',
+        image: 'rightside.svg'
     },
     {
-        name: 'Around eye',
-        image: 'aroundeye.png'
-    },    
+        name: 'Behind left eye',
+        image: 'lefteye.svg'
+    },   
     {
-        name: 'Behind eye',
-        image: 'behindeye.png'
-    },    
+        name: 'Around right eye',
+        image: 'righteye.svg'
+    },  
+    {
+        name: 'Whole head',
+        image: 'wholehead.svg'
+    },  
     {
         name: 'Scattered, top of head',
-        image: 'tophead.png'
+        image: 'tophead.svg'
     },    
     {
         name: 'Scattered, scalp and neck',
-        image: 'scalpneck.png'
+        image: 'scalpneck.svg'
     },    
     {
         name: 'Sinus area',
-        image: 'sinus.png'
+        image: 'sinus.svg'
     },    
     {
         name: 'Back of head',
-        image: 'backhead.png'
+        image: 'backhead.svg'
     },    
     {
         name: 'Neck to temple',
-        image: 'necktemple.png'
+        image: 'necktemple.svg'
     },    
 ]
 
@@ -150,7 +158,7 @@ export const TriggerSeed = [
 export default class HeadacheLookupSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<void> {
         // name is unique, so upsert keeps re-runs idempotent
-        await dataSource.getRepository(Location).upsert(LocationSeed, ['name']);
+        await dataSource.getRepository(HeadacheLocation).upsert(LocationSeed, ['name']);
         await dataSource.getRepository(ReliefMeasure).upsert(ReliefMeasureSeed, ['name']);
         await dataSource.getRepository(Symptom).upsert(SymptomSeed, ['name']);
         await dataSource.getRepository(Trigger).upsert(TriggerSeed, ['name']);

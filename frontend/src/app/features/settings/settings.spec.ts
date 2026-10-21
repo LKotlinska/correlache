@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { Settings } from './settings';
-import { UserService } from '../../services/user-service';
+import { UserService } from '../../services/user.service';
 
 describe('Settings', () => {
   let component: Settings;

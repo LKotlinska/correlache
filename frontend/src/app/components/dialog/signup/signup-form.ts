@@ -4,7 +4,7 @@ import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Dialog } from '../dialog';
 import { Button } from '../../button/button';
-import { UserService } from '../../../services/user-service';
+import { UserService } from '../../../services/user.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogKey, DialogService } from '../dialog.service';

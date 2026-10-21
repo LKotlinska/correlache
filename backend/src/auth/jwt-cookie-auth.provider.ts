@@ -1,7 +1,7 @@
 import { Injectable, type ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationProvider, AuthenticationRegistry } from '@nestjs/authentication';
-import { User } from '../user/user.entity.js';
+import { User } from '../user/entities/user.entity.js';
 import { UserService } from '../user/user.service.js';
 import { tokenFromCookieHeader } from './auth-cookie.js';
 

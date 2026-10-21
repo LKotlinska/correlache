@@ -1,0 +1,21 @@
+<div>
+  <div class="chip-heading">
+    <h3>{{ heading() }}</h3>
+    <button
+      matIconButton
+      type="button"
+      class="filled-icon-btn"
+      aria-label="Add"
+      (click)="openDialog()"
+    >
+      <mat-icon>{{ selectedOptions().length == 0 ? 'add' : 'edit' }}</mat-icon>
+    </button>
+  </div>
+  <ul class="chip-list">
+    @for (opt of selectedOptions(); track opt.id) {
+      <li>
+        <mat-chip class="chip">{{ opt.name }}</mat-chip>
+      </li>
+    }
+  </ul>
+</div>
