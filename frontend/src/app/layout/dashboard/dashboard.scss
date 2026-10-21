@@ -10,6 +10,8 @@
         align-items: center;
         gap: 1em;
         padding: p.$nav-padding;
+        border-bottom: 1px solid var(--mat-sys-surface-variant);
+        background-color: p.$white;
 
         .primary-icon {
             display: flex;
@@ -28,10 +30,32 @@
     .page-content {
         height: 100%;
         padding: p.$page-padding;
+
+        .action-menu {
+            position: absolute;
+            bottom: 8em;
+            right: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1em;
+
+            .actions {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 0.75em;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+        }
     }
 
     .nav-wrapper {
-        padding: 1em;
+        padding: 1em; 
+        border-top: 1px solid var(--mat-sys-surface-variant);
+        background-color: p.$white;
 
         .nav-tab {
             display: flex;

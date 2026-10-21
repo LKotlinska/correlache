@@ -11,6 +11,29 @@
     <mat-tab-nav-panel #tabPanel>
       <router-outlet />
     </mat-tab-nav-panel>
+
+    <div class="action-menu">
+      @if (open()) {
+        <ul class="actions" id="create-actions">
+          <li>
+            <a matFab extended routerLink="/user/headache/add" (click)="open.set(false)">
+              Headache
+            </a>
+          </li>
+        </ul>
+      }
+      <button
+        matFab
+        type="button"
+        [attr.aria-expanded]="open()"
+        aria-controls="create-actions"
+        aria-label="Create new entry"
+        (click)="open.set(!open())"
+        (keydown.escape)="open.set(false)"
+      >
+        <mat-icon>{{ open() ? 'close' : 'add' }}</mat-icon>
+      </button>
+    </div>
   </main>
 
   <nav mat-tab-nav-bar [tabPanel]="tabPanel" headerPosition="below" class="nav-wrapper">
