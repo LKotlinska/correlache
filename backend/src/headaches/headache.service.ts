@@ -70,4 +70,14 @@ export class HeadacheService {
     ])
     return { triggers, symptoms, reliefMeasures, headacheLocations };
   }
+
+  async getHeadaches(userId: string): Promise<Headache[]> {
+    const headaches = await this.headacheRepo.find({ 
+      where: { userId },
+      relations: { triggers: true, symptoms: true, reliefMeasures: true, locations: true },
+      order: { startedAt: 'DESC'},
+    });
+
+    return headaches;
+  }
 }
