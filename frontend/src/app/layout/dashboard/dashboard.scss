@@ -1,7 +1,8 @@
 @use '../../../variables' as p;
 
 .page-wrapper {
-    height: 100vh;
+    height: 100vh; // fallback for old browsers
+    height: 100dvh; // dynamic viewport: tracks the visible area
     display: flex;
     flex-direction: column;
 
@@ -28,12 +29,15 @@
     }
 
     .page-content {
-        height: 100%;
+        flex: 1;
+        min-height: 0; // lets a flex child shrink so overflow works
+        overflow-y: auto; // content scrolls; header and nav stay put
+        position: relative; // anchors the action menu
         padding: p.$page-padding;
 
         .action-menu {
             position: absolute;
-            bottom: 8em;
+            bottom: 3em;
             right: 2em;
             display: flex;
             flex-direction: column;
@@ -53,7 +57,9 @@
     }
 
     .nav-wrapper {
-        padding: 1em; 
+        flex-shrink: 0;
+        padding: 1em;
+        padding-bottom: calc(1em + env(safe-area-inset-bottom)); // iPhone home bar 
         border-top: 1px solid var(--mat-sys-surface-variant);
         background-color: p.$white;
 
