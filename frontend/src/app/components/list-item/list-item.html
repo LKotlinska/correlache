@@ -1,0 +1,13 @@
+<a class="link-wrapper" [class]="tone()" [routerLink]="link()" mat-list-item>
+  <div class="content">
+    <div class="icon-container">
+      <mat-icon>{{ icon() }}</mat-icon>
+    </div>
+    <div class="text-container">
+      <span class="title">{{ title() }}</span>
+      @if (line()) {
+        <span class="line">{{ line() }}</span>
+      }
+    </div>
+  </div>
+</a>

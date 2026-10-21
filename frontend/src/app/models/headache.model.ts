@@ -34,3 +34,10 @@ export interface Headache {
     painLevel: number,
     notes: string | null
 }
+
+export interface HeadacheDetail extends Headache {
+    locations: LocationLookupOption[];
+    triggers: LookupOption[];
+    symptoms: LookupOption[];
+    reliefMeasures: LookupOption[];    
+}
