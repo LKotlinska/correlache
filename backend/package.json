@@ -24,7 +24,8 @@
     "migration:generate": "npm run typeorm -- migration:generate -d src/database/data-source.ts",
     "migration:run": "typeorm migration:run -d dist/database/data-source.js",
     "migration:run:dev": "npm run typeorm -- migration:run -d src/database/data-source.ts",
-    "seed": "tsx --env-file=.env src/database/run-seeders.ts"
+    "seed": "tsx --env-file=.env src/database/run-seeders.ts",
+    "seed:prod": "node dist/database/run-seeders.js"
   },
   "dependencies": {
     "@nestjs/authentication": "^0.1.1",
