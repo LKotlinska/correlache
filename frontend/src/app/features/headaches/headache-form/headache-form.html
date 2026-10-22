@@ -1,4 +1,4 @@
-<app-page-header title="New headache" />
+<app-page-header [title]="isEdit ? 'Edit headache' : 'New headache'" />
 <main class="page-wrapper">
 <form [formGroup]="headacheForm" (ngSubmit)="onSubmit()">
   <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
