@@ -12,15 +12,30 @@
   color: p.$text-strong;
 }
 
-.card {
-  background-color: p.$white;
-  width: max-content;
-  margin: 0 auto;
-}
-
+// The summary card and the accordion share the same width, surface and radius
+.card,
 mat-accordion {
   display: block;
-  margin-top: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: p.$white;
+  border-radius: p.$card-border;
+  margin-bottom: 1em;
+}
+
+.row {
+  padding: p.$card-padding 0.5em;
+}
+
+.row span:last-child {
+  font-weight: 500;
+}
+
+mat-expansion-panel {
+  background-color: p.$white;
 }
 
 .tile-grid {
