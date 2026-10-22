@@ -4,5 +4,7 @@
     display: flex;
     align-items: center;
     gap: 1em;
-    padding: p.$nav-padding
+    padding: p.$nav-padding;
+    background-color: p.$white;
+    border-bottom: 1px solid var(--mat-sys-surface-variant);
 }
