@@ -24,6 +24,10 @@ export class HeadacheService {
         return this.http.put<Headache>(`/api/headaches/${id}`, payload);
     }
 
+    delete(id: string) {
+        return this.http.delete<void>(`/api/headaches/${id}`);
+    }
+
     getHeadacheById(id: string): Observable<HeadacheDetail> {
         return this.http.get<HeadacheDetail>(`/api/headaches/${id}`);
     }
