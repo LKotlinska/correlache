@@ -1,0 +1,11 @@
+<header class="nav-header">
+  <nav>
+    <button matIconButton (click)="goBack()" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </nav>
+  <h1>{{ title() }}</h1>
+  <div class="actions">
+    <ng-content />
+  </div>
+</header>
