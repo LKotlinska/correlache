@@ -31,7 +31,7 @@ export const routes: Routes = [
                 component: Headaches,
                 children: [
                     { path: 'add', loadComponent: () => import('./features/headaches/headache-form/headache-form').then(m => m.HeadacheForm)},
-                    // { path: 'view'},
+                    { path: ':id', loadComponent: () => import('./features/headaches/headache-view/headache-view').then(m => m.HeadacheView)},
                     // { path: 'edit'},
                 ]
             }
