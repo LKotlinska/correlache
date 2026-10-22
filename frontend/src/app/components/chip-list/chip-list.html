@@ -1,4 +1,5 @@
 <div>
+  @if (!readonly()) {
   <div class="chip-heading">
     <h3>{{ heading() }}</h3>
     <button
@@ -11,6 +12,7 @@
       <mat-icon>{{ selectedOptions().length == 0 ? 'add' : 'edit' }}</mat-icon>
     </button>
   </div>
+  }
   <ul class="chip-list">
     @for (opt of selectedOptions(); track opt.id) {
       <li>

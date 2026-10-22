@@ -12,6 +12,9 @@ export class MediaTile {
   title = input.required<string>();
   subtitle = input<string>();
 
+  /** Display-only: the tile can't be toggled. */
+  readonly = input(false);
+
   checked = model(false);
 
   toggle(event: Event) {

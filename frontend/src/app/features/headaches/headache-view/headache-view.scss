@@ -1,0 +1,36 @@
+@use '../../../../variables' as p;
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: p.$card-padding
+}
+
+.label {
+  flex: 1;
+  color: p.$text-strong;
+}
+
+.card {
+  background-color: p.$white;
+  width: max-content;
+  margin: 0 auto;
+}
+
+mat-accordion {
+  display: block;
+  margin-top: 1em;
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+.notes {
+  margin: 0;
+  white-space: pre-wrap;
+  color: p.$text-strong;
+}

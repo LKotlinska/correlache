@@ -5,6 +5,8 @@
     align-items: center;
     gap: 1em;
     padding: p.$nav-padding;
-    background-color: p.$white;
-    border-bottom: 1px solid var(--mat-sys-surface-variant);
+}
+
+.page-wrapper {
+    padding: p.$page-padding;
 }

@@ -29,6 +29,10 @@
     outline-offset: 2px;
   }
 
+  &.readonly {
+    cursor: default;
+  }
+
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
