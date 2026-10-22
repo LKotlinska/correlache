@@ -58,6 +58,12 @@ export class HeadacheService {
     return this.findOwnColumns(id);
   }
 
+  /** Deletes the headache, throwing a 404 if it isn't the user's. */
+  async remove(userId: string, id: string): Promise<void> {
+    const { affected } = await this.headacheRepo.delete({ id, userId });
+    if (!affected) throw new NotFoundException(`Headache ${id} not found`);
+  }
+
   private async findLookups(dto: CreateHeadacheDto) {
     const [locations, triggers, symptoms, reliefMeasures] = await Promise.all([
       this.findAllByIds(this.locationRepo, dto.locationIds, 'location'),
