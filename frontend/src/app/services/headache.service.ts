@@ -20,6 +20,10 @@ export class HeadacheService {
         return this.http.get<HeadacheDetail[]>('/api/headaches');
     }
 
+    update(id: string, payload: CreateHeadachePayload) {
+        return this.http.put<Headache>(`/api/headaches/${id}`, payload);
+    }
+
     getHeadacheById(id: string): Observable<HeadacheDetail> {
         return this.http.get<HeadacheDetail>(`/api/headaches/${id}`);
     }
