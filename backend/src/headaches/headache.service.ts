@@ -28,25 +28,49 @@ export class HeadacheService {
 
   async create(userId: string, dto: CreateHeadacheDto): Promise<Headache> {
     const { triggerIds, symptomIds, locationIds, reliefIds, notes, ...fields } = dto;
-    const [locations, triggers, symptoms, reliefMeasures] = await Promise.all([
-      this.findAllByIds(this.locationRepo, locationIds, 'location'),
-      this.findAllByIds(this.triggerRepo, triggerIds, 'trigger'),
-      this.findAllByIds(this.symptomRepo, symptomIds, 'symptom'),
-      this.findAllByIds(this.reliefRepo, reliefIds, 'relief measure'),
-    ]);
+    const lookups = await this.findLookups(dto);
 
     const headache = this.headacheRepo.create({
       ...fields,
       notes: notes?.trim() || null,
       userId,
-      locations,
-      triggers,
-      symptoms,
-      reliefMeasures,
+      ...lookups,
     })
     const saved = await this.headacheRepo.save(headache);
-    // Return only the headache's own columns, not the userId or the lookup rows.
-    return this.headacheRepo.findOneOrFail({ where: { id: saved.id }, select: { id: true, startedAt: true, endedAt: true, painLevel: true, notes: true } });
+    return this.findOwnColumns(saved.id);
+  }
+
+  /** Replaces all of a headache's fields and lookups with `dto`, throwing a 404 if it isn't the user's. */
+  async update(userId: string, id: string, dto: CreateHeadacheDto): Promise<Headache> {
+    const { triggerIds, symptomIds, locationIds, reliefIds, notes, endedAt, ...fields } = dto;
+    const headache = await this.headacheRepo.findOne({ where: { id, userId } });
+    if (!headache) throw new NotFoundException(`Headache ${id} not found`);
+
+    const lookups = await this.findLookups(dto);
+    Object.assign(headache, {
+      ...fields,
+      // Omitting the end clears it, as the form sends the full headache
+      endedAt: endedAt ?? null,
+      notes: notes?.trim() || null,
+      ...lookups,
+    });
+    await this.headacheRepo.save(headache);
+    return this.findOwnColumns(id);
+  }
+
+  private async findLookups(dto: CreateHeadacheDto) {
+    const [locations, triggers, symptoms, reliefMeasures] = await Promise.all([
+      this.findAllByIds(this.locationRepo, dto.locationIds, 'location'),
+      this.findAllByIds(this.triggerRepo, dto.triggerIds, 'trigger'),
+      this.findAllByIds(this.symptomRepo, dto.symptomIds, 'symptom'),
+      this.findAllByIds(this.reliefRepo, dto.reliefIds, 'relief measure'),
+    ]);
+    return { locations, triggers, symptoms, reliefMeasures };
+  }
+
+  /** Returns only the headache's own columns, not the userId or the lookup rows. */
+  private findOwnColumns(id: string): Promise<Headache> {
+    return this.headacheRepo.findOneOrFail({ where: { id }, select: { id: true, startedAt: true, endedAt: true, painLevel: true, notes: true } });
   }
 
   /** Loads the lookup rows for `ids`, throwing a 400 when any id does not exist. */
