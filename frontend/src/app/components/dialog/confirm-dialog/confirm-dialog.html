@@ -1,0 +1,7 @@
+<app-dialog [heading]="data.heading">
+  <p>{{ data.message }}</p>
+  <div class="btn-container">
+    <button matButton type="button" mat-dialog-close>Cancel</button>
+    <button matButton="filled" type="button" [mat-dialog-close]="true">{{ data.confirmLabel }}</button>
+  </div>
+</app-dialog>
