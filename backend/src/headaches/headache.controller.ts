@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { User } from '../user/entities/user.entity.js';
 import { HeadacheService } from './headache.service.js';
@@ -23,5 +23,10 @@ export class HeadacheController {
   @Get('')
   async getHeadaches(@CurrentUser() user: User): Promise<Headache[]> {
     return await this.headacheService.getHeadaches(user.id);
+  }
+
+  @Get(':id')
+  async getHeadacheById(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string): Promise<Headache> {
+    return await this.headacheService.getHeadacheById(user.id, id);
   }
 }

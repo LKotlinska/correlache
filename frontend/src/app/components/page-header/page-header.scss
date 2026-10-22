@@ -5,6 +5,11 @@
     align-items: center;
     gap: 1em;
     padding: p.$nav-padding;
+    border-bottom: p.$border-divider;
     background-color: p.$white;
-    border-bottom: 1px solid var(--mat-sys-surface-variant);
+    box-shadow: p.$box-shadow;
+}
+
+.actions {
+    margin-left: auto;
 }

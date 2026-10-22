@@ -1,3 +1,5 @@
+<app-page-header title="New headache" />
+<main class="page-wrapper">
 <form [formGroup]="headacheForm" (ngSubmit)="onSubmit()">
   <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
     <mat-step>
@@ -156,3 +158,4 @@
     </mat-step>
   </mat-stepper>
 </form>
+</main>

@@ -10,6 +10,10 @@ $surface-low: #f7f2fa;
 $surface-high: #e7e0ec;
 $white: #ffffff;
 
+$border-divider: 1px solid var(--mat-sys-surface-variant);
+$box-shadow: var(--mat-card-elevated-container-elevation, var(--mat-sys-level1));
+
 $nav-padding: 0.5em 1em;
 $page-padding: 1em;
+$card-padding: 0.5em;
 $card-border: 0.75em;

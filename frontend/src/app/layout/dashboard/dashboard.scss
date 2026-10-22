@@ -11,8 +11,9 @@
         align-items: center;
         gap: 1em;
         padding: p.$nav-padding;
-        border-bottom: 1px solid var(--mat-sys-surface-variant);
+        border-bottom: p.$border-divider;
         background-color: p.$white;
+        box-shadow: p.$box-shadow;
 
         .primary-icon {
             display: flex;
@@ -60,8 +61,9 @@
         flex-shrink: 0;
         padding: 1em;
         padding-bottom: calc(1em + env(safe-area-inset-bottom)); // iPhone home bar 
-        border-top: 1px solid var(--mat-sys-surface-variant);
+        border-top: p.$border-divider;
         background-color: p.$white;
+        box-shadow: p.$box-shadow;
 
         .nav-tab {
             display: flex;

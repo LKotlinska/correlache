@@ -19,4 +19,8 @@ export class HeadacheService {
     getHeadaches(): Observable<HeadacheDetail[]> {
         return this.http.get<HeadacheDetail[]>('/api/headaches');
     }
+
+    getHeadacheById(id: string): Observable<HeadacheDetail> {
+        return this.http.get<HeadacheDetail>(`/api/headaches/${id}`);
+    }
 }

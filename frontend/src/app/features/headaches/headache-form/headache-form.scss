@@ -1,3 +1,9 @@
+@use '../../../../variables' as p;
+
+.page-wrapper {
+    padding: p.$page-padding;
+}
+
 .picker-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

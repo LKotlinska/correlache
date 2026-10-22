@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
 import { HeadacheOptionsDto } from './dto/headache-options.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -74,10 +74,19 @@ export class HeadacheService {
   async getHeadaches(userId: string): Promise<Headache[]> {
     const headaches = await this.headacheRepo.find({ 
       where: { userId },
-      relations: { triggers: true, symptoms: true, reliefMeasures: true, locations: true },
       order: { startedAt: 'DESC'},
     });
 
     return headaches;
+  }
+
+  async getHeadacheById(userId: string, id: string): Promise<Headache> {
+    const headache = await this.headacheRepo.findOne({
+      where: { id, userId },
+      relations: { triggers: true, symptoms: true, reliefMeasures: true, locations: true },
+    });
+    if (!headache) throw new NotFoundException(`Headache ${id} not found`);
+
+    return headache;
   }
 }

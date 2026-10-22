@@ -12,10 +12,10 @@
   flex-direction: column;
   height: 100%;
   border: 2px solid p.$surface-high;
-  background: p.$surface-low;
+  // background: p.$surface-low;
   cursor: pointer;
   overflow: hidden;
-  padding: 1em;
+  padding: 0.5em;
   border-radius: p.$card-border;
 
   // Selected
@@ -29,6 +29,10 @@
     outline-offset: 2px;
   }
 
+  &.readonly {
+    cursor: default;
+  }
+
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -40,5 +44,10 @@
 
   .image-context {
     padding: 0.25em 0;
+  }
+
+  .title, .subtitle {
+    letter-spacing: normal;
+    font-size: var(--mat-sys-body-medium-size);
   }
 }
