@@ -17,10 +17,13 @@ export class ChipList {
   private dialogService = inject(DialogService);
   
   heading = input.required<string>()
+  /** Display-only: shows every option as a chip, without the heading or the edit button. */
+  readonly = input(false);
   options = input.required<LookupOption[]>()
   selected = model<number[]>([])
 
   selectedOptions() {
+    if (this.readonly()) return this.options();
     return this.options().filter(opt => this.selected().includes(opt.id));
   }
 

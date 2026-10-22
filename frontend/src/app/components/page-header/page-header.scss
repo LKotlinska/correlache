@@ -1,0 +1,15 @@
+@use '../../../variables' as p;
+
+.nav-header {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: p.$nav-padding;
+    border-bottom: p.$border-divider;
+    background-color: p.$white;
+    box-shadow: p.$box-shadow;
+}
+
+.actions {
+    margin-left: auto;
+}

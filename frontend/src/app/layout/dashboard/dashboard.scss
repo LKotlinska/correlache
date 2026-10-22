@@ -1,7 +1,8 @@
 @use '../../../variables' as p;
 
 .page-wrapper {
-    height: 100vh;
+    height: 100vh; // fallback for old browsers
+    height: 100dvh; // dynamic viewport: tracks the visible area
     display: flex;
     flex-direction: column;
 
@@ -10,6 +11,9 @@
         align-items: center;
         gap: 1em;
         padding: p.$nav-padding;
+        border-bottom: p.$border-divider;
+        background-color: p.$white;
+        box-shadow: p.$box-shadow;
 
         .primary-icon {
             display: flex;
@@ -26,12 +30,40 @@
     }
 
     .page-content {
-        height: 100%;
+        flex: 1;
+        min-height: 0; // lets a flex child shrink so overflow works
+        overflow-y: auto; // content scrolls; header and nav stay put
+        position: relative; // anchors the action menu
         padding: p.$page-padding;
+
+        .action-menu {
+            position: absolute;
+            bottom: 3em;
+            right: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1em;
+
+            .actions {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 0.75em;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+        }
     }
 
     .nav-wrapper {
+        flex-shrink: 0;
         padding: 1em;
+        padding-bottom: calc(1em + env(safe-area-inset-bottom)); // iPhone home bar 
+        border-top: p.$border-divider;
+        background-color: p.$white;
+        box-shadow: p.$box-shadow;
 
         .nav-tab {
             display: flex;

@@ -5,7 +5,7 @@
 } @else {
   @for (headache of headaches.value(); track headache.id) {
     <app-list-item
-      [link]="['/headache', headache.id]"
+      [link]="['/user/headache', headache.id]"
       [title]="'Attack - ' + headache.painLevel + '/10'"
       tone="attack"
     />

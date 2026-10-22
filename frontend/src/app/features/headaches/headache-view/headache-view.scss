@@ -1,0 +1,55 @@
+@use '../../../../variables' as p;
+
+.page-wrapper {
+  padding: p.$page-padding;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: p.$card-padding
+}
+
+.label {
+  flex: 1;
+  color: p.$text-strong;
+}
+
+// The summary card and the accordion share the same width, surface and radius
+.card,
+mat-accordion {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: p.$white;
+  border-radius: p.$card-border;
+  margin-bottom: 1em;
+}
+
+.row {
+  padding: p.$card-padding 0.5em;
+}
+
+.row span:last-child {
+  font-weight: 500;
+}
+
+mat-expansion-panel {
+  background-color: p.$white;
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+}
+
+.notes {
+  margin: 0;
+  white-space: pre-wrap;
+  color: p.$text-strong;
+}

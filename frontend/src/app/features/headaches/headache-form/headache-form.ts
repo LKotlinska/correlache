@@ -12,11 +12,14 @@ import { HeadacheService } from '../../../services/headache.service';
 import { AsyncPipe } from '@angular/common';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
 import { ChipList } from '../../../components/chip-list/chip-list';
+import { PageHeader } from '../../../components/page-header/page-header';
 import { Button } from '../../../components/button/button';
 import { combineDateTime } from '../../../utils/combine-date-time';
 import { CreateHeadachePayload } from '../../../models/headache.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HeadacheDetail } from '../../../models/headache.model';
 
 @Component({
   imports: [
@@ -34,7 +37,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     AsyncPipe,
     MediaTile,
     ChipList,
-    Button
+    Button,
+    PageHeader
 ],
   selector: 'app-headache-form',
   styleUrl: './headache-form.scss',
@@ -43,6 +47,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class HeadacheForm {
   private headacheService = inject(HeadacheService);
   private snackBar = inject(MatSnackBar); // temporary snackbar
+  private router = inject(Router);
+  /** Set on the edit route (`:id/edit`); null when adding a new headache. */
+  private headacheId = inject(ActivatedRoute).snapshot.paramMap.get('id');
+  isEdit = this.headacheId !== null;
   options = this.headacheService.getOptions();
   isSubmitting = signal(false);
   /** Latest selectable date: headaches can't be logged in the future. */
@@ -63,6 +71,33 @@ export class HeadacheForm {
     (group: AbstractControl) => this.endNotBeforeStart(group),
     (group: AbstractControl) => this.notInFuture(group),
   ] })
+
+  constructor() {
+    if (this.headacheId) {
+      this.headacheService.getHeadacheById(this.headacheId).subscribe({
+        next: (headache) => this.fillForm(headache),
+        error: () => this.snackBar.open("Couldn't load this headache", 'Close', { panelClass: 'snackbar-error' }),
+      });
+    }
+  }
+
+  /** Pre-fills the form with an existing headache so it can be edited. */
+  private fillForm(h: HeadacheDetail) {
+    const started = new Date(h.startedAt);
+    const ended = h.endedAt ? new Date(h.endedAt) : null;
+    this.headacheForm.patchValue({
+      startDate: started,
+      startTime: started,
+      endDate: ended,
+      endTime: ended,
+      painLevel: h.painLevel,
+      notes: h.notes ?? '',
+      locationIds: h.locations.map((o) => o.id),
+      triggerIds: h.triggers.map((o) => o.id),
+      symptomIds: h.symptoms.map((o) => o.id),
+      reliefIds: h.reliefMeasures.map((o) => o.id),
+    });
+  }
 
   /** Group validator: neither the start nor the end datetime may be in the future (the date picker only blocks future days, not later times today). */
   private notInFuture(group: AbstractControl): ValidationErrors | null {
@@ -181,8 +216,15 @@ export class HeadacheForm {
     };
 
     this.isSubmitting.set(true);
-    this.headacheService.create(payload).subscribe({
+    const request = this.headacheId
+      ? this.headacheService.update(this.headacheId, payload)
+      : this.headacheService.create(payload);
+    request.subscribe({
       next: () => {
+        if (this.headacheId) {
+          this.router.navigate(['/user/headache', this.headacheId], { replaceUrl: true });
+          return;
+        }
         // Temporary snackbar - should redirect to headache view
         this.snackBar.open('Headache has been added', 'Close', { panelClass: 'snackbar-success',});
       },
