@@ -3,10 +3,10 @@
     <mat-icon>more_vert</mat-icon>
   </button>
   <mat-menu #headacheMenu="matMenu" xPosition="before">
-    <button mat-menu-item type="button">
+    <a mat-menu-item [routerLink]="['/user/headache', id, 'edit']">
       <mat-icon>edit</mat-icon>
       <span>Edit</span>
-    </button>
+    </a>
     <button mat-menu-item type="button">
       <mat-icon>delete</mat-icon>
       <span>Delete</span>
