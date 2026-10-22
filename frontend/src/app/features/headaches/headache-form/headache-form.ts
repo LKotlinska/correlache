@@ -12,6 +12,7 @@ import { HeadacheService } from '../../../services/headache.service';
 import { AsyncPipe } from '@angular/common';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
 import { ChipList } from '../../../components/chip-list/chip-list';
+import { PageHeader } from '../../../components/page-header/page-header';
 import { Button } from '../../../components/button/button';
 import { combineDateTime } from '../../../utils/combine-date-time';
 import { CreateHeadachePayload } from '../../../models/headache.model';
@@ -34,7 +35,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     AsyncPipe,
     MediaTile,
     ChipList,
-    Button
+    Button,
+    PageHeader
 ],
   selector: 'app-headache-form',
   styleUrl: './headache-form.scss',

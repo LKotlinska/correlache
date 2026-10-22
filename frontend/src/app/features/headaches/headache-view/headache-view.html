@@ -1,3 +1,19 @@
+<app-page-header title="Headache">
+  <button matIconButton type="button" [matMenuTriggerFor]="headacheMenu" aria-label="Headache options">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #headacheMenu="matMenu" xPosition="before">
+    <button mat-menu-item type="button">
+      <mat-icon>edit</mat-icon>
+      <span>Edit</span>
+    </button>
+    <button mat-menu-item type="button">
+      <mat-icon>delete</mat-icon>
+      <span>Delete</span>
+    </button>
+  </mat-menu>
+</app-page-header>
+<main class="page-wrapper">
 @if (headache.isLoading()) {
   <mat-progress-bar mode="indeterminate" />
 } @else if (headache.error()) {
@@ -83,3 +99,4 @@
     }
   </mat-accordion>
 }
+</main>

@@ -1,20 +1,9 @@
-import { Component, inject } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Location } from '@angular/common';
-
 
 @Component({
-  imports: [MatIcon, MatButtonModule, RouterOutlet],
+  imports: [RouterOutlet],
   selector: 'app-headaches',
-  styleUrl: './headaches.scss',
   templateUrl: './headaches.html',
 })
-export class Headaches {
-  private location = inject(Location);
-
-  goBack() {
-    this.location.back();
-  }
-}
+export class Headaches {}
