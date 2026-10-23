@@ -3,8 +3,8 @@ import { MuscleGroup } from "./muscle-group.entity.js";
 
 @Entity('muscles')
 export class Muscle {
-    @PrimaryGeneratedColumn()
-    id: number
+    @Column('number')
+    lyfta_id: number
 
     @Column("varchar", { length: 50, unique: true })
     name: string
