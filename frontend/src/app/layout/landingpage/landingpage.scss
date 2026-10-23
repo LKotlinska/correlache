@@ -1,6 +1,10 @@
 @use '../../../variables' as p;
 .header-wrapper {
-    height: 60dvh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background-color: p.$surface-low;
     .nav-container {
         display: flex;
         align-items: center;
@@ -24,7 +28,9 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        height: 100%;
+        .hgroup{
+            margin: 4em 0 2em;
+        }
         .heading {
             text-transform: uppercase;
             font-weight: 500;
@@ -47,7 +53,91 @@
             display: flex;
             flex-direction: column;
             gap: 1em;
-            margin: 2em;
         }
+    }
+}
+
+.illustration {
+    position: relative;
+    margin-top: auto;
+    height: 17em;
+    .waves, .arcs {
+        position: absolute;
+        left: 0;
+        width: 100%;
+    }
+    .waves {
+        bottom: 0;
+        height: 17em;
+        .w1 { fill: #e9e0f9 }
+        .w2 { fill: #8573bd }
+        .w3 { fill: p.$brand-primary }
+        &--front { pointer-events: none; }
+    }
+    .arcs {
+        bottom: 4em;
+        height: 100%;
+        fill: none;
+        stroke: p.$text-strong;
+        stroke-width: 1.5;
+        stroke-dasharray: 4 5;
+        path { vector-effect: non-scaling-stroke; }
+    }
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background: p.$brand-primary;
+    }
+    img {
+        position: absolute;
+        bottom: 1em;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 18em;
+        clip-path: inset(3px 0 0 0);
+    }
+    .chip {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+        padding: 0.3em 0.7em;
+        font-size: 0.75em;
+        background: p.$white;
+        border: 1px solid p.$outline;
+        border-radius: 0.5em;
+        mat-icon { font-size: 1.2em; width: 1.2em; height: 1.2em; }
+        animation: float 4s ease-in-out infinite;
+        &--left { top: -2em; left: 2em; }
+        &--right { top: 3.5em; right: 1.5em; animation-duration: 5s; animation-delay: -2s; }
+        @media (prefers-reduced-motion: reduce) { animation: none; }
+        .chip-icon{
+            display:flex;
+            align-items: center;
+        }
+    }
+}
+
+@keyframes float {
+    0%, 100% { translate: 0 0; }
+    50% { translate: 0 -6px; }
+}
+
+.page-wrapper {
+    margin-top: -1px;
+    min-height: 40dvh;
+    background-color: p.$brand-primary;
+    padding: 0.5em 1em 2em;
+    .eyebrow {
+        margin: 0;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-size: 0.7em;
+        color: p.$white;
     }
 }
