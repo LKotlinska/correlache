@@ -1,0 +1,25 @@
+@use '../../../../variables' as p;
+
+.page-wrapper {
+    padding: p.$page-padding;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+}
+
+.btn-container:has(> :only-child) {
+    justify-content: end;
+}
+
+.mat-vertical-content {
+    padding: 0 24px 24px 0px;
+}
+
+.duration-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+}

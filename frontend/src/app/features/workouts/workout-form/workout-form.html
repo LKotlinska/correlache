@@ -1,0 +1,58 @@
+<app-page-header title="New workout" />
+<main class="page-wrapper">
+  <form [formGroup]="workoutForm">
+    <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
+      <mat-step>
+        <ng-template matStepLabel>
+          <h2>When did you train?</h2>
+        </ng-template>
+        <div>
+          <h3>Start</h3>
+          <app-date-time-picker
+            [dateControl]="workoutForm.controls.startDate"
+            [timeControl]="workoutForm.controls.startTime"
+            [maxDate]="today"
+          />
+        </div>
+        <div>
+          <h3>Duration</h3>
+        </div>
+
+        <div class="btn-container">
+          <button matButton="filled" type="button" matStepperNext>Next</button>
+        </div>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>
+          <h2>Location</h2>
+        </ng-template>
+
+        <div class="btn-container">
+          <button matButton="filled" type="button" matStepperPrevious>Back</button>
+          <button matButton="filled" type="button" matStepperNext>Next</button>
+        </div>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>
+          <h2>Triggers and symptoms</h2>
+        </ng-template>
+
+        <div class="btn-container">
+          <button matButton="filled" type="button" matStepperPrevious>Back</button>
+          <button matButton="filled" type="button" matStepperNext>Next</button>
+        </div>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>
+          <h2>Save your headache</h2>
+        </ng-template>
+        <div class="btn-container">
+          <app-button type="submit" ngForm="sub">Save</app-button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </form>
+</main>

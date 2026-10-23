@@ -4,6 +4,7 @@ import { Dashboard } from './layout/dashboard/dashboard';
 import { authGuard } from './guards/auth-guard';
 import { NotFoundError } from 'rxjs';
 import { Headaches } from './features/headaches/headaches';
+import { Workouts } from './features/workouts/workouts';
 
 export const routes: Routes = [
     {
@@ -33,6 +34,13 @@ export const routes: Routes = [
                     { path: 'add', loadComponent: () => import('./features/headaches/headache-form/headache-form').then(m => m.HeadacheForm)},
                     { path: ':id/edit', loadComponent: () => import('./features/headaches/headache-form/headache-form').then(m => m.HeadacheForm)},
                     { path: ':id', loadComponent: () => import('./features/headaches/headache-view/headache-view').then(m => m.HeadacheView)},
+                ]
+            },
+            {
+                path: 'workout',
+                component: Workouts,
+                children: [
+                    { path: 'add', loadComponent: () => import('./features/workouts/workout-form/workout-form').then(m => m.WorkoutForm)},
                 ]
             }
         ]
