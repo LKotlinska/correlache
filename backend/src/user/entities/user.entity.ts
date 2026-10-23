@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Headache } from "../../headaches/entities/headache.entity.js";
+import { Workout } from "../../exercise-library/entities/workout.entity.js";
 
 @Entity('users')
 export class User {
@@ -20,6 +21,9 @@ export class User {
     
     @OneToMany(() => Headache, (headache) => headache.user)
     headaches: Headache[]
+
+    @OneToMany(() => Workout, (workout) => workout.user)
+    workouts: Workout[]
 
     @CreateDateColumn()
     created_at: Date
