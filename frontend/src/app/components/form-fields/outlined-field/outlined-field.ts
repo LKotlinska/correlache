@@ -27,6 +27,8 @@ export class OutlinedField {
   private messages: Record<string, string> = {
     required: 'This field is required',
     email: 'Please enter a valid email adress',
+    min: 'Value is too low',
+    max: 'Value is too high',
     minlength: 'Value is too short',
     emailTaken: 'This email is already registered',
   };
