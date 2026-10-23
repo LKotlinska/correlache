@@ -44,231 +44,233 @@ export const MuscleGroupSeed = [
 
 export const MuscleSeed = [
     {
-        id: 33,
+        lyfta_id: 33,
         name: 'Splenius',
         muscleGroup: 1
     },
     {
-        id: 34,
+        lyfta_id: 34,
         name: 'Sternocleidomastoid',
         muscleGroup: 1
     },
     {
-        id: 21,
+        lyfta_id: 21,
         name: 'Levator Scapulae',
         muscleGroup: 1
     },
     {
-        id: 43,
+        lyfta_id: 43,
         name: 'Trapezius Upper Fibers',
         muscleGroup: 1
     },
     {
-        id: 8,
+        lyfta_id: 8,
         name: 'Deltoid Anterior',
         muscleGroup: 2
     },
     {
-        id: 9,
+        lyfta_id: 9,
         name: 'Deltoid Lateral',
         muscleGroup: 2
     },
     {
-        id: 10,
+        lyfta_id: 10,
         name: 'Deltoid Posterior',
         muscleGroup: 2
     },
     {
-        id: 19,
+        lyfta_id: 19,
         name: 'Infraspinatus',
         muscleGroup: 2
     },
     {
-        id: 38,
+        lyfta_id: 38,
         name: 'Teres Minor',
         muscleGroup: 2
     },
     {
-        id: 35,
+        lyfta_id: 35,
         name: 'Subscapularis',
         muscleGroup: 2
     },
     {
-        id: 24,
+        lyfta_id: 24,
         name: 'Pectoralis Major Clavicular Head',
         muscleGroup: 3
     },
     {
-        id: 25,
+        lyfta_id: 25,
         name: 'Pectoralis Major Sternal Head',
         muscleGroup: 3
     },
     {
-        id: 31,
+        lyfta_id: 31,
         name: 'Serratus Anterior',
         muscleGroup: 3
     },
     {
-        id: 30,
+        lyfta_id: 30,
         name: 'Serratus Ante',
         muscleGroup: 3
     },
     {
-        id: 20,
+        lyfta_id: 20,
         name: 'Latissimus Dorsi',
         muscleGroup: 4
     },
     {
-        id: 37,
+        lyfta_id: 37,
         name: 'Teres Major',
         muscleGroup: 4
     },
     {
-        id: 11,
+        lyfta_id: 11,
         name: 'Erector Spinae',
         muscleGroup: 4
     },
     {
-        id: 42,
+        lyfta_id: 42,
         name: 'Trapezius Middle Fibers',
         muscleGroup: 4
     },
     {
-        id: 41,
+        lyfta_id: 41,
         name: 'Trapezius Lower Fibers',
         muscleGroup: 4
     },
     {
-        id: 4,
+        lyfta_id: 4,
         name: 'Biceps Brachii',
         muscleGroup: 5
     },
     {
-        id: 5,
+        lyfta_id: 5,
         name: 'Brachialis',
         muscleGroup: 5
     },
     {
-        id: 6,
+        lyfta_id: 6,
         name: 'Brachioradialis',
         muscleGroup: 5
     },
     {
-        id: 44,
+        lyfta_id: 44,
         name: 'Triceps Brachii',
         muscleGroup: 5
     },
     {
-        id: 45,
+        lyfta_id: 45,
         name: 'Wrist Extensors',
         muscleGroup: 5
     },
     {
-        id: 46,
+        lyfta_id: 46,
         name: 'Wrist Flexors',
         muscleGroup: 5
     },
     {
-        id: 28,
+        lyfta_id: 28,
         name: 'Rectus Abdominis',
         muscleGroup: 6
     },
     {
-        id: 22,
+        lyfta_id: 22,
         name: 'Obliques',
         muscleGroup: 6
     },
     {
-        id: 40,
+        lyfta_id: 40,
         name: 'Transverse Abdominis',
         muscleGroup: 6
     },
     {
-        id: 13,
+        lyfta_id: 13,
         name: 'Gluteus Maximus',
         muscleGroup: 7
     },  
     {
-        id: 14,
+        lyfta_id: 14,
         name: 'Gluteus Medius',
         muscleGroup: 7
     },   
     {
-        id: 15,
+        lyfta_id: 15,
         name: 'Gluteus Minimus',
         muscleGroup: 7
     },
     {
-        id: 7,
+        lyfta_id: 7,
         name: 'Deep Hip External Rotators',
         muscleGroup: 7
     },
     {
-        id: 18,
+        lyfta_id: 18,
         name: 'Iliopsoas',
         muscleGroup: 7
     },
     {
-        id: 36,
+        lyfta_id: 36,
         name: 'Tensor Fasciae Latae',
         muscleGroup: 7
     },
     {
-        id: 29,
+        lyfta_id: 29,
         name: 'Sartorius',
         muscleGroup: 7
     },
     {
-        id: 27,
+        lyfta_id: 27,
         name: 'Quadriceps',
         muscleGroup: 8
     },
     {
-        id: 17,
+        lyfta_id: 17,
         name: 'Hamstrings',
         muscleGroup: 8
     },
     {
-        id: 2,
+        lyfta_id: 2,
         name: 'Adductor Longus',
         muscleGroup: 8
     },
     {
-        id: 3,
+        lyfta_id: 3,
         name: 'Adductor Magnus',
         muscleGroup: 8
     },
     {
-        id: 16,
+        lyfta_id: 16,
         name: 'Gracilis',
         muscleGroup: 8
     },
     {
-        id: 23,
+        lyfta_id: 23,
         name: 'Pectineus',
         muscleGroup: 8
     },
     {
-        id: 26,
+        lyfta_id: 26,
         name: 'Popliteus',
         muscleGroup: 8
     },
     {
-        id: 12,
+        lyfta_id: 12,
         name: 'Gastrocnemius',
         muscleGroup: 9
     },
     {
-        id: 32,
+        lyfta_id: 32,
         name: 'Soleus',
         muscleGroup: 9
     },
     {
-        id: 39,
+        lyfta_id: 39,
         name: 'Tibialis Anterior',
         muscleGroup: 9
     },
 ]
+
+
 
 export default class WorkoutLookupSeeder implements Seeder {
  public async run(dataSource: DataSource): Promise<void> {
@@ -276,7 +278,7 @@ export default class WorkoutLookupSeeder implements Seeder {
         await dataSource.getRepository(MuscleGroup).upsert(MuscleGroupSeed, ['id']);
         await dataSource.getRepository(Muscle).upsert(
             MuscleSeed.map(({ muscleGroup, ...m }) => ({ ...m, muscleGroup: { id: muscleGroup } })),
-            ['id'],
+            ['lyfta_id'],
         );
     }
 }
