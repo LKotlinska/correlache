@@ -11,6 +11,7 @@ import { AuthenticationModule } from '@nestjs/authentication';
 import { AuthModule } from './auth/auth.module.js';
 import { dbConfig } from './db.config.js';
 import { HeadacheModule } from './headaches/headache.module.js'; 
+import { WorkoutModule } from './exercise-library/workout.module.js';
 
 // ESM has no __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -39,6 +40,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
     UserModule,
     AuthModule,
     HeadacheModule,
+    WorkoutModule,
   ],
   controllers: [AppController],
   providers: [AppService],
