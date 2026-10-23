@@ -12,7 +12,7 @@ export class Workout {
     @Column({ name: 'user_id', type: 'varchar', length: 36 })
     userId: string;
 
-    @ManyToOne(() => User, {
+    @ManyToOne(() => User, (user) => user.workouts, {
         onDelete: 'CASCADE',
         nullable: false,
     })
