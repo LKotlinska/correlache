@@ -13,9 +13,22 @@
         padding: p.$nav-padding;
         background-color: p.$white;
         box-shadow: p.$box-shadow;
+        position: fixed;
+        width: 100%;
+        box-sizing: border-box;
+        z-index: 1000;
+
         .logo {
+            img {
+                width: 1.8em;
+            }
             display: flex;
             gap: 0.5em;
+            font-weight: 500;
+            .logo-text {
+                font-weight: 570;
+                font-size: 1.5em;
+            }
         }
         .btn-container {
             display: flex;
@@ -29,7 +42,7 @@
         align-items: center;
         text-align: center;
         .hgroup{
-            margin: 4em 0 2em;
+            margin: 7em 0 2em;
         }
         .heading {
             text-transform: uppercase;
