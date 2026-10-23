@@ -16,6 +16,18 @@
         </div>
         <div>
           <h3>Duration</h3>
+          <div class="duration-grid">
+            <app-outlined-field
+              label="Hours"
+              type="number"
+              [myControl]="workoutForm.controls.durationHours"
+            />
+            <app-outlined-field
+              label="Minutes"
+              type="number"
+              [myControl]="workoutForm.controls.durationMinutes"
+            />
+          </div>
         </div>
 
         <div class="btn-container">
@@ -25,7 +37,7 @@
 
       <mat-step>
         <ng-template matStepLabel>
-          <h2>Location</h2>
+          <h2>Exercises and sets</h2>
         </ng-template>
 
         <div class="btn-container">
@@ -36,18 +48,7 @@
 
       <mat-step>
         <ng-template matStepLabel>
-          <h2>Triggers and symptoms</h2>
-        </ng-template>
-
-        <div class="btn-container">
-          <button matButton="filled" type="button" matStepperPrevious>Back</button>
-          <button matButton="filled" type="button" matStepperNext>Next</button>
-        </div>
-      </mat-step>
-
-      <mat-step>
-        <ng-template matStepLabel>
-          <h2>Save your headache</h2>
+          <h2>Save your workout</h2>
         </ng-template>
         <div class="btn-container">
           <app-button type="submit" ngForm="sub">Save</app-button>
