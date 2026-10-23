@@ -1,3 +1,30 @@
-<button matButton (click)="openDialog('signup')">Sign up</button>
+<header class="header-wrapper">
+  <div class="nav-container">
+    <div class="logo">
+      <img src="favicon.svg" alt="CorrelAche logo" />
+      <h1>CorrelAche</h1>
+    </div>
+    <div class="btn-container">
+      <button matButton (click)="openDialog('signin')">Sign in</button>
+      <button matIconButton>
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="page-heading">
+    <hgroup>
+      <h2 class="heading">Headache & workout diary</h2>
+      <p class="headline">
+        Headaches<br />
+        have patterns.<br />Find yours.
+      </p>
+      <p class="subhead">Add your workouts, track your headaches, <br />and see what lines up.</p>
+    </hgroup>
+    <div class="action-container">
+      <button matButton="filled" (click)="openDialog('signup')">Start your diary</button>
+      <button matButton="outlined">See how it works</button>
+    </div>
+  </div>
+</header>
 
-<button matButton (click)="openDialog('signin')">Sign in</button>
+<main class="page-wrapper"></main>
