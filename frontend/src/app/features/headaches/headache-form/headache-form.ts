@@ -1,17 +1,15 @@
 import { Component, inject, signal } from '@angular/core';
 import { AbstractControl, FormGroup,ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatStepperModule } from '@angular/material/stepper';
-import { MatTimepickerModule } from '@angular/material/timepicker';
 import { HeadacheService } from '../../../services/headache.service';
 import { AsyncPipe } from '@angular/common';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
 import { ChipList } from '../../../components/chip-list/chip-list';
+import { DateTimePicker } from '../../../components/form-fields/date-time-picker/date-time-picker';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { Button } from '../../../components/button/button';
 import { combineDateTime } from '../../../utils/combine-date-time';
@@ -30,15 +28,13 @@ import { HeadacheDetail } from '../../../models/headache.model';
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatTimepickerModule,
     MatSliderModule,
     AsyncPipe,
     MediaTile,
     ChipList,
     Button,
-    PageHeader
+    PageHeader,
+    DateTimePicker
 ],
   selector: 'app-headache-form',
   styleUrl: './headache-form.scss',

@@ -8,61 +8,23 @@
       </ng-template>
       <div>
         <h3>Start *</h3>
-        <div class="picker-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Pick a date</mat-label>
-            <input
-              [formControl]="headacheForm.controls.startDate"
-              matInput
-              [matDatepicker]="startDatePicker"
-              [max]="today"
-            />
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #startDatePicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Pick a time</mat-label>
-            <input
-              [formControl]="headacheForm.controls.startTime"
-              matInput
-              [matTimepicker]="startTimePicker"
-              [matTimepickerMax]="startTimeMax"
-            />
-            <mat-timepicker-toggle matIconSuffix [for]="startTimePicker" />
-            <mat-timepicker #startTimePicker />
-          </mat-form-field>
-        </div>
+        <app-date-time-picker
+          [dateControl]="headacheForm.controls.startDate"
+          [timeControl]="headacheForm.controls.startTime"
+          [maxDate]="today"
+          [timeMax]="startTimeMax"
+        />
       </div>
       <div>
         <h3>End</h3>
-        <div class="picker-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Pick a date</mat-label>
-            <input
-              [formControl]="headacheForm.controls.endDate"
-              matInput
-              [matDatepickerFilter]="endDateFilter"
-              [matDatepicker]="endDatePicker"
-              [max]="today"
-            />
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #endDatePicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Pick a time</mat-label>
-            <input
-              [formControl]="headacheForm.controls.endTime"
-              matInput
-              [matTimepicker]="timepicker"
-              [matTimepickerMin]="endTimeMin"
-              [matTimepickerMax]="endTimeMax"
-            />
-            <mat-timepicker-toggle matIconSuffix [for]="timepicker" />
-            <mat-timepicker #timepicker />
-          </mat-form-field>
-        </div>
+        <app-date-time-picker
+          [dateControl]="headacheForm.controls.endDate"
+          [timeControl]="headacheForm.controls.endTime"
+          [maxDate]="today"
+          [dateFilter]="endDateFilter"
+          [timeMin]="endTimeMin"
+          [timeMax]="endTimeMax"
+        />
         @if (headacheForm.hasError('endBeforeStart')) {
           <p class="form-error" role="alert">The end can't be before the start.</p>
         }
