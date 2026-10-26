@@ -3,8 +3,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; // fallback for old browsers
-    min-height: 100svh; // stable: dvh resizes as the mobile URL bar hides/shows, making the illustration jump
+    // min-height: 100vh; // fallback for old browsers
+    // min-height: 100svh; // stable: dvh resizes as the mobile URL bar hides/shows, making the illustration jump
     .nav-container {
         display: flex;
         align-items: center;
@@ -72,7 +72,7 @@
 
 .illustration {
     position: relative;
-    margin-top: auto;
+    margin-top: 2em;
     height: 17em;
     // arcs, chips and image share a width-capped column so they stay together on wide screens
     .illu-content {
@@ -111,8 +111,8 @@
         position: absolute;
         left: 0;
         right: 0;
-        bottom: 0;
-        height: 3px;
+        bottom: -2px; // overshoot into .page-wrapper so subpixel rounding can't leave a seam
+        height: 5px;
         background: p.$brand-primary;
     }
     .illu-img {
