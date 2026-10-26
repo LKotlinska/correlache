@@ -3,8 +3,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
-    background-color: p.$surface-low;
+    min-height: 100vh; // fallback for old browsers
+    min-height: 100svh; // stable: dvh resizes as the mobile URL bar hides/shows, making the illustration jump
     .nav-container {
         display: flex;
         align-items: center;
@@ -42,24 +42,24 @@
         align-items: center;
         text-align: center;
         .hgroup{
-            margin: 7em 0 2em;
+            margin: 6em 0 1em;
         }
         .heading {
             text-transform: uppercase;
             font-weight: 500;
-            font-size: 1.25em;
+            font-size: 1.15em;
         }
         .headline {
             color: var(--mat-sys-primary);
             font-family: "Roboto Serif", serif;
             font-weight: 650;
-            font-size: 2.6em;
+            font-size: 2.5em;
             line-height: 1.1;
             margin: 0.75em;
         }
         .subhead {
             font-weight: 500;
-            font-size: 1.15em;
+            font-size: 1.05em;
 
         }
         .action-container {
@@ -74,6 +74,16 @@
     position: relative;
     margin-top: auto;
     height: 17em;
+    // arcs, chips and image share a width-capped column so they stay together on wide screens
+    .illu-content {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 26em;
+        height: 100%;
+    }
     .waves, .arcs {
         position: absolute;
         left: 0;
@@ -81,14 +91,14 @@
     }
     .waves {
         bottom: 0;
-        height: 17em;
+        height: 13em;
         .w1 { fill: #e9e0f9 }
         .w2 { fill: #8573bd }
         .w3 { fill: p.$brand-primary }
         &--front { pointer-events: none; }
     }
     .arcs {
-        bottom: 4em;
+        bottom: 1em;
         height: 100%;
         fill: none;
         stroke: p.$text-strong;
@@ -105,12 +115,13 @@
         height: 3px;
         background: p.$brand-primary;
     }
-    img {
+    .illu-img {
         position: absolute;
         bottom: 1em;
         left: 50%;
         transform: translateX(-50%);
-        height: 18em;
+        height: 15em;
+        width: auto;
         clip-path: inset(3px 0 0 0);
     }
     .chip {
@@ -125,8 +136,8 @@
         border-radius: 0.5em;
         mat-icon { font-size: 1.2em; width: 1.2em; height: 1.2em; }
         animation: float 4s ease-in-out infinite;
-        &--left { top: -2em; left: 2em; }
-        &--right { top: 3.5em; right: 1.5em; animation-duration: 5s; animation-delay: -2s; }
+        &--left { top: 2em; left: 2em; }
+        &--right { top: 6.5em; right: 1.5em; animation-duration: 5s; animation-delay: -2s; }
         @media (prefers-reduced-motion: reduce) { animation: none; }
         .chip-icon{
             display:flex;
@@ -142,7 +153,7 @@
 
 .page-wrapper {
     margin-top: -1px;
-    min-height: 40dvh;
+    min-height: 40svh;
     background-color: p.$brand-primary;
     padding: 0.5em 1em 2em;
     .eyebrow {
