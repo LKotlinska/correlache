@@ -13,6 +13,7 @@ export const MuscleGroupSeed = [
     { id: 7, name: 'Hips & glutes' },
     { id: 8, name: 'Legs' },
     { id: 9, name: 'Calves & shins' },
+    { id: 10, name: 'Cardio' },
 ];
 
 // `aliases` are the other spellings the exercises dataset uses for the same muscle
@@ -46,6 +47,7 @@ export const MuscleSeed = [
     { name: 'Soleus', muscleGroup: 9, aliases: [] },
     { name: 'Ankles & feet', muscleGroup: 9, aliases: ['ankles', 'ankle stabilizers', 'feet'] },
     { name: 'Shins', muscleGroup: 9, aliases: [] },
+    { name: 'Cardiovascular', muscleGroup: 10, aliases: ['cardiovascular system'] },
 ];
 
 // lower-cased dataset muscle name -> muscles.name
