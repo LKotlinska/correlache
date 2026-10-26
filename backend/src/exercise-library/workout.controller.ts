@@ -13,7 +13,7 @@ export class WorkoutController {
     return this.workoutService.create(createWorkoutDto);
   }
 
-  @Get()
+  @Get('exercises')
   async getExercises(): Promise<ExerciseDto[]> {
     return await this.workoutService.getExercises();
   }
