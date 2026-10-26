@@ -1,4 +1,3 @@
-import { ExerciseType } from '../entities/exercise.entity.js';
 import { MuscleRole } from '../entities/exercise-muscle.entity.js';
 
 export class LookupDto {
@@ -16,7 +15,7 @@ export class ExerciseDto {
     id: number;
     name: string;
     imageName: string | null;
-    exerciseType: ExerciseType;
+    gifName: string | null;
     equipment: LookupDto;
     bodyPart: LookupDto;
     muscles: ExerciseMuscleDto[];

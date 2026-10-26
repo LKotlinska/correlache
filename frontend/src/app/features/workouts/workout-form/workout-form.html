@@ -7,6 +7,14 @@
           <h2>When did you train?</h2>
         </ng-template>
         <div>
+          <h3>Title</h3>
+          <app-outlined-field
+            label="Workout title"
+            type="text"
+            [myControl]="workoutForm.controls.title"
+          />
+        </div>
+        <div>
           <h3>Start</h3>
           <app-date-time-picker
             [dateControl]="workoutForm.controls.startDate"
@@ -29,7 +37,6 @@
             />
           </div>
         </div>
-
         <div class="btn-container">
           <button matButton="filled" type="button" matStepperNext>Next</button>
         </div>
