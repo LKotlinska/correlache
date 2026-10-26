@@ -75,6 +75,16 @@
     position: relative;
     margin-top: auto;
     height: 17em;
+    // arcs, chips and image share a width-capped column so they stay together on wide screens
+    .illu-content {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 26em;
+        height: 100%;
+    }
     .waves, .arcs {
         position: absolute;
         left: 0;
@@ -82,7 +92,7 @@
     }
     .waves {
         bottom: 0;
-        height: 17em;
+        height: 13em;
         .w1 { fill: #e9e0f9 }
         .w2 { fill: #8573bd }
         .w3 { fill: p.$brand-primary }
@@ -112,6 +122,7 @@
         left: 50%;
         transform: translateX(-50%);
         height: 15em;
+        width: auto;
         clip-path: inset(3px 0 0 0);
     }
     .chip {
