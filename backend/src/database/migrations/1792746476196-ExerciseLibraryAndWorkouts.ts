@@ -6,16 +6,11 @@ export class ExerciseLibraryAndWorkouts1792746476196 implements MigrationInterfa
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE \`equipment\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(50) NOT NULL, UNIQUE INDEX \`IDX_b44a87bec78c8cf13f5bb83857\` (\`name\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`body_parts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(50) NOT NULL, UNIQUE INDEX \`IDX_f98ca1ef4c161f1ada41ed0e9e\` (\`name\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`exercises\` (\`id\` int NOT NULL, \`name\` varchar(150) NOT NULL, \`image_name\` varchar(255) NULL, \`equipment_id\` int NOT NULL, \`body_part_id\` int NOT NULL, \`exercise_type\` enum ('weight_reps', 'reps_only', 'duration', 'distance_duration', 'weight_duration') NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`exercises\` (\`id\` int NOT NULL, \`name\` varchar(150) NOT NULL, \`image_name\` varchar(255) NULL, \`gif_name\` varchar(255) NULL, \`instructions\` json NULL, \`equipment_id\` int NOT NULL, \`body_part_id\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`exercise_muscles\` (\`exercise_id\` int NOT NULL, \`muscle_id\` int NOT NULL, \`role\` enum ('primary', 'secondary') NOT NULL, PRIMARY KEY (\`exercise_id\`, \`muscle_id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`workouts\` (\`id\` varchar(36) NOT NULL, \`user_id\` varchar(36) NOT NULL, \`title\` varchar(150) NOT NULL, \`started_at\` datetime NOT NULL, \`duration_seconds\` int NOT NULL, INDEX \`IDX_4d5de268a0428738521d07bf29\` (\`user_id\`, \`started_at\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`workout_exercises\` (\`id\` varchar(36) NOT NULL, \`workout_id\` varchar(36) NOT NULL, \`lyfta_exercise_id\` int NULL, \`exercise_name\` varchar(150) NOT NULL, \`order\` int NOT NULL, \`superset_id\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`sets\` (\`id\` varchar(36) NOT NULL, \`workout_exercise_id\` varchar(36) NOT NULL, \`order\` int NOT NULL, \`weight\` float NULL, \`reps\` int NULL, \`distance\` float NULL, \`duration_seconds\` int NULL, \`set_type\` enum ('normal', 'warmup', 'dropset', 'failure') NOT NULL DEFAULT 'normal', PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        // Add as nullable and backfill first: existing muscle rows were seeded with id = Lyfta id
-        await queryRunner.query(`ALTER TABLE \`muscles\` ADD \`lyfta_id\` int NULL`);
-        await queryRunner.query(`UPDATE \`muscles\` SET \`lyfta_id\` = \`id\``);
-        await queryRunner.query(`ALTER TABLE \`muscles\` MODIFY \`lyfta_id\` int NOT NULL`);
-        await queryRunner.query(`ALTER TABLE \`muscles\` ADD UNIQUE INDEX \`IDX_ebae6be9718efd3dce1f586ad9\` (\`lyfta_id\`)`);
+        await queryRunner.query(`CREATE TABLE \`workout_exercises\` (\`id\` varchar(36) NOT NULL, \`workout_id\` varchar(36) NOT NULL, \`exercise_id\` int NULL, \`exercise_name\` varchar(150) NOT NULL, \`order\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`sets\` (\`id\` varchar(36) NOT NULL, \`workout_exercise_id\` varchar(36) NOT NULL, \`order\` int NOT NULL, \`weight\` float NULL, \`reps\` int NULL, \`distance\` float NULL, \`duration_seconds\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`ALTER TABLE \`exercises\` ADD CONSTRAINT \`FK_2bb208f4a02f1b077c67352fc11\` FOREIGN KEY (\`equipment_id\`) REFERENCES \`equipment\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`exercises\` ADD CONSTRAINT \`FK_026442a164303ee80d7ee175dfe\` FOREIGN KEY (\`body_part_id\`) REFERENCES \`body_parts\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`exercise_muscles\` ADD CONSTRAINT \`FK_a9a7890a7e3cb424d69248c9058\` FOREIGN KEY (\`exercise_id\`) REFERENCES \`exercises\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`);
@@ -33,8 +28,6 @@ export class ExerciseLibraryAndWorkouts1792746476196 implements MigrationInterfa
         await queryRunner.query(`ALTER TABLE \`exercise_muscles\` DROP FOREIGN KEY \`FK_a9a7890a7e3cb424d69248c9058\``);
         await queryRunner.query(`ALTER TABLE \`exercises\` DROP FOREIGN KEY \`FK_026442a164303ee80d7ee175dfe\``);
         await queryRunner.query(`ALTER TABLE \`exercises\` DROP FOREIGN KEY \`FK_2bb208f4a02f1b077c67352fc11\``);
-        await queryRunner.query(`ALTER TABLE \`muscles\` DROP INDEX \`IDX_ebae6be9718efd3dce1f586ad9\``);
-        await queryRunner.query(`ALTER TABLE \`muscles\` DROP COLUMN \`lyfta_id\``);
         await queryRunner.query(`DROP TABLE \`sets\``);
         await queryRunner.query(`DROP TABLE \`workout_exercises\``);
         await queryRunner.query(`DROP INDEX \`IDX_4d5de268a0428738521d07bf29\` ON \`workouts\``);

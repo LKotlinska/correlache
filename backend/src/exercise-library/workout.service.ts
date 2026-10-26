@@ -24,7 +24,7 @@ export class WorkoutService {
       id: exercise.id,
       name: exercise.name,
       imageName: exercise.imageName,
-      exerciseType: exercise.exerciseType,
+      gifName: exercise.gifName,
       equipment: { id: exercise.equipment.id, name: exercise.equipment.name },
       bodyPart: { id: exercise.bodyPart.id, name: exercise.bodyPart.name },
       muscles: exercise.muscles.map((em) => ({
