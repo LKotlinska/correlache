@@ -17,6 +17,7 @@
   overflow: hidden;
   padding: 0.5em;
   border-radius: p.$card-border;
+  background-color: p.$white;
 
   // Selected
   &:has(input:checked) {
@@ -43,11 +44,18 @@
   }
 
   .image-context {
+    display: flex;
+    flex-direction: column;
     padding: 0.25em 0;
+  }
+
+  .title {
+    font-weight: 600;
   }
 
   .title, .subtitle {
     letter-spacing: normal;
     font-size: var(--mat-sys-body-medium-size);
+    text-transform: capitalize;
   }
 }
