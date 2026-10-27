@@ -27,7 +27,12 @@
     </cdk-virtual-scroll-viewport>
   }
   <div class="btn-container">
-    <button matButton="filled" [disabled]="exerciseForm.value.length === 0">
+    <button
+      matButton="filled"
+      type="button"
+      (click)="submitExercises()"
+      [disabled]="exerciseForm.value.length === 0"
+    >
       {{
         exerciseForm.value.length === 1
           ? 'Add 1 exercise'
