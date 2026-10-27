@@ -1,6 +1,7 @@
 import { In, type DataSource } from 'typeorm';
 import type { Seeder } from 'typeorm-extension';
-import { basename } from 'path';
+import { basename, extname, resolve } from 'path';
+import { existsSync } from 'fs';
 import { Exercise } from '../../exercise-library/entities/exercise.entity.js';
 import { ExerciseMuscle, MuscleRole } from '../../exercise-library/entities/exercise-muscle.entity.js';
 import { Muscle } from '../../exercise-library/lookups/muscle.entity.js';
@@ -13,8 +14,16 @@ const DATASET_COMMIT = '7455efae41b330c265e7cd4b78dfa848e7ce5ebd';
 const DATASET_URL = `https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/${DATASET_COMMIT}/data/exercises.json`;
 
 // The images and GIFs are (c) Gym visual and may not be used without their permission.
-// Keep this off until that is granted; turning it on and re-running the seed fills image_name / gif_name.
-const SEED_MEDIA = false;
+// The local copies below are webp: the animated ones (gif_name) and static first-frame stills (image_name).
+
+// Named like the dataset's jpg/gif ones (0001-2gPfomN.jpg -> 0001-2gPfomN.webp)
+const MEDIA_DIR = resolve(process.cwd(), '../frontend/public/images/exercises');
+const webpName = (source: string | null, dir: string): string | null => {
+    if (!source) return null;
+    const base = basename(source);
+    const name = base.slice(0, base.length - extname(base).length) + '.webp';
+    return existsSync(resolve(dir, name)) ? name : null;
+};
 
 interface DatasetExercise {
     id: string;
@@ -64,9 +73,9 @@ export default class ExercisesDatasetSeeder implements Seeder {
             exercises.set(id, {
                 id,
                 name: ex.name.slice(0, 150),
-                imageName: SEED_MEDIA && ex.image ? basename(ex.image) : null,
+                imageName: webpName(ex.image, resolve(MEDIA_DIR, 'stills')),
                 instructions: ex.instruction_steps?.en ?? null,
-                gifName: SEED_MEDIA && ex.gif_url ? basename(ex.gif_url) : null,
+                gifName: webpName(ex.gif_url, MEDIA_DIR),
                 equipmentId,
                 bodyPartId,
             });
