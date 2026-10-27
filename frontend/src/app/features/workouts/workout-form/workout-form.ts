@@ -27,6 +27,7 @@ function createSetGroup() {
 
 type SetGroup = ReturnType<typeof createSetGroup>;
 
+
 @Component({
   imports: [RouterLink, ReactiveFormsModule, MatStepperModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule],
   selector: 'app-workout-form',
@@ -154,15 +155,12 @@ export class WorkoutForm {
       title: title!.trim(),
       startedAt: combineDateTime(startDate!, startTime),
       durationSeconds: ((durationHours ?? 0) * 60 + (durationMinutes ?? 0)) * 60,
-      exercises: this.exercises().map((exercise, index) => ({
+      exercises: this.exercises().map((exercise) => ({
         exerciseId: exercise.id,
-        exerciseName: exercise.name,
-        order: index,
         // Rows left completely empty are not saving
         sets: this.getSets(exercise.id)
           .getRawValue()
-          .filter((set) => set.weight !== null || set.reps !== null)
-          .map((set, order) => ({ order, ...set })),
+          .filter((set) => set.weight !== null || set.reps !== null),
       })),
     };
   }

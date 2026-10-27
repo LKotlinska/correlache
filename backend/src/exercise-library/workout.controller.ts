@@ -1,4 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { CurrentUser } from '@nestjs/authentication';
+import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 import { UpdateWorkoutDto } from './dto/update-workout.dto.js';
@@ -9,8 +11,8 @@ export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 
   @Post()
-  create(@Body() createWorkoutDto: CreateWorkoutDto) {
-    return this.workoutService.create(createWorkoutDto);
+  create(@CurrentUser() user: User, @Body() createWorkoutDto: CreateWorkoutDto) {
+    return this.workoutService.create(user.id, createWorkoutDto);
   }
 
   @Get('exercises')
