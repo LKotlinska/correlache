@@ -1,5 +1,5 @@
 <app-page-header title="New workout" />
-<main class="page-wrapper">
+<main>
   <form [formGroup]="workoutForm">
     <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
       <mat-step>
@@ -46,6 +46,42 @@
         <ng-template matStepLabel>
           <h2>Exercises and sets</h2>
         </ng-template>
+        <div class="exercise-container">
+          @for (exercise of exercises(); track exercise.id) {
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title class="exercise-name">{{ exercise.name }}</mat-panel-title>
+              </mat-expansion-panel-header>
+              <p class="exercise-muscles">{{ muscleNames(exercise) }}</p>
+              <div class="sets-grid">
+                @for (set of getSets(exercise.id).controls; track set; let i = $index) {
+                  <span class="set-number">{{ i + 1 }}</span>
+                  <app-outlined-field label="Kg" type="number" [myControl]="set.controls.weight" />
+                  <app-outlined-field label="Reps" type="number" [myControl]="set.controls.reps" />
+                  <button
+                    matIconButton
+                    type="button"
+                    class="delete-set-btn"
+                    [attr.aria-label]="'Delete set ' + (i + 1)"
+                    (click)="removeSet(exercise.id, i)"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                }
+              </div>
+              <div class="add-set-container">
+                <button
+                  matButton="filled"
+                  type="button"
+                  aria-label="Add set"
+                  (click)="addSet(exercise.id)"
+                >
+                  Add set
+                </button>
+              </div>
+            </mat-expansion-panel>
+          }
+        </div>
 
         <div class="btn-centered">
           <button
