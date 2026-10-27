@@ -6,6 +6,12 @@
     gap: 1em;
     .exercise-name {
         text-transform: capitalize;
+        // one line with an ellipsis; display:block because text-overflow doesn't work on the default flex title
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 }
 
