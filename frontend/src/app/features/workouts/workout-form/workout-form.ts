@@ -7,8 +7,7 @@ import { Button } from '../../../components/button/button';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OutlinedField } from '../../../components/form-fields/outlined-field/outlined-field';
 import { DateTimePicker } from '../../../components/form-fields/date-time-picker/date-time-picker';
-import { WorkoutService } from '../../../services/workout.service';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { ExerciseDraftService } from '../../../services/exercise-draft';
 
 @Component({
   imports: [RouterLink, ReactiveFormsModule, MatStepperModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField],
@@ -17,6 +16,9 @@ import { rxResource } from '@angular/core/rxjs-interop';
   templateUrl: './workout-form.html',
 })
 export class WorkoutForm {
+  private exerciseDraftService = inject(ExerciseDraftService)
+  exercises = this.exerciseDraftService.exercises;
+
   today = new Date();
   
   workoutForm = new FormGroup({
@@ -27,7 +29,4 @@ export class WorkoutForm {
     title: new FormControl<string>('', { validators: [Validators.required]}),
   })
 
-  openDialog() {
-    
-  }
 }

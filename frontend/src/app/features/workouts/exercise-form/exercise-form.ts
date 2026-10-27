@@ -38,7 +38,7 @@ export class ExerciseForm {
   exerciseForm = new FormControl<number[]>([], { nonNullable: true })
 
   constructor() {
-    this.exerciseForm.setValue(this.exerciseDraft.exerciseIds()); // keep earlier picks when re-opening
+    this.exerciseForm.setValue(this.exerciseDraft.exercises().map(e => e.id)); // keep earlier picks when re-opening
   }
 
   // the virtual scroll renders one item per row, so group the exercises into rows of `columns`
@@ -66,12 +66,12 @@ export class ExerciseForm {
       // Remove this id when unselected
       control.setValue(currentIds.filter(x => x !== id));
     }
-   console.log(this.exerciseForm.value);
-
   }
 
   submitExercises() {
-    this.exerciseDraft.exerciseIds.set(this.exerciseForm.value);
+    const ids = this.exerciseForm.value;
+    const selected = this.exercises.value()!.filter(e => ids.includes(e.id));
+    this.exerciseDraft.exercises.set(selected);
     this.location.back();
   }
 
