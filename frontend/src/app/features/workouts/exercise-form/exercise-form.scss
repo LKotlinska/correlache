@@ -1,0 +1,11 @@
+cdk-virtual-scroll-viewport {
+  // the viewport needs a fixed height, otherwise it renders no rows
+  height: calc(100vh - 120px);
+}
+
+.exercise {
+  // must match itemSize on the viewport
+  height: 48px;
+  display: flex;
+  align-items: center;
+}

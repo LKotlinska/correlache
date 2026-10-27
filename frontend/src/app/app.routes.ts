@@ -41,6 +41,7 @@ export const routes: Routes = [
                 component: Workouts,
                 children: [
                     { path: 'add', loadComponent: () => import('./features/workouts/workout-form/workout-form').then(m => m.WorkoutForm)},
+                    { path: 'add/exercises', loadComponent: () => import('./features/workouts/exercise-form/exercise-form').then(m => m.ExerciseForm)},
                 ]
             }
         ]

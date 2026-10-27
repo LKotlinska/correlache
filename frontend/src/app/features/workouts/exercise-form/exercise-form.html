@@ -1,0 +1,12 @@
+<app-page-header title="Add exercises"></app-page-header>
+@if (exercises.isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+} @else if (exercises.error()) {
+  <p>Couldn't load exercises.</p>
+} @else if (exercises.value(); as list) {
+  <cdk-virtual-scroll-viewport itemSize="48">
+    <div class="exercise" *cdkVirtualFor="let exercise of list">
+      {{ exercise.name }}
+    </div>
+  </cdk-virtual-scroll-viewport>
+}
