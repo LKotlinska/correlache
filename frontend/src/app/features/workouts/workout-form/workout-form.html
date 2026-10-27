@@ -47,6 +47,18 @@
           <h2>Exercises and sets</h2>
         </ng-template>
 
+        <div class="btn-centered">
+          <button
+            matButton="filled"
+            type="button"
+            class="filled-icon-btn"
+            aria-label="Add"
+            (click)="openDialog()"
+          >
+            <!-- <mat-icon>add</mat-icon> -->
+            Add exercise
+          </button>
+        </div>
         <div class="btn-container">
           <button matButton="filled" type="button" matStepperPrevious>Back</button>
           <button matButton="filled" type="button" matStepperNext>Next</button>
