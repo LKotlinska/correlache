@@ -1,6 +1,6 @@
 <app-page-header title="New workout" />
 <main>
-  <form [formGroup]="workoutForm">
+  <form [formGroup]="workoutForm" (ngSubmit)="onSubmit()">
     <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
       <mat-step>
         <ng-template matStepLabel>
@@ -100,7 +100,7 @@
           <h2>Save your workout</h2>
         </ng-template>
         <div class="btn-container">
-          <app-button type="submit" ngForm="sub">Save</app-button>
+          <app-button type="submit" ngForm="sub" [disabled]="isSubmitting()">Save</app-button>
         </div>
       </mat-step>
     </mat-stepper>

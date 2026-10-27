@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, merge, Subject } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +14,9 @@ import { DateTimePicker } from '../../../components/form-fields/date-time-picker
 import { ExerciseDraftService, SetDraft } from '../../../services/exercise-draft';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
-import { Exercise } from '../../../models/workout.model';
+import { CreateWorkoutPayload, Exercise } from '../../../models/workout.model';
+import { WorkoutService } from '../../../services/workout.service';
+import { combineDateTime } from '../../../utils/combine-date-time';
 
 function createSetGroup() {
   return new FormGroup({
@@ -31,6 +35,10 @@ type SetGroup = ReturnType<typeof createSetGroup>;
 })
 export class WorkoutForm {
   private exerciseDraftService = inject(ExerciseDraftService)
+  private workoutService = inject(WorkoutService);
+  private snackBar = inject(MatSnackBar); // temporary snackbar
+  isSubmitting = signal(false);
+  private submitted = false;
   exercises = this.exerciseDraftService.exercises;
 
   today = new Date();
@@ -73,6 +81,7 @@ export class WorkoutForm {
   }
 
   private saveDraft() {
+    if (this.submitted) return; // a late debounced save must not bring a saved workout back as a draft
     const sets: Record<number, SetDraft[]> = {};
     for (const [id, array] of this.setsByExercise) {
       sets[id] = array.getRawValue();
@@ -81,7 +90,7 @@ export class WorkoutForm {
   }
 
   hasDraft() {
-    return this.exerciseDraftService.hasDraft();
+    return !this.submitted && this.exerciseDraftService.hasDraft();
   }
 
   discardDraft() {
@@ -105,6 +114,57 @@ export class WorkoutForm {
   removeSet(exerciseId: number, index: number) {
     this.getSets(exerciseId).removeAt(index);
     this.setsChanged.next();
+  }
+
+  onSubmit() {
+    if (this.isSubmitting()) {
+      return;
+    }
+    const exercises = this.exercises();
+    const setsInvalid = exercises.some((e) => this.getSets(e.id).invalid);
+    if (this.workoutForm.invalid || setsInvalid) {
+      this.workoutForm.markAllAsTouched();
+      exercises.forEach((e) => this.getSets(e.id).markAllAsTouched());
+      return;
+    }
+    if (exercises.length === 0) {
+      this.snackBar.open('Add at least one exercise', 'Close', { panelClass: 'snackbar-error' });
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    this.workoutService.create(this.buildPayload()).subscribe({
+      next: () => {
+        this.submitted = true;
+        this.exerciseDraftService.clear();
+        // Temporary snackbar - should redirect to workout view
+        this.snackBar.open('Workout has been added', 'Close', { panelClass: 'snackbar-success' });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isSubmitting.set(false);
+        const message = err.error?.message;
+        this.snackBar.open((Array.isArray(message) ? message[0] : message) ?? 'Something went wrong', 'Close', { panelClass: 'snackbar-error' });
+      },
+    });
+  }
+
+  private buildPayload(): CreateWorkoutPayload {
+    const { startDate, startTime, durationHours, durationMinutes, title } = this.workoutForm.getRawValue();
+    return {
+      title: title!.trim(),
+      startedAt: combineDateTime(startDate!, startTime),
+      durationSeconds: ((durationHours ?? 0) * 60 + (durationMinutes ?? 0)) * 60,
+      exercises: this.exercises().map((exercise, index) => ({
+        exerciseId: exercise.id,
+        exerciseName: exercise.name,
+        order: index,
+        // Rows left completely empty are not saving
+        sets: this.getSets(exercise.id)
+          .getRawValue()
+          .filter((set) => set.weight !== null || set.reps !== null)
+          .map((set, order) => ({ order, ...set })),
+      })),
+    };
   }
 
   muscleNames(exercise: Exercise): string {

@@ -16,3 +16,25 @@ export interface Exercise {
     bodyPart: LookupOption;
     muscles: ExerciseMuscle[];
 }
+
+export interface CreateWorkoutSetPayload {
+    order: number;
+    weight: number | null;
+    reps: number | null;
+}
+
+export interface CreateWorkoutExercisePayload {
+    exerciseId: number;
+    exerciseName: string;
+    order: number;
+    sets: CreateWorkoutSetPayload[];
+}
+
+// Mirrors the Workout, WorkoutExercise and WorkoutSet entities in the backend
+export interface CreateWorkoutPayload {
+    title: string;
+    /** ISO 8601 timestamp */
+    startedAt: string;
+    durationSeconds: number;
+    exercises: CreateWorkoutExercisePayload[];
+}

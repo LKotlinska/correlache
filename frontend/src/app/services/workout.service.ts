@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Exercise } from '../models/workout.model';
+import { CreateWorkoutPayload, Exercise } from '../models/workout.model';
 
 @Service()
 export class WorkoutService {
@@ -9,5 +9,9 @@ export class WorkoutService {
 
     getExercises(): Observable<Exercise[]> {
         return this.http.get<Exercise[]>('/api/workout/exercises');
+    }
+
+    create(payload: CreateWorkoutPayload) {
+        return this.http.post('/api/workout', payload);
     }
 }
