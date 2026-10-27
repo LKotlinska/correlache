@@ -1,13 +1,15 @@
 import { Component, input, model } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  imports: [],
+  imports: [MatIcon],
   selector: 'app-media-tile',
   styleUrl: './media-tile.scss',
   templateUrl: './media-tile.html',
 })
 export class MediaTile {
-  image = input.required<string>();
+  /** Image URL; null shows a placeholder icon instead. */
+  image = input.required<string | null>();
   altText = input.required<string>();
   title = input.required<string>();
   subtitle = input<string>();

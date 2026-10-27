@@ -43,6 +43,16 @@
     width: 100%;
   }
 
+  .placeholder {
+    // same square shape as the exercise stills
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: p.$outline;
+    background-color: p.$surface-high;
+  }
+
   .image-context {
     display: flex;
     flex-direction: column;

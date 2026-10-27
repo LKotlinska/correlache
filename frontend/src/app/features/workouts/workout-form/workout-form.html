@@ -20,7 +20,11 @@
             [dateControl]="workoutForm.controls.startDate"
             [timeControl]="workoutForm.controls.startTime"
             [maxDate]="today"
+            [timeMax]="startTimeMax"
           />
+          @if (workoutForm.hasError('futureDate')) {
+            <p class="form-error" role="alert">Workouts can't be logged in the future.</p>
+          }
         </div>
         <div>
           <h3>Duration</h3>

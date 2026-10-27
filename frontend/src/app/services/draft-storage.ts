@@ -1,5 +1,7 @@
 import { Service } from '@angular/core';
 
+export const HEADACHE_DRAFT_KEY = 'headache-draft';
+
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 
 /** Keeps form drafts in sessionStorage: they survive a refresh but not a closed tab. */

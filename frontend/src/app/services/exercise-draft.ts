@@ -1,6 +1,7 @@
 import { effect, inject, Service, signal } from '@angular/core';
 import { Exercise } from '../models/workout.model';
 import { DraftStorage } from './draft-storage';
+import { DraftController } from './draft-controller';
 
 const KEY = 'workout-draft';
 
@@ -18,8 +19,8 @@ export interface WorkoutDraft {
 
 @Service()
 export class ExerciseDraftService {
-  private storage = inject(DraftStorage);
-  private saved = this.storage.load<WorkoutDraft>(KEY);
+  private draft = new DraftController(inject(DraftStorage), KEY);
+  private saved = this.draft.restore<WorkoutDraft>();
 
   readonly exercises = signal<Exercise[]>(this.saved?.exercises ?? []);
   form: WorkoutDraft['form'] = this.saved?.form ?? null;
@@ -30,6 +31,13 @@ export class ExerciseDraftService {
       this.exercises();
       this.persist();
     });
+  }
+
+  /** Replaces the picked exercises and drops the sets of any exercise that is no longer picked. */
+  setExercises(list: Exercise[]) {
+    const ids = new Set(list.map((e) => e.id));
+    this.sets = Object.fromEntries(Object.entries(this.sets).filter(([id]) => ids.has(Number(id))));
+    this.exercises.set(list);
   }
 
   /** Stores the form values and sets alongside the picked exercises. */
@@ -47,11 +55,11 @@ export class ExerciseDraftService {
     this.form = null;
     this.sets = {};
     this.exercises.set([]);
-    this.storage.clear(KEY);
+    this.draft.discard();
   }
 
   private persist() {
     if (!this.hasDraft()) return;
-    this.storage.save(KEY, { exercises: this.exercises(), form: this.form, sets: this.sets });
+    this.draft.save({ exercises: this.exercises(), form: this.form, sets: this.sets });
   }
 }

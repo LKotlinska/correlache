@@ -10,6 +10,7 @@ import { FormControl } from '@angular/forms';
 import { MatAnchor } from '@angular/material/button';
 import { ExerciseDraftService } from '../../../services/exercise-draft';
 import { Location } from '@angular/common';
+import { toggleId } from '../../../utils/toggle-id';
 
 @Component({
   imports: [
@@ -56,22 +57,16 @@ export class ExerciseForm {
   }
 
   toggleExercise(id: number, checked: boolean) {
-    const control = this.exerciseForm;
-    const currentIds = control.value;
-
-    if (checked) {
-      // Add ids when selected
-      control.setValue([...currentIds, id]);
-    } else {
-      // Remove this id when unselected
-      control.setValue(currentIds.filter(x => x !== id));
-    }
+    toggleId(this.exerciseForm, id, checked);
   }
 
   submitExercises() {
-    const ids = this.exerciseForm.value;
-    const selected = this.exercises.value()!.filter(e => ids.includes(e.id));
-    this.exerciseDraft.exercises.set(selected);
+    // Look ids up in the full library (not the visible rows) and keep the order they were picked in
+    const byId = new Map<number, Exercise>(
+      [...this.exerciseDraft.exercises(), ...(this.exercises.value() ?? [])].map((e) => [e.id, e]),
+    );
+    const selected = this.exerciseForm.value.flatMap((id) => byId.get(id) ?? []);
+    this.exerciseDraft.setExercises(selected);
     this.location.back();
   }
 

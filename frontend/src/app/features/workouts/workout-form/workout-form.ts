@@ -17,11 +17,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { CreateWorkoutPayload, Exercise } from '../../../models/workout.model';
 import { WorkoutService } from '../../../services/workout.service';
 import { combineDateTime } from '../../../utils/combine-date-time';
+import { notInFuture } from '../../../utils/date-time-validators';
+import { maxTimeFor } from '../../../utils/date';
+import { getErrorMessage } from '../../../utils/error-message';
+
+// Same upper bound as the backend (CreateWorkoutSetDto)
+const MAX_SET_VALUE = 10000;
+const WHOLE_NUMBER = Validators.pattern(/^\d+$/);
 
 function createSetGroup() {
   return new FormGroup({
-    weight: new FormControl<number | null>(null, { validators: [Validators.min(0)] }),
-    reps: new FormControl<number | null>(null, { validators: [Validators.min(0)] }),
+    weight: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(MAX_SET_VALUE)] }),
+    reps: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(MAX_SET_VALUE), WHOLE_NUMBER] }),
   });
 }
 
@@ -47,10 +54,15 @@ export class WorkoutForm {
   workoutForm = new FormGroup({
     startDate: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
     startTime: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
-    durationHours: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(23)] }),
-    durationMinutes: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(59)] }),
+    durationHours: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(23), WHOLE_NUMBER] }),
+    durationMinutes: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(59), WHOLE_NUMBER] }),
     title: new FormControl<string>('', { validators: [Validators.required]}),
-  })
+  }, { validators: [notInFuture] })
+
+  /** Latest selectable start time: now, but only when the start date is today. */
+  get startTimeMax(): Date | null {
+    return maxTimeFor(this.workoutForm.controls.startDate.value);
+  }
 
   private setsByExercise = new Map<number, FormArray<SetGroup>>();
 
@@ -143,8 +155,7 @@ export class WorkoutForm {
       },
       error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
-        const message = err.error?.message;
-        this.snackBar.open((Array.isArray(message) ? message[0] : message) ?? 'Something went wrong', 'Close', { panelClass: 'snackbar-error' });
+        this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
       },
     });
   }

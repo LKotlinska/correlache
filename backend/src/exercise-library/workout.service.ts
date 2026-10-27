@@ -10,11 +10,10 @@ import { ExerciseDto } from './dto/exercise.dto.js';
 
 @Injectable()
 export class WorkoutService {
-  @InjectRepository(Exercise)
-  private readonly exerciseRepo: Repository<Exercise>
-
-  @InjectRepository(Workout)
-  private readonly workoutRepo: Repository<Workout>
+  constructor(
+    @InjectRepository(Exercise) private readonly exerciseRepo: Repository<Exercise>,
+    @InjectRepository(Workout) private readonly workoutRepo: Repository<Workout>,
+  ) {}
 
   /** Saves the workout with its exercises and sets in one transaction, so a failure never leaves a half-saved workout. */
   async create(userId: string, dto: CreateWorkoutDto): Promise<Pick<Workout, 'id' | 'title' | 'startedAt' | 'durationSeconds'>> {
