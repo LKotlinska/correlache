@@ -2,7 +2,8 @@
 
 cdk-virtual-scroll-viewport {
   // the viewport needs a fixed height, otherwise it renders no rows
-  height: calc(100vh - 160px);
+  // dvh excludes the mobile browser toolbar, which 100vh does not
+  height: calc(100dvh - 120px);
 }
 
 .page-wrapper  {
@@ -11,7 +12,12 @@ cdk-virtual-scroll-viewport {
   .btn-container{
     display: flex;
     justify-content: end;
-    margin: 1em auto;
+    margin: 0 auto;
+    padding: 1em 0;
+    // keep the button visible even if the list is taller than the screen
+    position: sticky;
+    bottom: 0;
+    background: var(--mat-sys-surface, #fff);
   }
 }
 
