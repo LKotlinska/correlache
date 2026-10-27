@@ -7,13 +7,13 @@ import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
 import { Exercise } from './entities/exercise.entity.js';
 import { ExerciseMuscle } from './entities/exercise-muscle.entity.js';
-import { Equipment } from './lookups/equipment.entity.js';
-import { BodyPart } from './lookups/body-part.entity.js';
 import { Muscle } from './lookups/muscle.entity.js';
 import { MuscleGroup } from './lookups/muscle-group.entity.js';
+import { BodyPart } from './lookups/body-part.entity.js';
+import { Equipment } from './lookups/equipment.entity.js';
 
 @Module({
-  // autoLoadEntities only picks up entities registered here, and User references Workout
+  // autoLoadEntities only picks up entities listed in a forFeature; User references Workout, so all of these must be registered.
   imports: [
     TypeOrmModule.forFeature([
       Workout,
@@ -21,10 +21,10 @@ import { MuscleGroup } from './lookups/muscle-group.entity.js';
       WorkoutSet,
       Exercise,
       ExerciseMuscle,
-      Equipment,
-      BodyPart,
       Muscle,
       MuscleGroup,
+      BodyPart,
+      Equipment,
     ]),
   ],
   controllers: [WorkoutController],

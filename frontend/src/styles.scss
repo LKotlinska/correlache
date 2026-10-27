@@ -26,7 +26,7 @@ html {
       density: 0,
     )
   );
-  @include mat.form-field-density(-1);
+  @include mat.form-field-density(-2);
 
   // Figma palette, applied on top of the generated Material theme.
   @include mat.theme-overrides(
