@@ -1,0 +1,31 @@
+@use '../../../../variables' as p;
+
+cdk-virtual-scroll-viewport {
+  // the viewport needs a fixed height, otherwise it renders no rows
+  height: calc(100vh - 160px);
+}
+
+.page-wrapper  {
+  padding: p.$page-padding;
+
+  .btn-container{
+    display: flex;
+    justify-content: end;
+    margin: 1em auto;
+  }
+}
+
+.exercise-wrapper {
+  // must match rowHeight in exercise-form.ts
+  height: 245px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5em;
+  padding: 0.25em;
+
+  .media-tile {
+    min-width: 0;
+    overflow: hidden;
+  }
+}

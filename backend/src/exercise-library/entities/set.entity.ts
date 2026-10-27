@@ -2,13 +2,6 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "t
 import type { Relation } from "typeorm";
 import { WorkoutExercise } from "./workout-exercise.entity.js";
 
-export enum SetType {
-    NORMAL = 'normal',
-    WARMUP = 'warmup',
-    DROPSET = 'dropset',
-    FAILURE = 'failure',
-}
-
 // Named WorkoutSet to avoid clashing with the global JavaScript Set
 @Entity('sets')
 export class WorkoutSet {
@@ -39,7 +32,4 @@ export class WorkoutSet {
 
     @Column({ name: 'duration_seconds', type: 'int', nullable: true })
     durationSeconds: number | null;
-
-    @Column({ name: 'set_type', type: 'enum', enum: SetType, default: SetType.NORMAL })
-    setType: SetType;
 }

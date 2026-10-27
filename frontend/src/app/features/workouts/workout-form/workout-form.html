@@ -1,0 +1,112 @@
+<app-page-header title="New workout" />
+<main>
+  <form [formGroup]="workoutForm" (ngSubmit)="onSubmit()">
+    <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
+      <mat-step>
+        <ng-template matStepLabel>
+          <h2>When did you train?</h2>
+        </ng-template>
+        <div>
+          <h3>Title</h3>
+          <app-outlined-field
+            label="Workout title"
+            type="text"
+            [myControl]="workoutForm.controls.title"
+          />
+        </div>
+        <div>
+          <h3>Start</h3>
+          <app-date-time-picker
+            [dateControl]="workoutForm.controls.startDate"
+            [timeControl]="workoutForm.controls.startTime"
+            [maxDate]="today"
+            [timeMax]="startTimeMax"
+          />
+          @if (workoutForm.hasError('futureDate')) {
+            <p class="form-error" role="alert">Workouts can't be logged in the future.</p>
+          }
+        </div>
+        <div>
+          <h3>Duration</h3>
+          <div class="duration-grid">
+            <app-outlined-field
+              label="Hours"
+              type="number"
+              [myControl]="workoutForm.controls.durationHours"
+            />
+            <app-outlined-field
+              label="Minutes"
+              type="number"
+              [myControl]="workoutForm.controls.durationMinutes"
+            />
+          </div>
+        </div>
+        <div class="btn-container">
+          <button matButton="filled" type="button" matStepperNext>Next</button>
+        </div>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>
+          <h2>Exercises and sets</h2>
+        </ng-template>
+        <div class="exercise-container">
+          @for (exercise of exercises(); track exercise.id) {
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title class="exercise-name">{{ exercise.name }}</mat-panel-title>
+              </mat-expansion-panel-header>
+              <p class="exercise-muscles">{{ muscleNames(exercise) }}</p>
+              <div class="sets-grid">
+                @for (set of getSets(exercise.id).controls; track set; let i = $index) {
+                  <span class="set-number">{{ i + 1 }}</span>
+                  <app-outlined-field label="Kg" type="number" [myControl]="set.controls.weight" />
+                  <app-outlined-field label="Reps" type="number" [myControl]="set.controls.reps" />
+                  <button
+                    matIconButton
+                    type="button"
+                    class="delete-set-btn"
+                    [attr.aria-label]="'Delete set ' + (i + 1)"
+                    (click)="removeSet(exercise.id, i)"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                }
+              </div>
+              <div class="add-set-container">
+                <button
+                  matButton="outlined"
+                  type="button"
+                  aria-label="Add set"
+                  (click)="addSet(exercise.id)"
+                >
+                  Add set
+                </button>
+              </div>
+            </mat-expansion-panel>
+          }
+        </div>
+
+        <div class="btn-centered">
+          <button matButton="outlined" type="button" aria-label="Add" routerLink="exercises">
+            <!-- <mat-icon>add</mat-icon> -->
+            Add exercise
+          </button>
+        </div>
+        <div class="btn-container">
+          <button matButton="filled" type="button" matStepperPrevious>Back</button>
+          <button matButton="filled" type="button" matStepperNext>Next</button>
+        </div>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>
+          <h2>Save your workout</h2>
+        </ng-template>
+        <div class="btn-container">
+          <app-button type="submit" ngForm="sub" [disabled]="isSubmitting()">Save</app-button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </form>
+</main>

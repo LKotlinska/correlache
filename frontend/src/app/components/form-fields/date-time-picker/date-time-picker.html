@@ -1,0 +1,27 @@
+<div class="picker-grid">
+  <mat-form-field appearance="outline">
+    <mat-label>Pick a date</mat-label>
+    <input
+      [formControl]="dateControl()"
+      matInput
+      [matDatepickerFilter]="dateFilter()"
+      [matDatepicker]="datePicker"
+      [max]="maxDate()"
+    />
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+    <mat-datepicker #datePicker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Pick a time</mat-label>
+    <input
+      [formControl]="timeControl()"
+      matInput
+      [matTimepicker]="timePicker"
+      [matTimepickerMin]="timeMin()"
+      [matTimepickerMax]="timeMax()"
+    />
+    <mat-timepicker-toggle matIconSuffix [for]="timePicker" />
+    <mat-timepicker #timePicker />
+  </mat-form-field>
+</div>

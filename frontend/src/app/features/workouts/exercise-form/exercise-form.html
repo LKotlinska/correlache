@@ -1,0 +1,38 @@
+<app-page-header title="Add exercises"></app-page-header>
+<main class="page-wrapper">
+  @if (exercises.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (exercises.error()) {
+    <p>Couldn't load exercises.</p>
+  } @else if (exercises.value()) {
+    <cdk-virtual-scroll-viewport [itemSize]="rowHeight">
+      <div class="exercise-wrapper" *cdkVirtualFor="let row of rows()">
+        @for (exercise of row; track exercise.id) {
+          <app-media-tile
+            class="media-tile"
+            [image]="exercise.imageName ? '/images/exercises/stills/' + exercise.imageName : null"
+            [altText]="exercise.name"
+            [title]="exercise.name"
+            [subtitle]="exercise.bodyPart.name"
+            [checked]="isSelected(exercise.id)"
+            (checkedChange)="toggleExercise(exercise.id, $event)"
+          />
+        }
+      </div>
+    </cdk-virtual-scroll-viewport>
+  }
+  <div class="btn-container">
+    <button
+      matButton="filled"
+      type="button"
+      (click)="submitExercises()"
+      [disabled]="exerciseForm.value.length === 0"
+    >
+      {{
+        exerciseForm.value.length === 1
+          ? 'Add 1 exercise'
+          : `Add ${exerciseForm.value.length} exercises`
+      }}
+    </button>
+  </div>
+</main>

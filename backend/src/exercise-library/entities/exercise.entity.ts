@@ -4,17 +4,9 @@ import { Equipment } from "../lookups/equipment.entity.js";
 import { BodyPart } from "../lookups/body-part.entity.js";
 import { ExerciseMuscle } from "./exercise-muscle.entity.js";
 
-export enum ExerciseType {
-    WEIGHT_REPS = 'weight_reps',
-    REPS_ONLY = 'reps_only',
-    DURATION = 'duration',
-    DISTANCE_DURATION = 'distance_duration',
-    WEIGHT_DURATION = 'weight_duration',
-}
-
 @Entity('exercises')
 export class Exercise {
-    // Same id as the Lyfta exercise library, so it is not auto-generated
+    // Same id as the exercises-dataset library, so it is not auto-generated
     @PrimaryColumn("int")
     id: number;
 
@@ -23,6 +15,14 @@ export class Exercise {
 
     @Column({ name: 'image_name', type: 'varchar', length: 255, nullable: true })
     imageName: string | null;
+
+    @Column({ name: 'gif_name', type: 'varchar', length: 255, nullable: true })
+    gifName: string | null;
+
+    // English step-by-step instructions, e.g. ['Lie flat...', ...].
+    // Not selected by default so listing exercises stays light; select it explicitly when needed.
+    @Column({ type: 'json', nullable: true, select: false })
+    instructions: string[] | null;
 
     @Column({ name: 'equipment_id', type: 'int' })
     equipmentId: number;
@@ -37,9 +37,6 @@ export class Exercise {
     @ManyToOne(() => BodyPart, { nullable: false })
     @JoinColumn({ name: 'body_part_id' })
     bodyPart: Relation<BodyPart>;
-
-    @Column({ name: 'exercise_type', type: 'enum', enum: ExerciseType })
-    exerciseType: ExerciseType;
 
     @OneToMany(() => ExerciseMuscle, (em) => em.exercise)
     muscles: ExerciseMuscle[];
