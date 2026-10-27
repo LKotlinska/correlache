@@ -60,8 +60,8 @@
               <div class="sets-grid">
                 @for (set of getSets(exercise.id).controls; track set; let i = $index) {
                   <span class="set-number">{{ i + 1 }}</span>
-                  <app-outlined-field label="Kg" type="number" [myControl]="set.controls.weight" />
-                  <app-outlined-field label="Reps" type="number" [myControl]="set.controls.reps" />
+                  <app-outlined-field label="Kg" type="number" [compact]="true" [myControl]="set.controls.weight" />
+                  <app-outlined-field label="Reps" type="number" [compact]="true" [myControl]="set.controls.reps" />
                   <button
                     matIconButton
                     type="button"

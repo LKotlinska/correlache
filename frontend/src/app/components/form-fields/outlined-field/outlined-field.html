@@ -1,4 +1,4 @@
-<mat-form-field appearance="outline">
+<mat-form-field appearance="outline" [subscriptSizing]="compact() ? 'dynamic' : 'fixed'">
   <mat-label>{{ label() }}</mat-label>
   @if (type() === 'number') {
     <!-- A fixed type="number" is what makes Angular use its number accessor: the control gets a number (or null), not a string -->

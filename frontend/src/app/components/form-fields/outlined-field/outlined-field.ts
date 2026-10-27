@@ -18,6 +18,8 @@ export class OutlinedField {
   type = input<string>('text');
   myControl = input.required<FormControl>();
   hasPassView = input<boolean>(false)
+  // collapse the space reserved for errors, so compact rows (e.g. sets) stay even
+  compact = input<boolean>(false);
   hide = signal(true);
 
   clickEvent(event: MouseEvent) {
