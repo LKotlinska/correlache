@@ -1,8 +1,8 @@
 <header class="header-wrapper">
   <div class="nav-container">
     <div class="logo">
-      <img src="favicon.svg" alt="CorrelAche logo" />
-      <h1 class="logo-text">CorrelAche</h1>
+      <img class="nav-img" src="favicon.svg" alt="CorrelAche logo" />
+      <h1 class="nav-title">CorrelAche</h1>
     </div>
     <div class="btn-container">
       <button matButton (click)="openDialog('signin')">Sign in</button>
@@ -42,7 +42,9 @@
         <path d="M62 66 C 70 130, 120 160, 168 142" />
         <path d="M322 120 C 322 120, 320 180, 245 168" />
       </svg>
-      <span class="chip chip--left"><mat-icon class="chip-icon">bolt</mat-icon>Tension headache</span>
+      <span class="chip chip--left"
+        ><mat-icon class="chip-icon">bolt</mat-icon>Tension headache</span
+      >
       <span class="chip chip--right"
         ><mat-icon class="chip-icon">fitness_center</mat-icon>Neck & Traps</span
       >

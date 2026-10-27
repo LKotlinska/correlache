@@ -15,13 +15,9 @@
         background-color: p.$white;
         box-shadow: p.$box-shadow;
 
-        .page-heading {
-            font-size: 1.75em;
-        }
-
         .primary-icon {
             display: flex;
-            padding: 0.3em;
+            padding: 0.2em;
             border-radius: 50%;
             background-color: p.$brand-primary;
 
@@ -31,7 +27,7 @@
                 align-items: center;
                 color: p.$white;
                 font-weight: 400;
-                font-size: 1.5em;
+                font-size: 1.4em;
             }
 
         }

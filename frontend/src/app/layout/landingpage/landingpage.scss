@@ -19,16 +19,9 @@
         z-index: 1000;
 
         .logo {
-            img {
-                width: 1.8em;
-            }
             display: flex;
             gap: 0.5em;
             font-weight: 500;
-            .logo-text {
-                font-weight: 570;
-                font-size: 1.5em;
-            }
         }
         .btn-container {
             display: flex;
