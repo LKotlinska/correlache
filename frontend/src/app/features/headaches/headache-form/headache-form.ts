@@ -1,4 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime } from 'rxjs';
+import { DraftStorage } from '../../../services/draft-storage';
 import { AbstractControl, FormGroup,ɵInternalFormsSharedModule, ReactiveFormsModule, FormsModule, FormControl, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,6 +21,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeadacheDetail } from '../../../models/headache.model';
+
+const DRAFT_KEY = 'headache-draft';
 
 @Component({
   imports: [
@@ -44,6 +49,7 @@ export class HeadacheForm {
   private headacheService = inject(HeadacheService);
   private snackBar = inject(MatSnackBar); // temporary snackbar
   private router = inject(Router);
+  private draftStorage = inject(DraftStorage);
   /** Set on the edit route (`:id/edit`); null when adding a new headache. */
   private headacheId = inject(ActivatedRoute).snapshot.paramMap.get('id');
   isEdit = this.headacheId !== null;
@@ -74,7 +80,33 @@ export class HeadacheForm {
         next: (headache) => this.fillForm(headache),
         error: () => this.snackBar.open("Couldn't load this headache", 'Close', { panelClass: 'snackbar-error' }),
       });
+      return;
     }
+    // New headaches keep a draft in sessionStorage; editing is prefilled from the server instead
+    const draft = this.draftStorage.load<Record<string, unknown>>(DRAFT_KEY);
+    if (draft) {
+      this.restored = true;
+      this.headacheForm.patchValue(draft);
+    }
+    this.headacheForm.valueChanges
+      .pipe(debounceTime(200), takeUntilDestroyed())
+      .subscribe(() => {
+        if (this.submitted) return;
+        this.restored = true; // from here on a draft exists in storage
+        this.draftStorage.save(DRAFT_KEY, this.headacheForm.getRawValue());
+      });
+  }
+
+  private submitted = false;
+  /** True once a draft exists in storage, whether restored or saved from an edit. */
+  private restored = false;
+
+  hasDraft() {
+    return !this.headacheId && !this.submitted && this.restored;
+  }
+
+  discardDraft() {
+    this.draftStorage.clear(DRAFT_KEY);
   }
 
   /** Pre-fills the form with an existing headache so it can be edited. */
@@ -217,6 +249,8 @@ export class HeadacheForm {
       : this.headacheService.create(payload);
     request.subscribe({
       next: () => {
+        this.submitted = true;
+        this.discardDraft();
         if (this.headacheId) {
           this.router.navigate(['/user/headache', this.headacheId], { replaceUrl: true });
           return;
