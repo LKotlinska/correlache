@@ -35,3 +35,28 @@ export interface CreateWorkoutPayload {
     durationSeconds: number;
     exercises: CreateWorkoutExercisePayload[];
 }
+
+export interface WorkoutSet {
+    id: string;
+    order: number;
+    weight: number | null;
+    reps: number | null;
+    distance: number | null;
+    durationSeconds: number | null;    
+}
+
+export interface WorkoutExercise {
+    id: string;
+    exerciseId: number;
+    exerciseName: string;
+    order: number;
+    sets: WorkoutSet[];
+}
+
+export interface Workout {
+    id: string;
+    title: string;
+    startedAt: string;
+    durationSeconds: number;
+    exercises: WorkoutExercise[]
+}

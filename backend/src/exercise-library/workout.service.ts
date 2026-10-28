@@ -79,4 +79,15 @@ export class WorkoutService {
       })),
     }));
   }
+
+  async getWorkouts(userId: string): Promise<Workout[]> {
+  return this.workoutRepo.find({
+      where: { userId },
+      relations: { exercises: { sets: true } },
+      order: {
+        startedAt: 'DESC',
+        exercises: { order: 'ASC', sets: { order: 'ASC' } },
+      },
+    });
+  }
 }

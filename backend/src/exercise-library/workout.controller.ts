@@ -5,6 +5,7 @@ import { WorkoutService } from './workout.service.js';
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 import { UpdateWorkoutDto } from './dto/update-workout.dto.js';
 import { ExerciseDto } from './dto/exercise.dto.js';
+import { Workout } from './entities/workout.entity.js';
 
 @Controller('workout')
 export class WorkoutController {
@@ -20,6 +21,10 @@ export class WorkoutController {
     return await this.workoutService.getExercises();
   }
 
+  @Get('')
+  async getWorkouts(@CurrentUser() user: User): Promise<Workout[]> {
+    return await this.workoutService.getWorkouts(user.id)
+  }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.workoutService.findOne(+id);
