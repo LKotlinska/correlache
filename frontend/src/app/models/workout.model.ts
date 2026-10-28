@@ -3,6 +3,7 @@ import { LookupOption } from './headache.model';
 export type MuscleRole = 'primary' | 'secondary';
 
 export interface ExerciseMuscle extends LookupOption {
+    muscleGroup: LookupOption;
     role: MuscleRole;
 }
 
@@ -59,4 +60,13 @@ export interface Workout {
     startedAt: string;
     durationSeconds: number;
     exercises: WorkoutExercise[]
+}
+
+// Mirrors WorkoutDetailDto, returned by GET /api/workout/:id
+export interface WorkoutExerciseDetail extends WorkoutExercise {
+    muscles: ExerciseMuscle[];
+}
+
+export interface WorkoutDetail extends Workout {
+    exercises: WorkoutExerciseDetail[];
 }

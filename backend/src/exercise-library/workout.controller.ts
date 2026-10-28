@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
@@ -25,10 +25,11 @@ export class WorkoutController {
   async getWorkouts(@CurrentUser() user: User): Promise<Workout[]> {
     return await this.workoutService.getWorkouts(user.id)
   }
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.workoutService.findOne(+id);
-  // }
+
+  @Get(':id')
+  findOne(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string) {
+    return this.workoutService.getWorkoutById(user.id, id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateWorkoutDto: UpdateWorkoutDto) {

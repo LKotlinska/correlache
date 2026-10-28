@@ -1,0 +1,61 @@
+<app-detail-header
+  title="Workout"
+  entityName="workout"
+  [editLink]="['/user/workout', id, 'edit']"
+/>
+<main class="page-wrapper">
+  @if (workout.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (workout.error()) {
+    <p>Couldn't load this workout.</p>
+  } @else if (workout.value(); as w) {
+    <mat-card class="card">
+      <mat-card-content>
+        <div class="row">
+          <mat-icon>label</mat-icon>
+          <span class="label">Title</span>
+          <span>{{ w.title }}</span>
+        </div>
+
+        <div class="row">
+          <mat-icon>schedule</mat-icon>
+          <span class="label">Started</span>
+          <span>{{ w.startedAt | date: 'd MMMM, HH:mm' }}</span>
+        </div>
+
+        @if (w.durationSeconds != 0) {
+          <div class="row">
+            <mat-icon>timer</mat-icon>
+            <span class="label">Duration</span>
+            <span>{{ w.durationSeconds | duration }}</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    @if (muscleGroups(w); as groups) {
+      @if (groups.length) {
+        <h2 class="section-title">Muscle groups</h2>
+        <app-chip-list heading="Muscle groups" [options]="groups" [readonly]="true" />
+      }
+    }
+
+    @if (w.exercises.length) {
+      <h2 class="section-title">Exercises</h2>
+      <mat-accordion multi>
+        @for (ex of w.exercises; track ex.id) {
+          <mat-expansion-panel [disabled]="!ex.sets.length">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="exercise-name">{{ ex.exerciseName }}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ol class="sets">
+              @for (set of ex.sets; track set.id) {
+                <li>{{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }}</li>
+              }
+            </ol>
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+    }
+  }
+</main>

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 import { Exercise } from './entities/exercise.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,7 +6,7 @@ import { In, Repository } from 'typeorm';
 import { Workout } from './entities/workout.entity.js';
 import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
-import { ExerciseDto } from './dto/exercise.dto.js';
+import { ExerciseDto, ExerciseMuscleDto, WorkoutDetailDto } from './dto/exercise.dto.js';
 
 @Injectable()
 export class WorkoutService {
@@ -62,7 +62,7 @@ export class WorkoutService {
 
   async getExercises(): Promise<ExerciseDto[]> {
     const exercises = await this.exerciseRepo.find({
-      relations: { equipment: true, bodyPart: true, muscles: { muscle: true } },
+      relations: { equipment: true, bodyPart: true, muscles: { muscle: { muscleGroup: true } } },
     });
 
     return exercises.map((exercise) => ({
@@ -75,13 +75,14 @@ export class WorkoutService {
       muscles: exercise.muscles.map((em) => ({
         id: em.muscle.id,
         name: em.muscle.name,
+        muscleGroup: { id: em.muscle.muscleGroup.id, name: em.muscle.muscleGroup.name },
         role: em.role,
       })),
     }));
   }
 
   async getWorkouts(userId: string): Promise<Workout[]> {
-  return this.workoutRepo.find({
+  return await this.workoutRepo.find({
       where: { userId },
       relations: { exercises: { sets: true } },
       order: {
@@ -89,5 +90,46 @@ export class WorkoutService {
         exercises: { order: 'ASC', sets: { order: 'ASC' } },
       },
     });
+  }
+
+  /** Returns the workout with each exercise's muscles from the library. Exercises no longer in the library get an empty list. */
+  async getWorkoutById(userId: string, id: string): Promise<WorkoutDetailDto> {
+    const workout = await this.workoutRepo.findOne({
+      where: { userId, id },
+      relations: { exercises: { sets: true } },
+      order: {
+        exercises: { order: 'ASC', sets: { order: 'ASC' } },
+      },
+    });
+    if (!workout) throw new NotFoundException(`Workout ${id} not found`);
+
+    const exerciseIds = workout.exercises.flatMap((e) => (e.exerciseId == null ? [] : [e.exerciseId]));
+    const libraryExercises = exerciseIds.length
+      ? await this.exerciseRepo.find({
+          where: { id: In(exerciseIds) },
+          relations: { muscles: { muscle: { muscleGroup: true } } },
+        })
+      : [];
+
+    const musclesByExerciseId = new Map<number, ExerciseMuscleDto[]>();
+    for (const exercise of libraryExercises) {
+      musclesByExerciseId.set(
+        exercise.id,
+        exercise.muscles.map((em) => ({
+          id: em.muscle.id,
+          name: em.muscle.name,
+          muscleGroup: { id: em.muscle.muscleGroup.id, name: em.muscle.muscleGroup.name },
+          role: em.role,
+        })),
+      );
+    }
+
+    return {
+      ...workout,
+      exercises: workout.exercises.map((e) => ({
+        ...e,
+        muscles: musclesByExerciseId.get(e.exerciseId ?? -1) ?? [],
+      })),
+    };
   }
 }

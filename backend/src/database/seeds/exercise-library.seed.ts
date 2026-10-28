@@ -60,12 +60,14 @@ export const MuscleAliases = new Map<string, string>(
 export default class WorkoutLookupSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<void> {
         // groups first: muscles reference them via foreign key
-        // upsert on the unique name, not the id: a database seeded before may hold these names under other ids
+        // muscle_groups.id is a plain int primary key (no auto-increment), so every row must be inserted
+        // with an explicit id. Omitting it makes MySQL use 0 for all rows, which collapses the upsert into
+        // one row and then trips the unique name index.
+        // A database seeded before may hold these names under other ids, so only add the missing names.
         const groupRepo = dataSource.getRepository(MuscleGroup);
-        await groupRepo.upsert(
-            MuscleGroupSeed.map(({ name }) => ({ name })),
-            ['name'],
-        );
+        const existingNames = new Set((await groupRepo.find()).map((g) => g.name));
+        const missing = MuscleGroupSeed.filter(({ name }) => !existingNames.has(name));
+        if (missing.length) await groupRepo.insert(missing);
         const groupIdByName = new Map((await groupRepo.find()).map((g) => [g.name, g.id]));
         const groupNameBySeedId = new Map(MuscleGroupSeed.map((g) => [g.id, g.name]));
         await dataSource.getRepository(Muscle).upsert(
