@@ -27,10 +27,6 @@ export class WorkoutView {
     stream: () => this.workoutService.getWorkoutById(this.id)
   })
 
-  muscleNames(exercise: WorkoutExerciseDetail): string {
-    return exercise.muscles.map((m) => m.name.toLowerCase()).join(', ');
-  }
-
   /** Muscle groups the workout mainly trained, in library order, without duplicates. */
   muscleGroups(workout: WorkoutDetail): LookupOption[] {
     const groups = new Map<number, LookupOption>();

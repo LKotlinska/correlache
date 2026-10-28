@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
@@ -27,7 +27,7 @@ export class WorkoutController {
   }
 
   @Get(':id')
-  findOne(@CurrentUser() user: User, @Param('id') id: string) {
+  findOne(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string) {
     return this.workoutService.getWorkoutById(user.id, id);
   }
 

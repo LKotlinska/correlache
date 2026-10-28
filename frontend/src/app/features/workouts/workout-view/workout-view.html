@@ -2,7 +2,6 @@
   title="Workout"
   entityName="workout"
   [editLink]="['/user/workout', id, 'edit']"
-  /* [deleteFn]="deleteFn" */
 />
 <main class="page-wrapper">
   @if (workout.isLoading()) {
@@ -51,7 +50,7 @@
             </mat-expansion-panel-header>
             <ol class="sets">
               @for (set of ex.sets; track set.id) {
-                <li>{{ set.weight ?? 0 }} kg x {{ set.reps ?? 0 }}</li>
+                <li>{{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }}</li>
               }
             </ol>
           </mat-expansion-panel>

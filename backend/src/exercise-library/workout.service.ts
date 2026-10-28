@@ -104,10 +104,12 @@ export class WorkoutService {
     if (!workout) throw new NotFoundException(`Workout ${id} not found`);
 
     const exerciseIds = workout.exercises.flatMap((e) => (e.exerciseId == null ? [] : [e.exerciseId]));
-    const libraryExercises = await this.exerciseRepo.find({
-      where: { id: In(exerciseIds) },
-      relations: { muscles: { muscle: { muscleGroup: true } } },
-    });
+    const libraryExercises = exerciseIds.length
+      ? await this.exerciseRepo.find({
+          where: { id: In(exerciseIds) },
+          relations: { muscles: { muscle: { muscleGroup: true } } },
+        })
+      : [];
 
     const musclesByExerciseId = new Map<number, ExerciseMuscleDto[]>();
     for (const exercise of libraryExercises) {
