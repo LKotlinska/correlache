@@ -60,9 +60,19 @@ export const MuscleAliases = new Map<string, string>(
 export default class WorkoutLookupSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<void> {
         // groups first: muscles reference them via foreign key
-        await dataSource.getRepository(MuscleGroup).upsert(MuscleGroupSeed, ['id']);
+        // upsert on the unique name, not the id: a database seeded before may hold these names under other ids
+        const groupRepo = dataSource.getRepository(MuscleGroup);
+        await groupRepo.upsert(
+            MuscleGroupSeed.map(({ name }) => ({ name })),
+            ['name'],
+        );
+        const groupIdByName = new Map((await groupRepo.find()).map((g) => [g.name, g.id]));
+        const groupNameBySeedId = new Map(MuscleGroupSeed.map((g) => [g.id, g.name]));
         await dataSource.getRepository(Muscle).upsert(
-            MuscleSeed.map(({ name, muscleGroup }) => ({ name, muscleGroup: { id: muscleGroup } })),
+            MuscleSeed.map(({ name, muscleGroup }) => ({
+                name,
+                muscleGroup: { id: groupIdByName.get(groupNameBySeedId.get(muscleGroup)!)! },
+            })),
             ['name'],
         );
     }

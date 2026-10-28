@@ -1,7 +1,7 @@
 <app-page-header title="New workout" />
 <main>
   <form [formGroup]="workoutForm" (ngSubmit)="onSubmit()">
-    <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
+    <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" [selectedIndex]="initialStep" (selectionChange)="onStepChange($event)" #stepper>
       <mat-step>
         <ng-template matStepLabel>
           <h2>When did you train?</h2>
@@ -60,8 +60,18 @@
               <div class="sets-grid">
                 @for (set of getSets(exercise.id).controls; track set; let i = $index) {
                   <span class="set-number">{{ i + 1 }}</span>
-                  <app-outlined-field label="Kg" type="number" [myControl]="set.controls.weight" />
-                  <app-outlined-field label="Reps" type="number" [myControl]="set.controls.reps" />
+                  <app-outlined-field
+                    label="Kg"
+                    type="number"
+                    [compact]="true"
+                    [myControl]="set.controls.weight"
+                  />
+                  <app-outlined-field
+                    label="Reps"
+                    type="number"
+                    [compact]="true"
+                    [myControl]="set.controls.reps"
+                  />
                   <button
                     matIconButton
                     type="button"
@@ -87,7 +97,7 @@
           }
         </div>
 
-        <div class="btn-centered">
+        <div class="btn-container">
           <button matButton="outlined" type="button" aria-label="Add" routerLink="exercises">
             <!-- <mat-icon>add</mat-icon> -->
             Add exercise

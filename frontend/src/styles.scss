@@ -93,6 +93,15 @@ body {
     width: 1px;
   }
 
+  .nav-title {
+    font-weight: 600;
+    font-size: 1.5em;
+  }
+
+  .nav-img {
+    width: 1.8em;
+  }
+
   .filled-icon-btn {
     background-color: var(--mat-sys-primary);
     color: var(--mat-sys-on-primary);

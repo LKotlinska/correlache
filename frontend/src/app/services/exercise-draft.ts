@@ -25,6 +25,8 @@ export class ExerciseDraftService {
   readonly exercises = signal<Exercise[]>(this.saved?.exercises ?? []);
   form: WorkoutDraft['form'] = this.saved?.form ?? null;
   sets: WorkoutDraft['sets'] = this.saved?.sets ?? {};
+  /** Stepper step the form was left on, so it reopens there after picking exercises. */
+  step = 0;
 
   constructor() {
     effect(() => {
@@ -54,6 +56,7 @@ export class ExerciseDraftService {
   clear() {
     this.form = null;
     this.sets = {};
+    this.step = 0;
     this.exercises.set([]);
     this.draft.discard();
   }

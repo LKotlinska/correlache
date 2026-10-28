@@ -18,6 +18,10 @@ export const BodyPartSeed = [
 
 export default class BodyPartSeeder implements Seeder {
     public async run(dataSource: DataSource): Promise<void> {
-        await dataSource.getRepository(BodyPart).upsert(BodyPartSeed, ['id']);
+        // upsert on the unique name, not the id: a database seeded before may hold these names under other ids
+        await dataSource.getRepository(BodyPart).upsert(
+            BodyPartSeed.map(({ name }) => ({ name })),
+            ['name'],
+        );
     }
 }

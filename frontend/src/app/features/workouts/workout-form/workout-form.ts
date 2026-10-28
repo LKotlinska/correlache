@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { MatStepperModule } from '@angular/material/stepper';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { Button } from '../../../components/button/button';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -50,7 +51,14 @@ export class WorkoutForm {
   exercises = this.exerciseDraftService.exercises;
 
   today = new Date();
-  
+
+  // reopen on the step the user left, e.g. the exercises step after picking exercises
+  initialStep = this.exerciseDraftService.step;
+
+  onStepChange(event: StepperSelectionEvent) {
+    this.exerciseDraftService.step = event.selectedIndex;
+  }
+
   workoutForm = new FormGroup({
     startDate: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
     startTime: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
