@@ -1,0 +1,53 @@
+@use '../../../../variables' as p;
+.page-wrapper {
+  padding: p.$page-padding;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: p.$card-padding
+}
+
+.label {
+  flex: 1;
+  color: p.$text-strong;
+}
+
+// The summary card and the accordion share the same width, surface and radius
+.card,
+mat-accordion {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: p.$white;
+  border-radius: p.$card-border;
+  margin-bottom: 1em;
+}
+
+.row {
+  padding: p.$card-padding 0.5em;
+}
+
+.row span:last-child {
+  font-weight: 500;
+}
+
+.section-title {
+  margin: 0 0 0.5em;
+  color: p.$text-strong;
+}
+
+.sets {
+  margin: 0;
+  padding-left: 1.5em;
+  color: p.$text-strong;
+}
+
+.exercise-name {
+    text-transform: capitalize;
+}

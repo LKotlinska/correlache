@@ -25,10 +25,11 @@ export class WorkoutController {
   async getWorkouts(@CurrentUser() user: User): Promise<Workout[]> {
     return await this.workoutService.getWorkouts(user.id)
   }
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.workoutService.findOne(+id);
-  // }
+
+  @Get(':id')
+  findOne(@CurrentUser() user: User, @Param('id') id: string) {
+    return this.workoutService.getWorkoutById(user.id, id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateWorkoutDto: UpdateWorkoutDto) {
