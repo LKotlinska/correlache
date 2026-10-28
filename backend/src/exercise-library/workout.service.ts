@@ -43,6 +43,12 @@ export class WorkoutService {
     });
   }
 
+  /** Deletes the workout with its exercises and sets (cascade), throwing a 404 if it isn't the user's. */
+  async remove(userId: string, id: string): Promise<void> {
+    const { affected } = await this.workoutRepo.delete({ id, userId });
+    if (!affected) throw new NotFoundException(`Workout ${id} not found`);
+  }
+
   /** Looks up the library names of the exercises in `dto`, throwing a 400 when any id does not exist. */
   private async findExerciseNames(dto: CreateWorkoutDto): Promise<Map<number, string>> {
     const ids = [...new Set(dto.exercises.map((e) => e.exerciseId))];

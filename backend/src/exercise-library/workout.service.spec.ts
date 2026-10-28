@@ -11,6 +11,7 @@ import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 describe('WorkoutService', () => {
   let service: WorkoutService;
   let exerciseRepo: { find: ReturnType<typeof vi.fn> };
+  let workoutRepo: { delete: ReturnType<typeof vi.fn>; manager: unknown };
   let manager: {
     create: ReturnType<typeof vi.fn>;
     save: ReturnType<typeof vi.fn>;
@@ -37,11 +38,15 @@ describe('WorkoutService', () => {
       findOne: vi.fn().mockResolvedValue({ id: 'w-1', userId: 'user-1', title: 'Old', startedAt: new Date(0), durationSeconds: 1 }),
       delete: vi.fn().mockResolvedValue({ affected: 2 }),
     };
+    workoutRepo = {
+      delete: vi.fn().mockResolvedValue({ affected: 1 }),
+      manager: { transaction: (fn: (m: unknown) => unknown) => fn(manager) },
+    };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkoutService,
         { provide: getRepositoryToken(Exercise), useValue: exerciseRepo },
-        { provide: getRepositoryToken(Workout), useValue: { manager: { transaction: (fn: (m: unknown) => unknown) => fn(manager) } } },
+        { provide: getRepositoryToken(Workout), useValue: workoutRepo },
       ],
     }).compile();
 
@@ -97,6 +102,20 @@ describe('WorkoutService', () => {
 
       await expect(service.update('user-1', 'w-1', dto)).rejects.toBeInstanceOf(BadRequestException);
       expect(manager.delete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('remove', () => {
+    it('deletes the user\'s workout', async () => {
+      await service.remove('user-1', 'w-1');
+
+      expect(workoutRepo.delete).toHaveBeenCalledWith({ id: 'w-1', userId: 'user-1' });
+    });
+
+    it('throws a 404 when the workout is not the user\'s', async () => {
+      workoutRepo.delete.mockResolvedValue({ affected: 0 });
+
+      await expect(service.remove('user-1', 'w-1')).rejects.toBeInstanceOf(NotFoundException);
     });
   });
 });
