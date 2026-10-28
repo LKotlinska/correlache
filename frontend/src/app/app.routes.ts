@@ -43,6 +43,8 @@ export const routes: Routes = [
                 children: [
                     { path: 'add', canDeactivate: [discardDraftGuard], loadComponent: () => import('./features/workouts/workout-form/workout-form').then(m => m.WorkoutForm)},
                     { path: 'add/exercises', loadComponent: () => import('./features/workouts/exercise-form/exercise-form').then(m => m.ExerciseForm)},
+                    { path: ':id/edit', loadComponent: () => import('./features/workouts/workout-form/workout-form').then(m => m.WorkoutForm)},
+                    { path: ':id/edit/exercises', loadComponent: () => import('./features/workouts/exercise-form/exercise-form').then(m => m.ExerciseForm)},
                     { path: ':id', loadComponent: () => import('./features/workouts/workout-view/workout-view').then(m => m.WorkoutView)},
                 ]
             }

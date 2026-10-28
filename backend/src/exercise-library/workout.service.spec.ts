@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Exercise } from './entities/exercise.entity.js';
@@ -11,7 +11,12 @@ import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 describe('WorkoutService', () => {
   let service: WorkoutService;
   let exerciseRepo: { find: ReturnType<typeof vi.fn> };
-  let manager: { create: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
+  let manager: {
+    create: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+    findOne: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+  };
 
   const dto: CreateWorkoutDto = {
     title: '  Push day ',
@@ -28,7 +33,9 @@ describe('WorkoutService', () => {
     let nextId = 0;
     manager = {
       create: vi.fn((_entity, data) => ({ ...data })),
-      save: vi.fn(async (data) => (Array.isArray(data) ? data : { ...data, id: `id-${++nextId}` })),
+      save: vi.fn(async (data) => (Array.isArray(data) ? data : { ...data, id: data.id ?? `id-${++nextId}` })),
+      findOne: vi.fn().mockResolvedValue({ id: 'w-1', userId: 'user-1', title: 'Old', startedAt: new Date(0), durationSeconds: 1 }),
+      delete: vi.fn().mockResolvedValue({ affected: 2 }),
     };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -63,5 +70,33 @@ describe('WorkoutService', () => {
 
     await expect(service.create('user-1', dto)).rejects.toBeInstanceOf(BadRequestException);
     expect(manager.save).not.toHaveBeenCalled();
+  });
+
+  describe('update', () => {
+    it('replaces the workout fields, exercises and sets', async () => {
+      const result = await service.update('user-1', 'w-1', dto);
+
+      expect(manager.findOne).toHaveBeenCalledWith(Workout, { where: { id: 'w-1', userId: 'user-1' } });
+      expect(result).toMatchObject({ id: 'w-1', title: 'Push day', durationSeconds: 3600 });
+      expect(manager.delete).toHaveBeenCalledWith(WorkoutExercise, { workoutId: 'w-1' });
+      const created = manager.create.mock.calls;
+      expect(created[0]).toEqual([WorkoutExercise, expect.objectContaining({ workoutId: 'w-1', exerciseId: 7, order: 0 })]);
+      expect(created[1]).toEqual([WorkoutSet, expect.objectContaining({ order: 0, weight: 50, reps: 8 })]);
+    });
+
+    it('throws a 404 without changing anything when the workout is not the user\'s', async () => {
+      manager.findOne.mockResolvedValue(null);
+
+      await expect(service.update('user-1', 'w-1', dto)).rejects.toBeInstanceOf(NotFoundException);
+      expect(manager.delete).not.toHaveBeenCalled();
+      expect(manager.save).not.toHaveBeenCalled();
+    });
+
+    it('rejects unknown exercise ids before touching the workout', async () => {
+      exerciseRepo.find.mockResolvedValue([{ id: 7, name: 'Bench press' }]);
+
+      await expect(service.update('user-1', 'w-1', dto)).rejects.toBeInstanceOf(BadRequestException);
+      expect(manager.delete).not.toHaveBeenCalled();
+    });
   });
 });

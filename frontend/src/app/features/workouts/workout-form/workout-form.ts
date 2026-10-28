@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, merge, Subject } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeader } from '../../../components/page-header/page-header';
@@ -21,6 +21,7 @@ import { combineDateTime } from '../../../utils/combine-date-time';
 import { notInFuture } from '../../../utils/date-time-validators';
 import { maxTimeFor } from '../../../utils/date';
 import { getErrorMessage } from '../../../utils/error-message';
+import { workoutToDraft } from '../../../utils/workout-to-draft';
 
 // Same upper bound as the backend (CreateWorkoutSetDto)
 const MAX_SET_VALUE = 10000;
@@ -46,6 +47,10 @@ export class WorkoutForm {
   private exerciseDraftService = inject(ExerciseDraftService)
   private workoutService = inject(WorkoutService);
   private snackBar = inject(MatSnackBar); // temporary snackbar
+  private router = inject(Router);
+  /** Set on the edit route (`:id/edit`); null when adding a new workout. */
+  private workoutId = inject(ActivatedRoute).snapshot.paramMap.get('id');
+  isEdit = this.workoutId !== null;
   isSubmitting = signal(false);
   private submitted = false;
   exercises = this.exerciseDraftService.exercises;
@@ -75,6 +80,37 @@ export class WorkoutForm {
   private setsByExercise = new Map<number, FormArray<SetGroup>>();
 
   constructor() {
+    this.initForm();
+    // Keep the draft current (not just on destroy) so a refresh doesn't lose edits
+    merge(this.workoutForm.valueChanges, this.setsChanged)
+      .pipe(debounceTime(200), takeUntilDestroyed())
+      .subscribe(() => this.saveDraft());
+  }
+
+  private initForm() {
+    const draft = this.exerciseDraftService;
+    if (!this.workoutId) {
+      draft.endEdit();
+      this.restoreFromDraft();
+      return;
+    }
+    // Coming back from the exercise picker keeps the edits made so far; any other entry loads the saved workout
+    const returningFromPicker = draft.keepEdit && draft.editingId === this.workoutId;
+    draft.keepEdit = false;
+    if (returningFromPicker) {
+      this.restoreFromDraft();
+      return;
+    }
+    this.workoutService.getWorkoutById(this.workoutId).subscribe({
+      next: (workout) => {
+        draft.startEdit(workout.id, workoutToDraft(workout));
+        this.restoreFromDraft();
+      },
+      error: () => this.snackBar.open("Couldn't load this workout", 'Close', { panelClass: 'snackbar-error' }),
+    });
+  }
+
+  private restoreFromDraft() {
     const draft = this.exerciseDraftService;
     if (draft.form) {
       this.workoutForm.patchValue(draft.form);
@@ -85,10 +121,11 @@ export class WorkoutForm {
         this.setsByExercise.set(exercise.id, new FormArray(saved.map((s) => this.createSetGroup(s))));
       }
     }
-    // Keep the draft current (not just on destroy) so a refresh doesn't lose edits
-    merge(this.workoutForm.valueChanges, this.setsChanged)
-      .pipe(debounceTime(200), takeUntilDestroyed())
-      .subscribe(() => this.saveDraft());
+  }
+
+  /** Remembers the edits while the exercise picker is open. */
+  onAddExercise() {
+    this.exerciseDraftService.keepEdit = this.isEdit;
   }
 
   /** Emits whenever any set is added, removed or edited. */
@@ -111,7 +148,7 @@ export class WorkoutForm {
   }
 
   hasDraft() {
-    return !this.submitted && this.exerciseDraftService.hasDraft();
+    return !this.isEdit && !this.submitted && this.exerciseDraftService.hasDraft();
   }
 
   discardDraft() {
@@ -154,18 +191,29 @@ export class WorkoutForm {
     }
 
     this.isSubmitting.set(true);
-    this.workoutService.create(this.buildPayload()).subscribe({
-      next: () => {
-        this.submitted = true;
-        this.exerciseDraftService.clear();
-        // Temporary snackbar - should redirect to workout view
-        this.snackBar.open('Workout has been added', 'Close', { panelClass: 'snackbar-success' });
-      },
+    const payload = this.buildPayload();
+    const request = this.workoutId
+      ? this.workoutService.update(this.workoutId, payload)
+      : this.workoutService.create(payload);
+    request.subscribe({
+      next: () => this.onSaved(),
       error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
         this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
       },
     });
+  }
+
+  private onSaved() {
+    this.submitted = true;
+    if (this.workoutId) {
+      this.exerciseDraftService.endEdit();
+      this.router.navigate(['/user/workout', this.workoutId], { replaceUrl: true });
+      return;
+    }
+    this.exerciseDraftService.clear();
+    // Temporary snackbar - should redirect to workout view
+    this.snackBar.open('Workout has been added', 'Close', { panelClass: 'snackbar-success' });
   }
 
   private buildPayload(): CreateWorkoutPayload {

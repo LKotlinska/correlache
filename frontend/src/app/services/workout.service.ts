@@ -15,6 +15,10 @@ export class WorkoutService {
         return this.http.post('/api/workout', payload);
     }
 
+    update(id: string, payload: CreateWorkoutPayload) {
+        return this.http.put(`/api/workout/${id}`, payload);
+    }
+
     getWorkouts(): Observable<Workout[]> {
         return this.http.get<Workout[]>('/api/workout');
     }
