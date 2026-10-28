@@ -119,5 +119,9 @@ body {
   .mat-mdc-tab-link-container {
     border-bottom: none;
   }
+
+  .mat-expansion-panel {
+    background-color: $white;
+  }
 }
 /* You can add global styles to this file, and also import other style files */
