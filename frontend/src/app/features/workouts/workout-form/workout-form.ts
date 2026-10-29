@@ -57,7 +57,7 @@ export class WorkoutForm {
 
   today = new Date();
 
-  // reopen on the step the user left, e.g. the exercises step after picking exercises
+  // reopen on the step the user left, e.g. the exercises step after picking exercises (stepper)
   initialStep = this.exerciseDraftService.step;
 
   onStepChange(event: StepperSelectionEvent) {
@@ -171,6 +171,13 @@ export class WorkoutForm {
 
   removeSet(exerciseId: number, index: number) {
     this.getSets(exerciseId).removeAt(index);
+    this.setsChanged.next();
+  }
+
+  /** Removes the exercise together with its sets, so none are left behind in the draft or payload. */
+  removeExercise(exerciseId: number) {
+    this.setsByExercise.delete(exerciseId);
+    this.exerciseDraftService.setExercises(this.exercises().filter((e) => e.id !== exerciseId));
     this.setsChanged.next();
   }
 
