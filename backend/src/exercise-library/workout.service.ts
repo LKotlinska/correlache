@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 import { Exercise } from './entities/exercise.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { Workout } from './entities/workout.entity.js';
 import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
@@ -17,47 +17,79 @@ export class WorkoutService {
 
   /** Saves the workout with its exercises and sets in one transaction, so a failure never leaves a half-saved workout. */
   async create(userId: string, dto: CreateWorkoutDto): Promise<Pick<Workout, 'id' | 'title' | 'startedAt' | 'durationSeconds'>> {
+    const namesById = await this.findExerciseNames(dto);
+
+    return this.workoutRepo.manager.transaction(async (manager) => {
+      const workout = await manager.save(manager.create(Workout, { userId, ...this.ownFields(dto) }));
+      await this.saveExercises(manager, workout.id, dto, namesById);
+      return this.summary(workout);
+    });
+  }
+
+  /** Replaces all of a workout's fields, exercises and sets with `dto`, throwing a 404 if it isn't the user's. */
+  async update(userId: string, id: string, dto: CreateWorkoutDto): Promise<Pick<Workout, 'id' | 'title' | 'startedAt' | 'durationSeconds'>> {
+    const namesById = await this.findExerciseNames(dto);
+
+    return this.workoutRepo.manager.transaction(async (manager) => {
+      const workout = await manager.findOne(Workout, { where: { id, userId } });
+      if (!workout) throw new NotFoundException(`Workout ${id} not found`);
+
+      Object.assign(workout, this.ownFields(dto));
+      await manager.save(workout);
+      // Sets are removed with their exercise (cascade), then rebuilt from the form
+      await manager.delete(WorkoutExercise, { workoutId: id });
+      await this.saveExercises(manager, id, dto, namesById);
+      return this.summary(workout);
+    });
+  }
+
+  /** Deletes the workout with its exercises and sets (cascade), throwing a 404 if it isn't the user's. */
+  async remove(userId: string, id: string): Promise<void> {
+    const { affected } = await this.workoutRepo.delete({ id, userId });
+    if (!affected) throw new NotFoundException(`Workout ${id} not found`);
+  }
+
+  /** Looks up the library names of the exercises in `dto`, throwing a 400 when any id does not exist. */
+  private async findExerciseNames(dto: CreateWorkoutDto): Promise<Map<number, string>> {
     const ids = [...new Set(dto.exercises.map((e) => e.exerciseId))];
     const library = await this.exerciseRepo.find({ where: { id: In(ids) }, select: { id: true, name: true } });
     const namesById = new Map(library.map((e) => [e.id, e.name]));
     const unknown = ids.filter((id) => !namesById.has(id));
     if (unknown.length) throw new BadRequestException(`Unknown exercise id(s): ${unknown.join(', ')}`);
+    return namesById;
+  }
 
-    return this.workoutRepo.manager.transaction(async (manager) => {
-      const workout = await manager.save(
-        manager.create(Workout, {
-          userId,
-          title: dto.title.trim(),
-          startedAt: new Date(dto.startedAt),
-          durationSeconds: dto.durationSeconds,
+  private ownFields(dto: CreateWorkoutDto) {
+    return { title: dto.title.trim(), startedAt: new Date(dto.startedAt), durationSeconds: dto.durationSeconds };
+  }
+
+  private summary({ id, title, startedAt, durationSeconds }: Workout) {
+    return { id, title, startedAt, durationSeconds };
+  }
+
+  private async saveExercises(manager: EntityManager, workoutId: string, dto: CreateWorkoutDto, namesById: Map<number, string>) {
+    for (const [order, exercise] of dto.exercises.entries()) {
+      const workoutExercise = await manager.save(
+        manager.create(WorkoutExercise, {
+          workoutId,
+          exerciseId: exercise.exerciseId,
+          exerciseName: namesById.get(exercise.exerciseId)!,
+          order,
         }),
       );
-
-      for (const [order, exercise] of dto.exercises.entries()) {
-        const workoutExercise = await manager.save(
-          manager.create(WorkoutExercise, {
-            workoutId: workout.id,
-            exerciseId: exercise.exerciseId,
-            exerciseName: namesById.get(exercise.exerciseId)!,
-            order,
+      // Rows with neither weight nor reps carry no information, so they are not stored
+      const sets = exercise.sets
+        .filter((set) => set.weight != null || set.reps != null)
+        .map((set, setOrder) =>
+          manager.create(WorkoutSet, {
+            workoutExerciseId: workoutExercise.id,
+            order: setOrder,
+            weight: set.weight ?? null,
+            reps: set.reps ?? null,
           }),
         );
-        // Rows with neither weight nor reps carry no information, so they are not stored
-        const sets = exercise.sets
-          .filter((set) => set.weight != null || set.reps != null)
-          .map((set, setOrder) =>
-            manager.create(WorkoutSet, {
-              workoutExerciseId: workoutExercise.id,
-              order: setOrder,
-              weight: set.weight ?? null,
-              reps: set.reps ?? null,
-            }),
-          );
-        if (sets.length) await manager.save(sets);
-      }
-
-      return { id: workout.id, title: workout.title, startedAt: workout.startedAt, durationSeconds: workout.durationSeconds };
-    });
+      if (sets.length) await manager.save(sets);
+    }
   }
 
   async getExercises(): Promise<ExerciseDto[]> {

@@ -2,6 +2,7 @@
   title="Workout"
   entityName="workout"
   [editLink]="['/user/workout', id, 'edit']"
+  [deleteFn]="deleteFn"
 />
 <main class="page-wrapper">
   @if (workout.isLoading()) {

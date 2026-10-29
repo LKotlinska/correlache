@@ -1,4 +1,4 @@
-<app-page-header title="New workout" />
+<app-page-header [title]="isEdit ? 'Edit workout' : 'New workout'" />
 <main>
   <form [formGroup]="workoutForm" (ngSubmit)="onSubmit()">
     <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" [selectedIndex]="initialStep" (selectionChange)="onStepChange($event)" #stepper>
@@ -98,7 +98,7 @@
         </div>
 
         <div class="btn-container">
-          <button matButton="outlined" type="button" aria-label="Add" routerLink="exercises">
+          <button matButton="outlined" type="button" aria-label="Add" routerLink="exercises" (click)="onAddExercise()">
             <!-- <mat-icon>add</mat-icon> -->
             Add exercise
           </button>

@@ -1,9 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
-import { UpdateWorkoutDto } from './dto/update-workout.dto.js';
 import { ExerciseDto } from './dto/exercise.dto.js';
 import { Workout } from './entities/workout.entity.js';
 
@@ -31,13 +30,14 @@ export class WorkoutController {
     return this.workoutService.getWorkoutById(user.id, id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateWorkoutDto: UpdateWorkoutDto) {
-  //   return this.workoutService.update(+id, updateWorkoutDto);
-  // }
+  @Put(':id')
+  update(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string, @Body() dto: CreateWorkoutDto) {
+    return this.workoutService.update(user.id, id, dto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.workoutService.remove(+id);
-  // }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@CurrentUser() user: User, @Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.workoutService.remove(user.id, id);
+  }
 }

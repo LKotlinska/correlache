@@ -27,6 +27,8 @@ export class WorkoutView {
     stream: () => this.workoutService.getWorkoutById(this.id)
   })
 
+  deleteFn = () => this.workoutService.delete(this.id);
+
   /** Muscle groups the workout mainly trained, in library order, without duplicates. */
   muscleGroups(workout: WorkoutDetail): LookupOption[] {
     const groups = new Map<number, LookupOption>();
