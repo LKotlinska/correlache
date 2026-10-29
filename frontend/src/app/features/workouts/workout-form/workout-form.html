@@ -4,13 +4,13 @@
     <section>
       <h2>When did you train?</h2>
       <div class="workout-container">
-        <h3>Title</h3>
+        <h3 class="field-heading">Title</h3>
         <app-outlined-field
           label="Workout title"
           type="text"
           [myControl]="workoutForm.controls.title"
         />
-        <h3>Start</h3>
+        <h3 class="field-heading">Start</h3>
         <app-date-time-picker
           [dateControl]="workoutForm.controls.startDate"
           [timeControl]="workoutForm.controls.startTime"
@@ -20,7 +20,7 @@
         @if (workoutForm.hasError('futureDate')) {
           <p class="form-error" role="alert">Workouts can't be logged in the future.</p>
         }
-        <h3>Duration</h3>
+        <h3 class="field-heading">Duration</h3>
         <div class="duration-grid">
           <app-outlined-field
             label="Hours"

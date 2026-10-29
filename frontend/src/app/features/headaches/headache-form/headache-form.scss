@@ -6,6 +6,10 @@
     gap: 0.5em;
 }
 
+.field-heading {
+    margin: 0.25em 0 0.5em;
+}
+
 .slider {
     display: flex;
     // Gradient lives on the full-width inactive track; the active fill is hidden on top of it

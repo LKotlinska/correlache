@@ -30,6 +30,10 @@
     }
 }
 
+.field-heading {
+    margin: 0.25em 0 0.5em;
+}
+
 .btn-add {
     display: flex;
     justify-content: center;
@@ -39,7 +43,7 @@
 .btn-container {
     display: flex;
     justify-content: space-between;
-    margin-top: 1em;
+    margin-top: auto;
 }
 
 .btn-container:has(> :only-child) {
