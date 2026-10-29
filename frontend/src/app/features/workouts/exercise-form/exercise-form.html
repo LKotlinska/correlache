@@ -5,6 +5,12 @@
   } @else if (exercises.error()) {
     <p>Couldn't load exercises.</p>
   } @else if (exercises.value()) {
+    <mat-form-field appearance="outline">
+      <mat-label>Search</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput type="search" [formControl]="searchControl" />
+    </mat-form-field>
+
     <cdk-virtual-scroll-viewport [itemSize]="rowHeight">
       <div class="exercise-wrapper" *cdkVirtualFor="let row of rows()">
         @for (exercise of row; track exercise.id) {
