@@ -2,14 +2,13 @@
 
 .page-wrapper {
     padding: p.$page-padding;
+    .picker-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5em;
+    }
 }
 
-.picker-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    gap: 1em;
-}
 
 .slider {
     display: flex;

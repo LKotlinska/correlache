@@ -1,7 +1,7 @@
-@if (headaches.isLoading()) {
+@if (headaches.isLoading() || workouts.isLoading()) {
   <p>Loading…</p>
-} @else if (headaches.error()) {
-  <p>Couldn't load headaches.</p>
+} @else if (headaches.error() || workouts.error()) {
+  <p>Couldn't load headaches or workouts.</p>
 } @else {
   @for (headache of headaches.value(); track headache.id) {
     <app-list-item
@@ -15,5 +15,8 @@
     }
   } @empty {
     <p>No headaches logged yet.</p>
+  }
+  @for (workout of workouts.value(); track workout.id) {
+    <app-list-item [link]="['/user/workout', workout.id]" [title]="workout.title" tone="activity" />
   }
 }

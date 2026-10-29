@@ -1,8 +1,8 @@
 <header class="header-wrapper">
   <div class="nav-container">
     <div class="logo">
-      <img src="favicon.svg" alt="CorrelAche logo" />
-      <h1 class="logo-text">CorrelAche</h1>
+      <img class="nav-img" src="favicon.svg" alt="CorrelAche logo" />
+      <h1 class="nav-title">CorrelAche</h1>
     </div>
     <div class="btn-container">
       <button matButton (click)="openDialog('signin')">Sign in</button>
@@ -37,15 +37,19 @@
         d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
       />
     </svg>
-    <svg class="arcs" viewBox="0 0 400 272" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M62 66 C 70 130, 120 160, 168 142" />
-      <path d="M322 120 C 322 120, 320 180, 245 168" />
-    </svg>
-    <span class="chip chip--left"><mat-icon class="chip-icon">bolt</mat-icon>Tension headache</span>
-    <span class="chip chip--right"
-      ><mat-icon class="chip-icon">fitness_center</mat-icon>Neck & Traps</span
-    >
-    <img class="illu-img" src="illustration.png" alt="" />
+    <div class="illu-content">
+      <svg class="arcs" viewBox="0 0 400 272" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M62 66 C 70 130, 120 160, 168 142" />
+        <path d="M322 120 C 322 120, 320 180, 245 168" />
+      </svg>
+      <span class="chip chip--left"
+        ><mat-icon class="chip-icon">bolt</mat-icon>Tension headache</span
+      >
+      <span class="chip chip--right"
+        ><mat-icon class="chip-icon">fitness_center</mat-icon>Neck & Traps</span
+      >
+      <img class="illu-img" src="illustration.webp" width="400" height="600" alt="" />
+    </div>
     <svg
       class="waves waves--front"
       viewBox="0 -53 420 260"

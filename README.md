@@ -33,22 +33,7 @@ This applies every file in `src/database/migrations/` in order and records them 
 npm run seed
 ```
 
-Fills the lookup tables (locations, symptoms, triggers, relief measures, muscle groups and muscles). Seeders upsert on their unique key, so running them again is safe.
-
-### Changing the schema
-
-1. Edit or add an entity (`src/**/*.entity.ts`).
-2. Generate a migration, giving it a name:
-   ```
-   npm run migration:generate -- src/database/migrations/DescriptiveName
-   ```
-3. Review the generated file, then run `npm run migration:run:dev`.
-
-Never edit a migration that has already been applied or merged; add a new one instead.
-
-### Adding seed data
-
-Seeders live in `src/database/seeds/` and must be named `*.seed.ts`. Add rows to the existing arrays, or create a new class implementing `Seeder`. Seed groups before anything that references them (e.g. muscle groups before muscles).
+Fills the lookup tables (locations, symptoms, triggers, relief measures, muscle groups and muscles, as well as exercises). Seeders upsert on their unique key, so running them again is safe.
 
 ### Production (Heroku)
 

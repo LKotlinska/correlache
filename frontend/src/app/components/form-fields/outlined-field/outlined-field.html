@@ -1,12 +1,23 @@
-<mat-form-field appearance="outline">
+<mat-form-field appearance="outline" [subscriptSizing]="compact() ? 'dynamic' : 'fixed'">
   <mat-label>{{ label() }}</mat-label>
-  <input
-    [type]="hasPassView() && !hide() ? 'text' : type()"
-    matInput
-    [formControl]="myControl()"
-    /* Attribute binding allows to skip it when it's not given */
-    [attr.placeholder]="placeholder() || null"
-  />
+  @if (type() === 'number') {
+    <!-- A fixed type="number" is what makes Angular use its number accessor: the control gets a number (or null), not a string -->
+    <input
+      type="number"
+      matInput
+      [formControl]="myControl()"
+      [attr.placeholder]="placeholder() || null"
+    />
+  } @else {
+    <input
+      [type]="hasPassView() && !hide() ? 'text' : type()"
+      matInput
+      [formControl]="myControl()"
+      /* Attribute binding allows to skip it when it's not given */
+      [attr.placeholder]="placeholder() || null"
+    />
+  }
+
   @if (hasPassView()) {
     <button
       mat-icon-button

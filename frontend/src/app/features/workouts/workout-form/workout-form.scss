@@ -1,0 +1,79 @@
+@use '../../../../variables' as p;
+
+.exercise-container {
+    display:flex; 
+    flex-direction: column;
+    gap: 1em;
+    .exercise-name {
+        text-transform: capitalize;
+        // one line with an ellipsis; display:block because text-overflow doesn't work on the default flex title
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+}
+
+.btn-container:has(> :only-child) {
+    justify-content: end;
+}
+
+.mat-vertical-content {
+    padding: 0 24px 24px 0px;
+}
+
+.duration-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1em;
+}
+
+.duration-grid app-outlined-field,
+.duration-grid ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+}
+
+.exercise-muscles {
+    margin: 0 0 1em;
+    font-size: 0.85em;
+    text-transform: capitalize;
+}
+
+.sets-grid {
+    display: grid;
+    grid-template-columns: 2em repeat(2, minmax(0, 1fr)) auto;
+    align-items: center;
+    column-gap: 0.75em;
+
+    app-outlined-field,
+    ::ng-deep .mat-mdc-form-field {
+        width: 100%;
+    }
+}
+
+.set-number {
+    font-weight: 500;
+    text-align: center;
+}
+
+.delete-set-btn {
+    color: #d32f2f;
+}
+
+.add-set-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1em;
+}
+
+.form-error {
+    color: var(--mat-sys-error, #b3261e);
+    margin: 0.5em 0 0;
+}

@@ -1,5 +1,13 @@
 @use '../../../variables' as p;
 
+// sticky goes on the host: a sticky child can't leave its own (inline-sized) parent
+:host {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
 .nav-header {
     display: flex;
     align-items: center;

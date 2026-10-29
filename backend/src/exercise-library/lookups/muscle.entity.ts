@@ -6,9 +6,6 @@ export class Muscle {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column("int", { unique: true })
-    lyfta_id: number
-
     @Column("varchar", { length: 50, unique: true })
     name: string
 

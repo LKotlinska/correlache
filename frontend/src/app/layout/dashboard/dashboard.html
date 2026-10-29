@@ -4,7 +4,7 @@
       <div class="primary-icon">
         <mat-icon class="mat-icon">{{ activeItem()?.icon }}</mat-icon>
       </div>
-      <h1>{{ activeItem()?.label }}</h1>
+      <h1 class="nav-title">{{ activeItem()?.label }}</h1>
     </div>
   </header>
   <main class="page-content">
@@ -18,6 +18,11 @@
           <li>
             <a matFab extended routerLink="/user/headache/add" (click)="open.set(false)">
               Headache
+            </a>
+          </li>
+          <li>
+            <a matFab extended routerLink="/user/workout/add" (click)="open.set(false)">
+              Workout
             </a>
           </li>
         </ul>

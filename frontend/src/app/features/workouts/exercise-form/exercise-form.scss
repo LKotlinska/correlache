@@ -1,0 +1,37 @@
+@use '../../../../variables' as p;
+
+cdk-virtual-scroll-viewport {
+  // the viewport needs a fixed height, otherwise it renders no rows
+  // dvh excludes the mobile browser toolbar, which 100vh does not
+  height: calc(100dvh - 120px);
+}
+
+.page-wrapper  {
+  padding: p.$page-padding;
+
+  .btn-container{
+    display: flex;
+    justify-content: end;
+    margin: 0 auto;
+    padding: 1em 0;
+    // keep the button visible even if the list is taller than the screen
+    position: sticky;
+    bottom: 0;
+    background: var(--mat-sys-surface, #fff);
+  }
+}
+
+.exercise-wrapper {
+  // must match rowHeight in exercise-form.ts
+  height: 245px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5em;
+  padding: 0.25em;
+
+  .media-tile {
+    min-width: 0;
+    overflow: hidden;
+  }
+}

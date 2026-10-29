@@ -18,6 +18,8 @@ export class OutlinedField {
   type = input<string>('text');
   myControl = input.required<FormControl>();
   hasPassView = input<boolean>(false)
+  // collapse the space reserved for errors, so compact rows (e.g. sets) stay even
+  compact = input<boolean>(false);
   hide = signal(true);
 
   clickEvent(event: MouseEvent) {
@@ -27,6 +29,7 @@ export class OutlinedField {
   private messages: Record<string, string> = {
     required: 'This field is required',
     email: 'Please enter a valid email adress',
+    pattern: 'Whole numbers only',
     minlength: 'Value is too short',
     emailTaken: 'This email is already registered',
   };
@@ -35,6 +38,8 @@ export class OutlinedField {
     const errors = this.myControl().errors;
     if (!errors) return null;
     const key = Object.keys(errors)[0];
+    if (key === 'min') return `Must be at least ${errors['min'].min}`;
+    if (key === 'max') return `Must be at most ${errors['max'].max}`;
     return this.messages[key] ?? 'Invalid value';
   }
 }

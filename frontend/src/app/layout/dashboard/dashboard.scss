@@ -9,7 +9,7 @@
     .header-content {
         display: flex;
         align-items: center;
-        gap: 1em;
+        gap: 0.55em;
         padding: p.$nav-padding;
         border-bottom: p.$border-divider;
         background-color: p.$white;
@@ -17,13 +17,17 @@
 
         .primary-icon {
             display: flex;
-            padding: 0.4em;
+            padding: 0.2em;
             border-radius: 50%;
             background-color: p.$brand-primary;
 
             .mat-icon {
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 color: p.$white;
                 font-weight: 400;
+                font-size: 1.4em;
             }
 
         }
@@ -59,10 +63,9 @@
 
     .nav-wrapper {
         flex-shrink: 0;
-        padding: 1em;
-        padding-bottom: calc(1em + env(safe-area-inset-bottom)); // iPhone home bar 
+        padding: 0.35em 0;
+        // padding-bottom: calc(1em + env(safe-area-inset-bottom)); // iPhone home bar 
         border-top: p.$border-divider;
-        background-color: p.$white;
         box-shadow: p.$box-shadow;
 
         .nav-tab {
