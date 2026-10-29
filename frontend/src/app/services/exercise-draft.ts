@@ -32,8 +32,6 @@ export class ExerciseDraftService {
   editingId: string | null = null;
   /** Set when leaving the edit form for the exercise picker, so the edits survive the round trip. */
   keepEdit = false;
-  /** Stepper step the form was left on, so it reopens there after picking exercises. */
-  step = 0;
 
   constructor() {
     effect(() => {
@@ -61,7 +59,6 @@ export class ExerciseDraftService {
     this.editingId = id;
     this.form = draft.form;
     this.sets = draft.sets;
-    this.step = 0;
     this.exercises.set(draft.exercises);
   }
 
@@ -73,7 +70,6 @@ export class ExerciseDraftService {
     const saved = this.draft.restore<WorkoutDraft>();
     this.form = saved?.form ?? null;
     this.sets = saved?.sets ?? {};
-    this.step = 0;
     this.exercises.set(saved?.exercises ?? []);
   }
 
@@ -84,7 +80,6 @@ export class ExerciseDraftService {
   clear() {
     this.form = null;
     this.sets = {};
-    this.step = 0;
     this.exercises.set([]);
     this.draft.discard();
   }

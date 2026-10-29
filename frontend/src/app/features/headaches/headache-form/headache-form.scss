@@ -1,14 +1,10 @@
 @use '../../../../variables' as p;
 
-.page-wrapper {
-    padding: p.$page-padding;
-    .picker-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5em;
-    }
+.picker-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5em;
 }
-
 
 .slider {
     display: flex;

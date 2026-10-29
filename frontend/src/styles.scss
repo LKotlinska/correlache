@@ -102,6 +102,10 @@ body {
     width: 1.8em;
   }
 
+  .page-wrapper {
+    padding: $page-padding;
+  }
+
   .filled-icon-btn {
     background-color: var(--mat-sys-primary);
     color: var(--mat-sys-on-primary);
@@ -126,6 +130,10 @@ body {
   .mat-expansion-panel-body,
   .mat-expansion-panel-header {
     padding: 0 18px 16px;
+  }
+
+  .mat-expansion-panel-header {
+    padding-bottom: 0;
   }
 }
 /* You can add global styles to this file, and also import other style files */

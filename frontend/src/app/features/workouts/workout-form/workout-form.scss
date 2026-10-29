@@ -1,6 +1,11 @@
 @use '../../../../variables' as p;
 @use '@angular/material' as mat;
 
+.workout-container,
+.exercise-container {
+    padding: 0 1em;
+}   
+
 .exercise-container {
     display:flex; 
     flex-direction: column;
@@ -25,6 +30,12 @@
     }
 }
 
+.btn-add {
+    display: flex;
+    justify-content: center;
+    margin: 1em 0 ;
+}
+
 .btn-container {
     display: flex;
     justify-content: space-between;
@@ -33,10 +44,6 @@
 
 .btn-container:has(> :only-child) {
     justify-content: end;
-}
-
-.mat-vertical-content {
-    padding: 0 24px 24px 0px;
 }
 
 .duration-grid {
