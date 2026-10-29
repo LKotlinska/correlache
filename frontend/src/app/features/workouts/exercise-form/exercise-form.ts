@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { Exercise } from '../../../models/workout.model';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { WorkoutService } from '../../../services/workout.service';
@@ -14,6 +14,7 @@ import { toggleId } from '../../../utils/toggle-id';
 import { MatFormField, MatLabel, MatPrefix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
+import { MatChipListbox, MatChipOption } from '@angular/material/chips';
 
 @Component({
   imports: [
@@ -27,6 +28,8 @@ import { MatIcon } from '@angular/material/icon';
     MatPrefix,
     MatInput,
     MatIcon,
+    MatChipListbox,
+    MatChipOption,
     ReactiveFormsModule,
   ],
   selector: 'app-exercise-form',
@@ -43,6 +46,8 @@ export class ExerciseForm {
   readonly rowHeight = 245;
   searchControl = new FormControl('', { nonNullable: true });
   searchQuery = toSignal(this.searchControl.valueChanges, { initialValue: '' });
+  bodyPartControl = new FormControl<number | null>(null);
+  bodyPartId = toSignal(this.bodyPartControl.valueChanges, { initialValue: null });
 
   exercises = rxResource({
     stream: () => this.workoutService.getExercises(),
@@ -51,12 +56,24 @@ export class ExerciseForm {
   exerciseForm = new FormControl<number[]>([], { nonNullable: true })
 
   constructor() {
-    this.exerciseForm.setValue(this.exerciseDraft.exercises().map(e => e.id)); // keep earlier picks when re-opening
+    this.exerciseForm.setValue(this.exerciseDraft.exercises().map(e => e.id)); // keep earlier picks when re-opening  
   }
+
+  // distinct body parts present in the library, for the filter chips
+  bodyParts = computed(() => {
+    const byId = new Map((this.exercises.value() ?? []).map((e) => [e.bodyPart.id, e.bodyPart]));
+    return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+  });
 
   items = computed(() => {
     const sq = this.searchQuery().trim().toLowerCase();
-    return (this.exercises.value() ?? []).filter((x) => x.name.toLowerCase().includes(sq));
+    const bodyPartId = this.bodyPartId();
+    return (this.exercises.value() ?? []).filter(
+      (x) =>
+        x.name.toLowerCase().includes(sq) &&
+        // a deselected chip emits undefined, so == null covers "no filter"
+        (bodyPartId == null || x.bodyPart.id === bodyPartId),
+    );
   });
 
   // the virtual scroll renders one item per row, so group the filtered exercises into rows of `columns`

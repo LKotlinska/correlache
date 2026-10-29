@@ -11,6 +11,12 @@
       <input matInput type="search" [formControl]="searchControl" />
     </mat-form-field>
 
+    <mat-chip-listbox aria-label="Filter by body part" [formControl]="bodyPartControl">
+      @for (bodyPart of bodyParts(); track bodyPart.id) {
+        <mat-chip-option [value]="bodyPart.id">{{ bodyPart.name }}</mat-chip-option>
+      }
+    </mat-chip-listbox>
+
     <cdk-virtual-scroll-viewport [itemSize]="rowHeight">
       <div class="exercise-wrapper" *cdkVirtualFor="let row of rows()">
         @for (exercise of row; track exercise.id) {
