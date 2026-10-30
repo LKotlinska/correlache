@@ -125,7 +125,13 @@ body {
   }
 
   .mat-expansion-panel {
-    background-color: $white;
+    background-color: $surface-low;
+  }
+
+  // Outlined inputs are transparent by default; fill them with the same surface.
+  .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-text-field--outlined {
+    background-color: $surface-low;
+    border-radius: 4px;
   }
   .mat-expansion-panel-body,
   .mat-expansion-panel-header {
