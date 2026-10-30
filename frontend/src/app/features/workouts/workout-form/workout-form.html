@@ -42,13 +42,29 @@
         @for (exercise of exercises(); track exercise.id) {
           <div class="exercise-row">
             <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title class="exercise-name">{{ exercise.name }}</mat-panel-title>
+              <mat-expansion-panel-header class="panel-header">
+                <div class="header-text">
+                  <mat-panel-title class="exercise-name">{{ exercise.name }}</mat-panel-title>
+                  <span class="exercise-equipment">{{ exercise.equipment.name }}</span>
+                </div>
+                <button
+                  matIconButton
+                  type="button"
+                  class="delete-set-btn header-delete"
+                  [attr.aria-label]="'Remove ' + exercise.name"
+                  (click)="$event.stopPropagation(); removeExercise(exercise.id)"
+                  (keydown)="$event.stopPropagation()"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
               </mat-expansion-panel-header>
               <p class="exercise-muscles">{{ muscleNames(exercise) }}</p>
               <mat-form-field class="mode-select" appearance="outline" subscriptSizing="dynamic">
                 <mat-label>Track</mat-label>
-                <mat-select [value]="modeOf(exercise)" (selectionChange)="setMode(exercise, $event.value)">
+                <mat-select
+                  [value]="modeOf(exercise)"
+                  (selectionChange)="setMode(exercise, $event.value)"
+                >
                   @for (option of modeOptions; track option.value) {
                     <mat-option [value]="option.value">{{ option.label }}</mat-option>
                   }
@@ -122,15 +138,6 @@
                 </button>
               </div>
             </mat-expansion-panel>
-            <button
-              matIconButton
-              type="button"
-              class="delete-set-btn"
-              [attr.aria-label]="'Remove ' + exercise.name"
-              (click)="removeExercise(exercise.id)"
-            >
-              <mat-icon>delete_outline</mat-icon>
-            </button>
           </div>
         }
       </mat-accordion>
