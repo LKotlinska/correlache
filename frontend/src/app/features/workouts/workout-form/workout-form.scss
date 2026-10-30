@@ -61,6 +61,11 @@
     width: 100%;
 }
 
+.mode-select {
+    width: 100%;
+    margin-bottom: 1em;
+}
+
 .exercise-muscles {
     margin: 0 0 1em;
     font-size: 0.85em;
@@ -69,7 +74,7 @@
 
 .sets-grid {
     display: grid;
-    grid-template-columns: 2em repeat(2, minmax(0, 1fr)) auto;
+    grid-template-columns: 2em repeat(var(--field-columns, 2), minmax(0, 1fr)) auto;
     align-items: center;
     column-gap: 0.75em;
     gap: 0.5em;

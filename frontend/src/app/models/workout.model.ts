@@ -18,13 +18,20 @@ export interface Exercise {
     muscles: ExerciseMuscle[];
 }
 
+/** What is measured for an exercise in a workout. Mirrors TRACKING_MODES in the backend. */
+export type TrackingMode = 'weight_reps' | 'reps' | 'duration' | 'duration_distance';
+
 export interface CreateWorkoutSetPayload {
     weight: number | null;
     reps: number | null;
+    /** Kilometres */
+    distance: number | null;
+    durationSeconds: number | null;
 }
 
 export interface CreateWorkoutExercisePayload {
     exerciseId: number;
+    trackingMode: TrackingMode;
     sets: CreateWorkoutSetPayload[];
 }
 
@@ -51,6 +58,7 @@ export interface WorkoutExercise {
     exerciseId: number;
     exerciseName: string;
     order: number;
+    trackingMode: TrackingMode;
     sets: WorkoutSet[];
 }
 
