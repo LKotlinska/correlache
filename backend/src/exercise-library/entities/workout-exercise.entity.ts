@@ -2,6 +2,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 import type { Relation } from "typeorm";
 import { Workout } from "./workout.entity.js";
 import { WorkoutSet } from "./set.entity.js";
+import { DEFAULT_TRACKING_MODE } from "../tracking-mode.js";
+import type { TrackingMode } from "../tracking-mode.js";
 
 @Entity('workout_exercises')
 export class WorkoutExercise {
@@ -28,6 +30,9 @@ export class WorkoutExercise {
 
     @Column({ name: 'order', type: 'int' })
     order: number;
+
+    @Column({ name: 'tracking_mode', type: 'varchar', length: 20, default: DEFAULT_TRACKING_MODE })
+    trackingMode: TrackingMode;
 
     @OneToMany(() => WorkoutSet, (set) => set.workoutExercise)
     sets: WorkoutSet[];

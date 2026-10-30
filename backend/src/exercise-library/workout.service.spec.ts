@@ -24,8 +24,8 @@ describe('WorkoutService', () => {
     startedAt: '2026-10-27T10:00:00.000Z',
     durationSeconds: 3600,
     exercises: [
-      { exerciseId: 7, sets: [{ weight: 50, reps: 8 }, { weight: null, reps: null }, { weight: null, reps: 12 }] },
-      { exerciseId: 3, sets: [] },
+      { exerciseId: 7, trackingMode: 'weight_reps', sets: [{ weight: 50, reps: 8 }, { weight: null, reps: null }, { weight: null, reps: 12 }] },
+      { exerciseId: 3, trackingMode: 'weight_reps', sets: [] },
     ],
   };
 
@@ -68,6 +68,24 @@ describe('WorkoutService', () => {
     expect(created[2]).toEqual([WorkoutSet, expect.objectContaining({ order: 0, weight: 50, reps: 8 })]);
     expect(created[3]).toEqual([WorkoutSet, expect.objectContaining({ order: 1, weight: null, reps: 12 })]);
     expect(created[4]).toEqual([WorkoutExercise, expect.objectContaining({ exerciseId: 3, exerciseName: 'Squat', order: 1 })]);
+  });
+
+  it('keeps only the fields the tracking mode uses', async () => {
+    await service.create('user-1', {
+      ...dto,
+      exercises: [
+        { exerciseId: 7, trackingMode: 'duration_distance', sets: [{ weight: 50, reps: 8, distance: 2.5, durationSeconds: 1800 }, { weight: 20, reps: 5 }] },
+        { exerciseId: 3, trackingMode: 'reps', sets: [{ weight: 10, reps: 12, durationSeconds: 60 }] },
+      ],
+    });
+
+    const created = manager.create.mock.calls;
+    expect(created[1]).toEqual([WorkoutExercise, expect.objectContaining({ trackingMode: 'duration_distance' })]);
+    // the second set only had fields this mode ignores, so it is dropped
+    expect(created[2]).toEqual([WorkoutSet, expect.objectContaining({ order: 0, weight: null, reps: null, distance: 2.5, durationSeconds: 1800 })]);
+    expect(created[3]).toEqual([WorkoutExercise, expect.objectContaining({ trackingMode: 'reps' })]);
+    expect(created[4]).toEqual([WorkoutSet, expect.objectContaining({ order: 0, weight: null, reps: 12, distance: null, durationSeconds: null })]);
+    expect(created).toHaveLength(5);
   });
 
   it('rejects exercise ids that are not in the library without saving anything', async () => {
