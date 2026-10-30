@@ -23,10 +23,37 @@
         text-transform: capitalize;
         // one line with an ellipsis; display:block because text-overflow doesn't work on the default flex title
         display: block;
+        // mat-panel-title defaults to flex-basis:0, which collapses it to zero height in the column layout
+        flex: none;
         min-width: 0;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+
+    .panel-header.mat-expansion-panel-header {
+        // let the header grow to fit the name + equipment lines
+        --mat-expansion-header-collapsed-state-height: auto;
+        --mat-expansion-header-expanded-state-height: auto;
+        height: auto;
+    }
+    .header-text {
+        // padding here, not on the header: global styles override the header's own padding
+        padding-block: 0.75em;
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .exercise-equipment {
+        font-size: 0.85em;
+        text-transform: capitalize;
+        opacity: 0.8;
+    }
+    .header-delete {
+        flex: none;
+        align-self: center;
+        margin-right: 0.75em;
     }
 }
 
@@ -61,6 +88,11 @@
     width: 100%;
 }
 
+.mode-select {
+    width: 100%;
+    margin-bottom: 1em;
+}
+
 .exercise-muscles {
     margin: 0 0 1em;
     font-size: 0.85em;
@@ -69,7 +101,7 @@
 
 .sets-grid {
     display: grid;
-    grid-template-columns: 2em repeat(2, minmax(0, 1fr)) auto;
+    grid-template-columns: 2em repeat(var(--field-columns, 2), minmax(0, 1fr)) auto;
     align-items: center;
     column-gap: 0.75em;
     gap: 0.5em;
@@ -93,7 +125,7 @@
 
 .add-set-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     margin-top: 1em;
 }
 

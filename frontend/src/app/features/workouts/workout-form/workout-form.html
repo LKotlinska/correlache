@@ -42,27 +42,80 @@
         @for (exercise of exercises(); track exercise.id) {
           <div class="exercise-row">
             <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title class="exercise-name">{{ exercise.name }}</mat-panel-title>
+              <mat-expansion-panel-header class="panel-header">
+                <div class="header-text">
+                  <mat-panel-title class="exercise-name">{{ exercise.name }}</mat-panel-title>
+                  <span class="exercise-equipment">{{ exercise.equipment.name }}</span>
+                </div>
+                <button
+                  matIconButton
+                  type="button"
+                  class="delete-set-btn header-delete"
+                  [attr.aria-label]="'Remove ' + exercise.name"
+                  (click)="$event.stopPropagation(); removeExercise(exercise.id)"
+                  (keydown)="$event.stopPropagation()"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
               </mat-expansion-panel-header>
               <p class="exercise-muscles">{{ muscleNames(exercise) }}</p>
-              <div class="sets-grid">
+              <mat-form-field class="mode-select" appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Track</mat-label>
+                <mat-select
+                  [value]="modeOf(exercise)"
+                  (selectionChange)="setMode(exercise, $event.value)"
+                >
+                  @for (option of modeOptions; track option.value) {
+                    <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <div class="sets-grid" [style.--field-columns]="columnCount(exercise)">
                 @for (set of getSets(exercise.id).controls; track set; let i = $index) {
                   <span class="set-number">{{ i + 1 }}</span>
-                  <app-outlined-field
-                    class="set-item"
-                    label="Kg"
-                    type="number"
-                    [compact]="true"
-                    [myControl]="set.controls.weight"
-                  />
-                  <app-outlined-field
-                    class="set-item"
-                    label="Reps"
-                    type="number"
-                    [compact]="true"
-                    [myControl]="set.controls.reps"
-                  />
+                  @if (tracked(exercise).weight) {
+                    <app-outlined-field
+                      class="set-item"
+                      label="Kg"
+                      type="number"
+                      [compact]="true"
+                      [myControl]="set.controls.weight"
+                    />
+                  }
+                  @if (tracked(exercise).reps) {
+                    <app-outlined-field
+                      class="set-item"
+                      label="Reps"
+                      type="number"
+                      [compact]="true"
+                      [myControl]="set.controls.reps"
+                    />
+                  }
+                  @if (tracked(exercise).duration) {
+                    <app-outlined-field
+                      class="set-item"
+                      label="Hours"
+                      type="number"
+                      [compact]="true"
+                      [myControl]="set.controls.durationHours"
+                    />
+                    <app-outlined-field
+                      class="set-item"
+                      label="Min"
+                      type="number"
+                      [compact]="true"
+                      [myControl]="set.controls.durationMinutes"
+                    />
+                  }
+                  @if (tracked(exercise).distance) {
+                    <app-outlined-field
+                      class="set-item"
+                      label="Km"
+                      type="number"
+                      [compact]="true"
+                      [myControl]="set.controls.distance"
+                    />
+                  }
                   <button
                     matIconButton
                     type="button"
@@ -85,15 +138,6 @@
                 </button>
               </div>
             </mat-expansion-panel>
-            <button
-              matIconButton
-              type="button"
-              class="delete-set-btn"
-              [attr.aria-label]="'Remove ' + exercise.name"
-              (click)="removeExercise(exercise.id)"
-            >
-              <mat-icon>delete_outline</mat-icon>
-            </button>
           </div>
         }
       </mat-accordion>

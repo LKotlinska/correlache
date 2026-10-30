@@ -8,6 +8,7 @@ export function workoutToDraft(workout: WorkoutDetail): WorkoutDraft {
   const draft: WorkoutDraft = {
     exercises: [],
     sets: {},
+    modes: {},
     form: {
       title: workout.title,
       startDate: started,
@@ -21,7 +22,17 @@ export function workoutToDraft(workout: WorkoutDetail): WorkoutDraft {
     // Sets are keyed by library id like in the picker, so a repeated exercise is kept once
     if (draft.sets[e.exerciseId]) continue;
     draft.exercises.push(toExercise(e.exerciseId, e.exerciseName, e.muscles));
-    draft.sets[e.exerciseId] = e.sets.map(({ weight, reps }) => ({ weight, reps }));
+    draft.modes[e.exerciseId] = e.trackingMode;
+    draft.sets[e.exerciseId] = e.sets.map(({ weight, reps, distance, durationSeconds }) => {
+      const minutes = durationSeconds === null ? null : Math.floor(durationSeconds / 60);
+      return {
+        weight,
+        reps,
+        distance,
+        durationHours: minutes === null ? null : Math.floor(minutes / 60),
+        durationMinutes: minutes === null ? null : minutes % 60,
+      };
+    });
   }
   return draft;
 }

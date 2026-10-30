@@ -51,7 +51,14 @@
             </mat-expansion-panel-header>
             <ol class="sets">
               @for (set of ex.sets; track set.id) {
-                <li>{{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }}</li>
+                <li>
+                  @switch (ex.trackingMode) {
+                    @case ('reps') { {{ set.reps ?? '–' }} reps }
+                    @case ('duration') { {{ set.durationSeconds | duration }} }
+                    @case ('duration_distance') { {{ set.distance ?? '–' }} km · {{ set.durationSeconds | duration }} }
+                    @default { {{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }} }
+                  }
+                </li>
               }
             </ol>
           </mat-expansion-panel>

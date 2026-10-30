@@ -12,8 +12,11 @@ import { OutlinedField } from '../../../components/form-fields/outlined-field/ou
 import { DateTimePicker } from '../../../components/form-fields/date-time-picker/date-time-picker';
 import { ExerciseDraftService, SetDraft } from '../../../services/exercise-draft';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { CreateWorkoutPayload, Exercise } from '../../../models/workout.model';
+import { MatSelectModule } from '@angular/material/select';
+import { CreateWorkoutPayload, CreateWorkoutSetPayload, Exercise, TrackingMode } from '../../../models/workout.model';
+import { columnCount, defaultTrackingModeFor, TRACKED_FIELDS, TRACKING_MODE_OPTIONS, TrackedFields } from '../../../utils/tracking-mode';
 import { WorkoutService } from '../../../services/workout.service';
 import { combineDateTime } from '../../../utils/combine-date-time';
 import { notInFuture } from '../../../utils/date-time-validators';
@@ -23,12 +26,16 @@ import { workoutToDraft } from '../../../utils/workout-to-draft';
 
 // Same upper bound as the backend (CreateWorkoutSetDto)
 const MAX_SET_VALUE = 10000;
+const MAX_DISTANCE_KM = 10000;
 const WHOLE_NUMBER = Validators.pattern(/^\d+$/);
 
 function createSetGroup() {
   return new FormGroup({
     weight: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(MAX_SET_VALUE)] }),
     reps: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(MAX_SET_VALUE), WHOLE_NUMBER] }),
+    distance: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(MAX_DISTANCE_KM)] }),
+    durationHours: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(23), WHOLE_NUMBER] }),
+    durationMinutes: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(59), WHOLE_NUMBER] }),
   });
 }
 
@@ -36,7 +43,7 @@ type SetGroup = ReturnType<typeof createSetGroup>;
 
 
 @Component({
-  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule],
+  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule, MatFormFieldModule, MatSelectModule],
   selector: 'app-workout-form',
   styleUrl: './workout-form.scss',
   templateUrl: './workout-form.html',
@@ -69,6 +76,9 @@ export class WorkoutForm {
   }
 
   private setsByExercise = new Map<number, FormArray<SetGroup>>();
+  /** Modes the user set or restored; an exercise without an entry uses the default for its equipment. */
+  private modes = signal<Record<number, TrackingMode>>({});
+  readonly modeOptions = TRACKING_MODE_OPTIONS;
 
   constructor() {
     this.initForm();
@@ -106,6 +116,7 @@ export class WorkoutForm {
     if (draft.form) {
       this.workoutForm.patchValue(draft.form);
     }
+    this.modes.set({ ...draft.modes });
     for (const exercise of draft.exercises()) {
       const saved = draft.sets[exercise.id];
       if (saved?.length) {
@@ -135,7 +146,36 @@ export class WorkoutForm {
     for (const [id, array] of this.setsByExercise) {
       sets[id] = array.getRawValue();
     }
-    this.exerciseDraftService.saveForm(this.workoutForm.getRawValue(), sets);
+    const modes = Object.fromEntries(this.exercises().map((e) => [e.id, this.modeOf(e)]));
+    this.exerciseDraftService.saveForm(this.workoutForm.getRawValue(), sets, modes);
+  }
+
+  modeOf(exercise: Exercise): TrackingMode {
+    return this.modes()[exercise.id] ?? defaultTrackingModeFor(exercise.equipment.name);
+  }
+
+  tracked(exercise: Exercise): TrackedFields {
+    return TRACKED_FIELDS[this.modeOf(exercise)];
+  }
+
+  columnCount(exercise: Exercise): number {
+    return columnCount(this.tracked(exercise));
+  }
+
+  /** Switches what is measured and clears the fields the new mode doesn't use, so none are saved or validated unseen. */
+  setMode(exercise: Exercise, mode: TrackingMode) {
+    this.modes.update((modes) => ({ ...modes, [exercise.id]: mode }));
+    const tracked = TRACKED_FIELDS[mode];
+    for (const set of this.getSets(exercise.id).controls) {
+      if (!tracked.weight) set.controls.weight.reset();
+      if (!tracked.reps) set.controls.reps.reset();
+      if (!tracked.distance) set.controls.distance.reset();
+      if (!tracked.duration) {
+        set.controls.durationHours.reset();
+        set.controls.durationMinutes.reset();
+      }
+    }
+    this.setsChanged.next();
   }
 
   hasDraft() {
@@ -168,6 +208,7 @@ export class WorkoutForm {
   /** Removes the exercise together with its sets, so none are left behind in the draft or payload. */
   removeExercise(exerciseId: number) {
     this.setsByExercise.delete(exerciseId);
+    this.modes.update(({ [exerciseId]: _removed, ...rest }) => rest);
     this.exerciseDraftService.setExercises(this.exercises().filter((e) => e.id !== exerciseId));
     this.setsChanged.next();
   }
@@ -222,11 +263,24 @@ export class WorkoutForm {
       durationSeconds: ((durationHours ?? 0) * 60 + (durationMinutes ?? 0)) * 60,
       exercises: this.exercises().map((exercise) => ({
         exerciseId: exercise.id,
+        trackingMode: this.modeOf(exercise),
         // Rows left completely empty are not saving
         sets: this.getSets(exercise.id)
           .getRawValue()
-          .filter((set) => set.weight !== null || set.reps !== null),
+          .map((set) => this.toSetPayload(set, this.tracked(exercise)))
+          .filter((set) => Object.values(set).some((value) => value !== null)),
       })),
+    };
+  }
+
+  /** Keeps the fields the mode measures and turns the hours and minutes into seconds. */
+  private toSetPayload(set: SetDraft, tracked: TrackedFields): CreateWorkoutSetPayload {
+    const hasDuration = tracked.duration && (set.durationHours !== null || set.durationMinutes !== null);
+    return {
+      weight: tracked.weight ? set.weight : null,
+      reps: tracked.reps ? set.reps : null,
+      distance: tracked.distance ? set.distance : null,
+      durationSeconds: hasDuration ? ((set.durationHours ?? 0) * 60 + (set.durationMinutes ?? 0)) * 60 : null,
     };
   }
 
