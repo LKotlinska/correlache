@@ -5,8 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeader } from '../../../components/page-header/page-header';
-import { MatStepperModule } from '@angular/material/stepper';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { Button } from '../../../components/button/button';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -38,7 +36,7 @@ type SetGroup = ReturnType<typeof createSetGroup>;
 
 
 @Component({
-  imports: [RouterLink, ReactiveFormsModule, MatStepperModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule],
+  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule],
   selector: 'app-workout-form',
   styleUrl: './workout-form.scss',
   templateUrl: './workout-form.html',
@@ -56,13 +54,6 @@ export class WorkoutForm {
   exercises = this.exerciseDraftService.exercises;
 
   today = new Date();
-
-  // reopen on the step the user left, e.g. the exercises step after picking exercises
-  initialStep = this.exerciseDraftService.step;
-
-  onStepChange(event: StepperSelectionEvent) {
-    this.exerciseDraftService.step = event.selectedIndex;
-  }
 
   workoutForm = new FormGroup({
     startDate: new FormControl<Date | null>(new Date(), { validators: [Validators.required]}),
@@ -171,6 +162,13 @@ export class WorkoutForm {
 
   removeSet(exerciseId: number, index: number) {
     this.getSets(exerciseId).removeAt(index);
+    this.setsChanged.next();
+  }
+
+  /** Removes the exercise together with its sets, so none are left behind in the draft or payload. */
+  removeExercise(exerciseId: number) {
+    this.setsByExercise.delete(exerciseId);
+    this.exerciseDraftService.setExercises(this.exercises().filter((e) => e.id !== exerciseId));
     this.setsChanged.next();
   }
 
