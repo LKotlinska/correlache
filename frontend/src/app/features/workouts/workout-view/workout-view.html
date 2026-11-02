@@ -47,8 +47,16 @@
         @for (ex of w.exercises; track ex.id) {
           <mat-expansion-panel [disabled]="!ex.sets.length">
             <mat-expansion-panel-header>
-              <mat-panel-title class="exercise-name">{{ ex.exerciseName }}</mat-panel-title>
+              <div class="header-text">
+                <mat-panel-title class="exercise-name">{{ ex.exerciseName }}</mat-panel-title>
+                @if (ex.equipment) {
+                  <span class="exercise-equipment">{{ ex.equipment.name }}</span>
+                }
+              </div>
             </mat-expansion-panel-header>
+            @if (ex.muscles.length) {
+              <p class="exercise-muscles">{{ muscleNames(ex) }}</p>
+            }
             <table class="sets">
               <thead>
                 <tr>

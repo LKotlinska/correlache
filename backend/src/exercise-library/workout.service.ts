@@ -6,7 +6,7 @@ import { EntityManager, In, Repository } from 'typeorm';
 import { Workout } from './entities/workout.entity.js';
 import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
-import { ExerciseDto, ExerciseMuscleDto, WorkoutDetailDto } from './dto/exercise.dto.js';
+import { ExerciseDto, ExerciseMuscleDto, LookupDto, WorkoutDetailDto } from './dto/exercise.dto.js';
 import { TRACKED_FIELDS } from './tracking-mode.js';
 import { exerciseVolume } from './volume.js';
 
@@ -145,12 +145,14 @@ export class WorkoutService {
     const libraryExercises = exerciseIds.length
       ? await this.exerciseRepo.find({
           where: { id: In(exerciseIds) },
-          relations: { muscles: { muscle: { muscleGroup: true } } },
+          relations: { equipment: true, muscles: { muscle: { muscleGroup: true } } },
         })
       : [];
 
     const musclesByExerciseId = new Map<number, ExerciseMuscleDto[]>();
+    const equipmentByExerciseId = new Map<number, LookupDto>();
     for (const exercise of libraryExercises) {
+      equipmentByExerciseId.set(exercise.id, { id: exercise.equipment.id, name: exercise.equipment.name });
       musclesByExerciseId.set(
         exercise.id,
         exercise.muscles.map((em) => ({
@@ -166,6 +168,7 @@ export class WorkoutService {
       ...workout,
       exercises: workout.exercises.map((e) => ({
         ...e,
+        equipment: equipmentByExerciseId.get(e.exerciseId ?? -1) ?? null,
         muscles: musclesByExerciseId.get(e.exerciseId ?? -1) ?? [],
         volume: exerciseVolume(e.trackingMode, e.sets),
       })),

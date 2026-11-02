@@ -77,5 +77,33 @@ mat-accordion {
 }
 
 .exercise-name {
+    display: block;
+    // mat-panel-title defaults to flex-basis:0, which collapses it in the column layout
+    flex: none;
+    text-transform: capitalize;
+}
+
+.mat-expansion-panel-header {
+    --mat-expansion-header-collapsed-state-height: auto;
+    --mat-expansion-header-expanded-state-height: auto;
+    height: auto;
+}
+
+.header-text {
+    // padding here, not on the header: global styles override the header's own padding
+    padding-block: 0.75em;
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise-equipment {
+    font-size: 0.85em;
+    text-transform: capitalize;
+    opacity: 0.8;
+}
+
+.exercise-muscles {
+    margin: 0 0 1em;
+    font-size: 0.85em;
     text-transform: capitalize;
 }

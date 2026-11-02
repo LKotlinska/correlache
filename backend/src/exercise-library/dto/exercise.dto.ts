@@ -26,6 +26,7 @@ export class ExerciseDto {
 }
 
 export class WorkoutExerciseDetailDto extends WorkoutExercise {
+    equipment: LookupDto | null;
     muscles: ExerciseMuscleDto[];
     volume: ExerciseVolume;
 }
