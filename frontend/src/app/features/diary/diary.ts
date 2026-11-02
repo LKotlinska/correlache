@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { HeadacheService } from '../../services/headache.service';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { MatChipListbox, MatChipListboxChange, MatChipOption } from '@angular/material/chips';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { Button } from '../../components/button/button';
 import { ListItem } from '../../components/list-item/list-item';
@@ -8,6 +9,8 @@ import { WorkoutService } from '../../services/workout.service';
 import { addDays, dayKey, dayLabel, startOfWeek, weekLabel } from '../../utils/date';
 
 const WEEKS_PER_PAGE = 4;
+
+export type DiaryFilter = 'all' | DiaryEntry['kind'];
 
 interface DiaryEntry {
   kind: 'attack' | 'activity';
@@ -33,7 +36,7 @@ interface DiaryWeek {
 }
 
 @Component({
-  imports: [MatProgressBar, Button, ListItem],
+  imports: [MatChipListbox, MatChipOption, MatProgressBar, Button, ListItem],
   selector: 'app-diary',
   styleUrl: './diary.scss',
   templateUrl: './diary.html',
@@ -44,6 +47,8 @@ export class Diary {
 
   /** How many weeks back from the current one are loaded, including the current week. */
   weeksLoaded = signal(WEEKS_PER_PAGE);
+
+  filter = signal<DiaryFilter>('all');
 
   private from = computed(() => addDays(startOfWeek(new Date()), -7 * (this.weeksLoaded() - 1)));
 
@@ -62,7 +67,9 @@ export class Diary {
   isLoadingMore = computed(() => this.headaches.isLoading() || this.workouts.isLoading());
 
   weeks = computed<DiaryWeek[]>(() => {
+    const filter = this.filter();
     const entries = [...this.headacheEntries(), ...this.workoutEntries()]
+      .filter((entry) => filter === 'all' || entry.kind === filter)
       .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime());
     const currentWeek = startOfWeek(new Date());
 
@@ -82,6 +89,12 @@ export class Diary {
       days: this.groupByDay(entries),
     }));
   });
+
+  onFilterChange(event: MatChipListboxChange) {
+    // Clicking the selected chip would clear the selection; keep the current filter instead
+    if (event.value) this.filter.set(event.value);
+    else event.source.value = this.filter();
+  }
 
   loadEarlier() {
     this.weeksLoaded.update((weeks) => weeks + WEEKS_PER_PAGE);

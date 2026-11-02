@@ -8,14 +8,19 @@
 
 .week-summary {
   font-weight: 400;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .day-heading {
   margin: 1rem 0 0.25rem;
   font-size: 0.875rem;
   font-weight: 500;
-  opacity: 0.7;
+  opacity: 0.8;
+}
+
+mat-chip-listbox {
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 app-button {

@@ -3,6 +3,12 @@
 } @else if (isInitialLoading()) {
   <mat-progress-bar mode="indeterminate" />
 } @else {
+  <mat-chip-listbox aria-label="Filter diary" [value]="filter()" (change)="onFilterChange($event)">
+    <mat-chip-option value="all">All</mat-chip-option>
+    <mat-chip-option value="attack">Headaches</mat-chip-option>
+    <mat-chip-option value="activity">Workouts</mat-chip-option>
+  </mat-chip-listbox>
+
   @for (week of weeks(); track week.key) {
     <section>
       <h2 class="week-heading">
