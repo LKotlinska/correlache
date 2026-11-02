@@ -32,7 +32,10 @@ export interface Headache {
     startedAt: string,
     endedAt: string | null,
     painLevel: number,
-    notes: string | null
+    notes: string | null,
+    /** Included in the list response only */
+    locations?: LookupOption[],
+    symptoms?: LookupOption[]
 }
 
 export interface HeadacheDetail extends Headache {

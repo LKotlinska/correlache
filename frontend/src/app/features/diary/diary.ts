@@ -6,6 +6,8 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { Button } from '../../components/button/button';
 import { ListItem } from '../../components/list-item/list-item';
 import { WorkoutService } from '../../services/workout.service';
+import { Workout } from '../../models/workout.model';
+import { formatDuration } from '../../utils/duration';
 import { addDays, dayKey, dayLabel, startOfWeek, weekLabel } from '../../utils/date';
 
 const WEEKS_PER_PAGE = 4;
@@ -13,10 +15,11 @@ const WEEKS_PER_PAGE = 4;
 export type DiaryFilter = 'all' | DiaryEntry['kind'];
 
 interface DiaryEntry {
-  kind: 'attack' | 'activity';
+  kind: 'headache' | 'activity';
   id: string;
   title: string;
   line: string;
+  details: string[];
   link: string[];
   startedAt: Date;
 }
@@ -102,10 +105,14 @@ export class Diary {
 
   private headacheEntries = computed<DiaryEntry[]>(() =>
     (this.headaches.value() ?? []).map((headache) => ({
-      kind: 'attack',
+      kind: 'headache',
       id: headache.id,
-      title: `Attack - ${headache.painLevel}/10`,
-      line: this.time(new Date(headache.startedAt)),
+      title: `Headache - ${headache.painLevel}/10`,
+      line: '',
+      details: [
+        (headache.locations ?? []).map((l) => l.name).join(', '),
+        this.nameList(headache.symptoms ?? [], 2),
+      ].filter(Boolean),
       link: ['/user/headache', headache.id],
       startedAt: new Date(headache.startedAt),
     })),
@@ -116,7 +123,8 @@ export class Diary {
       kind: 'activity',
       id: workout.id,
       title: workout.title,
-      line: this.time(new Date(workout.startedAt)),
+      line: this.timeAndDuration(workout.startedAt, workout.durationSeconds),
+      details: [this.workoutDetail(workout)].filter(Boolean),
       link: ['/user/workout', workout.id],
       startedAt: new Date(workout.startedAt),
     })),
@@ -134,10 +142,29 @@ export class Diary {
 
   private summarise(entries: DiaryEntry[]): string {
     const workouts = entries.filter((e) => e.kind === 'activity').length;
-    const attacks = entries.length - workouts;
+    const headaches = entries.length - workouts;
     return [
       workouts && `${workouts} ${workouts === 1 ? 'workout' : 'workouts'}`,
-      attacks && `${attacks} ${attacks === 1 ? 'attack' : 'attacks'}`,
+      headaches && `${headaches} ${headaches === 1 ? 'headache' : 'headaches'}`,
+    ].filter(Boolean).join(' · ');
+  }
+
+  /** The first `max` names, followed by how many more there are. */
+  private nameList(options: { name: string }[], max: number): string {
+    const names = options.slice(0, max).map((o) => o.name).join(', ');
+    return options.length > max ? `${names} +${options.length - max}` : names;
+  }
+
+  private timeAndDuration(startedAt: string, seconds: number): string {
+    return [this.time(new Date(startedAt)), formatDuration(seconds)].filter(Boolean).join(' · ');
+  }
+
+  private workoutDetail(workout: Workout): string {
+    const exercises = workout.exercises.length;
+    const sets = workout.exercises.reduce((sum, e) => sum + e.sets.length, 0);
+    return [
+      exercises && `${exercises} ${exercises === 1 ? 'exercise' : 'exercises'}`,
+      sets && `${sets} ${sets === 1 ? 'set' : 'sets'}`,
     ].filter(Boolean).join(' · ');
   }
 

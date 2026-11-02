@@ -3,10 +3,10 @@ import { MatListItem } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 
-type Tone = 'activity' | 'attack';
+type Tone = 'activity' | 'headache';
 
 const ICONS: Record<Tone, string> = {
-  attack: 'bolt',
+  headache: 'bolt',
   activity: 'cardio_load',
 };
 
@@ -21,6 +21,7 @@ export class ListItem {
   title = input.required<string>();
   tone = input.required<Tone>();
   line = input<string>('');
+  details = input<string[]>([]);
 
   icon = computed(() => ICONS[this.tone()]);
 }

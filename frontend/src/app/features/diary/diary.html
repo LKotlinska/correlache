@@ -5,7 +5,7 @@
 } @else {
   <mat-chip-listbox aria-label="Filter diary" [value]="filter()" (change)="onFilterChange($event)">
     <mat-chip-option value="all">All</mat-chip-option>
-    <mat-chip-option value="attack">Headaches</mat-chip-option>
+    <mat-chip-option value="headache">Headaches</mat-chip-option>
     <mat-chip-option value="activity">Workouts</mat-chip-option>
   </mat-chip-listbox>
 
@@ -23,6 +23,7 @@
             [link]="entry.link"
             [title]="entry.title"
             [line]="entry.line"
+            [details]="entry.details"
             [tone]="entry.kind"
           />
         }
