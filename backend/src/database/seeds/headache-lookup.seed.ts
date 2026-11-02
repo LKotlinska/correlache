@@ -127,12 +127,18 @@ export const SymptomSeed = [
     },
     {
         name: 'Dizziness'
-    }
+    }, 
+    {
+        name: 'Fatigue'
+    },
 ]
 
 export const TriggerSeed = [
     {
         name: 'Physical strain'
+    },
+    {
+        name: 'Cardio'
     },
     {
         name: 'Lack of sleep'
