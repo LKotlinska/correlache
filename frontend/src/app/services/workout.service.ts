@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateWorkoutPayload, Exercise, Workout, WorkoutDetail } from '../models/workout.model';
+import { dateRangeParams } from '../utils/date';
 
 @Service()
 export class WorkoutService {
@@ -23,8 +24,9 @@ export class WorkoutService {
         return this.http.delete<void>(`/api/workout/${id}`);
     }
 
-    getWorkouts(): Observable<Workout[]> {
-        return this.http.get<Workout[]>('/api/workout');
+    /** Workouts newest first, optionally only those started from `from` (inclusive) until `to` (exclusive). */
+    getWorkouts(range: { from?: Date; to?: Date } = {}): Observable<Workout[]> {
+        return this.http.get<Workout[]>('/api/workout', { params: dateRangeParams(range) });
     }
 
     getWorkoutById(id: string): Observable<WorkoutDetail> {

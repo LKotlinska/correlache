@@ -8,6 +8,7 @@ import { Trigger } from './lookups/trigger.entity.js';
 import { Symptom } from './lookups/symptom.entity.js';
 import { ReliefMeasure } from './lookups/relief-measure.entity.js';
 import { HeadacheLocation } from './lookups/headache-location.entity.js';
+import { dateRange } from '../common/date-range.js';
 
 @Injectable()
 export class HeadacheService {
@@ -101,9 +102,10 @@ export class HeadacheService {
     return { triggers, symptoms, reliefMeasures, headacheLocations };
   }
 
-  async getHeadaches(userId: string): Promise<Headache[]> {
-    const headaches = await this.headacheRepo.find({ 
-      where: { userId },
+  /** The user's headaches, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive). */
+  async getHeadaches(userId: string, from?: Date, to?: Date): Promise<Headache[]> {
+    const headaches = await this.headacheRepo.find({
+      where: { userId, startedAt: dateRange(from, to) },
       order: { startedAt: 'DESC'},
     });
 

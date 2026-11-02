@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus, ParseDatePipe, Query } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
@@ -21,8 +21,12 @@ export class WorkoutController {
   }
 
   @Get('')
-  async getWorkouts(@CurrentUser() user: User): Promise<Workout[]> {
-    return await this.workoutService.getWorkouts(user.id)
+  async getWorkouts(
+    @CurrentUser() user: User,
+    @Query('from', new ParseDatePipe({ optional: true })) from?: Date,
+    @Query('to', new ParseDatePipe({ optional: true })) to?: Date,
+  ): Promise<Workout[]> {
+    return await this.workoutService.getWorkouts(user.id, from, to)
   }
 
   @Get(':id')
