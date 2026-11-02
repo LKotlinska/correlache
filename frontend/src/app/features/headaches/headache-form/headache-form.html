@@ -1,5 +1,5 @@
 <app-page-header [title]="isEdit ? 'Edit headache' : 'New headache'" />
-<main class="page-wrapper">
+<main>
   <form [formGroup]="headacheForm" (ngSubmit)="onSubmit()">
     <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
       <mat-step>
@@ -7,7 +7,7 @@
           <h2>When did it start?</h2>
         </ng-template>
         <div>
-          <h3>Start *</h3>
+          <h3 class="field-heading">Start *</h3>
           <app-date-time-picker
             [dateControl]="headacheForm.controls.startDate"
             [timeControl]="headacheForm.controls.startTime"
@@ -16,7 +16,7 @@
           />
         </div>
         <div>
-          <h3>End</h3>
+          <h3 class="field-heading">End</h3>
           <app-date-time-picker
             [dateControl]="headacheForm.controls.endDate"
             [timeControl]="headacheForm.controls.endTime"
@@ -33,7 +33,7 @@
           }
         </div>
         <div>
-          <h3>Pain level *</h3>
+          <h3 class="field-heading">Pain level *</h3>
           <mat-slider class="slider" min="1" max="10" step="1" showTickMarks discrete>
             <input [formControl]="headacheForm.controls.painLevel" matSliderThumb />
           </mat-slider>

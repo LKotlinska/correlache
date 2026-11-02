@@ -1,4 +1,5 @@
 @use '../../../variables' as p;
+
 .header-wrapper {
     position: relative;
     display: flex;
@@ -148,7 +149,6 @@
     margin-top: -1px;
     min-height: 40svh;
     background-color: p.$brand-primary;
-    padding: 0.5em 1em 2em;
     .eyebrow {
         margin: 0;
         text-align: center;

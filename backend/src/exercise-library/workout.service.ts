@@ -7,6 +7,7 @@ import { Workout } from './entities/workout.entity.js';
 import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
 import { ExerciseDto, ExerciseMuscleDto, WorkoutDetailDto } from './dto/exercise.dto.js';
+import { TRACKED_FIELDS } from './tracking-mode.js';
 
 @Injectable()
 export class WorkoutService {
@@ -75,18 +76,22 @@ export class WorkoutService {
           exerciseId: exercise.exerciseId,
           exerciseName: namesById.get(exercise.exerciseId)!,
           order,
+          trackingMode: exercise.trackingMode,
         }),
       );
-      // Rows with neither weight nor reps carry no information, so they are not stored
+      // Only the fields the mode tracks are kept, so later volume maths never sees stray values.
+      // Rows left with nothing carry no information, so they are not stored.
+      const tracked = TRACKED_FIELDS[exercise.trackingMode];
       const sets = exercise.sets
-        .filter((set) => set.weight != null || set.reps != null)
+        .map((set) => ({
+          weight: tracked.weight ? (set.weight ?? null) : null,
+          reps: tracked.reps ? (set.reps ?? null) : null,
+          distance: tracked.distance ? (set.distance ?? null) : null,
+          durationSeconds: tracked.durationSeconds ? (set.durationSeconds ?? null) : null,
+        }))
+        .filter((set) => Object.values(set).some((value) => value != null))
         .map((set, setOrder) =>
-          manager.create(WorkoutSet, {
-            workoutExerciseId: workoutExercise.id,
-            order: setOrder,
-            weight: set.weight ?? null,
-            reps: set.reps ?? null,
-          }),
+          manager.create(WorkoutSet, { workoutExerciseId: workoutExercise.id, order: setOrder, ...set }),
         );
       if (sets.length) await manager.save(sets);
     }

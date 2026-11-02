@@ -1,6 +1,6 @@
 @use '../../../variables' as p;
 
-.page-wrapper {
+.dashboard-wrapper {
     height: 100vh; // fallback for old browsers
     height: 100dvh; // dynamic viewport: tracks the visible area
     display: flex;
@@ -38,7 +38,6 @@
         min-height: 0; // lets a flex child shrink so overflow works
         overflow-y: auto; // content scrolls; header and nav stay put
         position: relative; // anchors the action menu
-        padding: p.$page-padding;
 
         .action-menu {
             position: absolute;

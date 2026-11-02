@@ -1,9 +1,5 @@
 @use '../../../../variables' as p;
 
-.page-wrapper {
-  padding: p.$page-padding;
-}
-
 .row {
   display: flex;
   align-items: center;

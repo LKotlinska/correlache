@@ -7,7 +7,7 @@ const valid = {
   title: 'Push day',
   startedAt: '2026-01-01T10:00:00.000Z',
   durationSeconds: 3600,
-  exercises: [{ exerciseId: 1, sets: [{ weight: 50, reps: 8 }, { weight: null, reps: null }] }],
+  exercises: [{ exerciseId: 1, trackingMode: 'weight_reps', sets: [{ weight: 50, reps: 8 }, { weight: null, reps: null }] }],
 };
 
 async function errorsFor(overrides: Record<string, unknown>) {
@@ -32,8 +32,23 @@ describe('CreateWorkoutDto', () => {
   });
 
   it('validates nested exercises and sets', async () => {
-    expect(await errorsFor({ exercises: [{ exerciseId: 0, sets: [] }] })).toContain('exercises');
-    expect(await errorsFor({ exercises: [{ exerciseId: 1, sets: [{ weight: -5, reps: 1 }] }] })).toContain('exercises');
-    expect(await errorsFor({ exercises: [{ exerciseId: 1, sets: [{ weight: 5, reps: 1.5 }] }] })).toContain('exercises');
+    expect(await errorsFor({ exercises: [{ exerciseId: 0, trackingMode: 'weight_reps', sets: [] }] })).toContain('exercises');
+    expect(await errorsFor({ exercises: [{ exerciseId: 1, trackingMode: 'weight_reps', sets: [{ weight: -5, reps: 1 }] }] })).toContain('exercises');
+    expect(await errorsFor({ exercises: [{ exerciseId: 1, trackingMode: 'weight_reps', sets: [{ weight: 5, reps: 1.5 }] }] })).toContain('exercises');
+  });
+
+  it('accepts time and distance sets in a time mode', async () => {
+    const exercises = [{ exerciseId: 1, trackingMode: 'duration_distance', sets: [{ distance: 2.5, durationSeconds: 1800 }] }];
+    expect(await errorsFor({ exercises })).toEqual([]);
+  });
+
+  it.each([
+    ['an unknown tracking mode', { trackingMode: 'stretch', sets: [] }],
+    ['a missing tracking mode', { trackingMode: undefined, sets: [] }],
+    ['a negative distance', { trackingMode: 'duration_distance', sets: [{ distance: -1 }] }],
+    ['a fractional duration', { trackingMode: 'duration', sets: [{ durationSeconds: 1.5 }] }],
+    ['a set duration of a day or more', { trackingMode: 'duration', sets: [{ durationSeconds: 86400 }] }],
+  ])('rejects %s', async (_label, exercise) => {
+    expect(await errorsFor({ exercises: [{ exerciseId: 1, ...exercise }] })).toContain('exercises');
   });
 });

@@ -102,6 +102,10 @@ body {
     width: 1.8em;
   }
 
+  .page-wrapper {
+    padding: $page-padding;
+  }
+
   .filled-icon-btn {
     background-color: var(--mat-sys-primary);
     color: var(--mat-sys-on-primary);
@@ -121,7 +125,21 @@ body {
   }
 
   .mat-expansion-panel {
-    background-color: $white;
+    background-color: $surface-low;
+  }
+
+  // Outlined inputs are transparent by default; fill them with the same surface.
+  .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-text-field--outlined {
+    background-color: $surface-low;
+    border-radius: 4px;
+  }
+  .mat-expansion-panel-body,
+  .mat-expansion-panel-header {
+    padding: 0 18px 16px;
+  }
+
+  .mat-expansion-panel-header {
+    padding-bottom: 0;
   }
 }
 /* You can add global styles to this file, and also import other style files */
