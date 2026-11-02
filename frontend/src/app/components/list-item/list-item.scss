@@ -1,7 +1,7 @@
 @use '../../../variables' as p;
 
 .link-wrapper {
-    box-sizing: border-box;
+  box-sizing: border-box;
   display: block;
   width: 100%;
   padding: p.$nav-padding;
@@ -9,6 +9,7 @@
   border: 1px solid transparent;
   border-radius: p.$card-border;
   text-decoration: none;
+  margin: 0.5em 0 ;
 
   .content {
     display: flex;
@@ -41,7 +42,7 @@
   }
 
   // Colors per tone
-  &.attack {
+  &.headache {
     background: #fff1ec;
     border-color: #f6d3c8;
 

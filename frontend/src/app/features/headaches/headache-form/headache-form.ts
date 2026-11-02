@@ -171,14 +171,9 @@ export class HeadacheForm {
       ? this.headacheService.update(this.headacheId, payload)
       : this.headacheService.create(payload);
     request.subscribe({
-      next: () => {
+      next: (saved) => {
         this.draft.markSubmitted();
-        if (this.headacheId) {
-          this.router.navigate(['/user/headache', this.headacheId], { replaceUrl: true });
-          return;
-        }
-        // Temporary snackbar - should redirect to headache view
-        this.snackBar.open('Headache has been added', 'Close', { panelClass: 'snackbar-success',});
+        this.router.navigate(['/user/headache', this.headacheId ?? saved.id], { replaceUrl: true });
       },
       error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);

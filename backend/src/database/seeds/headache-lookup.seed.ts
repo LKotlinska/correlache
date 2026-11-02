@@ -23,7 +23,7 @@ export const LocationSeed = [
         image: 'lefteye.svg'
     },   
     {
-        name: 'Around right eye',
+        name: 'Behind right eye',
         image: 'righteye.svg'
     },  
     {
@@ -96,7 +96,10 @@ export const SymptomSeed = [
         name: 'Vomiting'
     },
     {
-        name: 'Neck stiffness'
+        name: 'Neck or shoulder stiffness'
+    },
+    {
+        name: 'Neck pain'
     },
     {
         name: 'Trouble speaking'
@@ -108,16 +111,34 @@ export const SymptomSeed = [
         name: 'Confusion'
     },
     {
+        name: 'Trouble concentrating'
+    },
+    {
         name: 'Mood changes'
     },
     {
         name: 'Aura'
+    },
+    {
+        name: 'Congested nose'
+    },
+    {
+        name: 'Fever'
+    },
+    {
+        name: 'Dizziness'
+    }, 
+    {
+        name: 'Fatigue'
     },
 ]
 
 export const TriggerSeed = [
     {
         name: 'Physical strain'
+    },
+    {
+        name: 'Cardio'
     },
     {
         name: 'Lack of sleep'
@@ -152,6 +173,9 @@ export const TriggerSeed = [
     {
         name: 'Hormonal shifts'
     },
+    {
+        name: 'Infection'
+    }
 
 ]
 

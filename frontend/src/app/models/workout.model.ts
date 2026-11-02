@@ -72,6 +72,7 @@ export interface Workout {
 
 // Mirrors WorkoutDetailDto, returned by GET /api/workout/:id
 export interface WorkoutExerciseDetail extends WorkoutExercise {
+    equipment: LookupOption | null;
     muscles: ExerciseMuscle[];
     volume: ExerciseVolume;
 }

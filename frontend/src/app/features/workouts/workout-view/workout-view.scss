@@ -40,11 +40,70 @@ mat-accordion {
 }
 
 .sets {
-  margin: 0;
-  padding-left: 1.5em;
+  width: 100%;
+  border-collapse: collapse;
   color: p.$text-strong;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.4em 0;
+  }
+
+  th {
+    font-size: 0.75em;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: p.$outline;
+  }
+
+  td {
+    font-weight: 500;
+  }
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.75em 0 0;
+  padding-top: 0.75em;
+  border-top: p.$border-divider;
+  color: p.$text-strong;
+
+  span:last-child {
+    font-weight: 500;
+  }
 }
 
 .exercise-name {
+    display: block;
+    // mat-panel-title defaults to flex-basis:0, which collapses it in the column layout
+    flex: none;
+    text-transform: capitalize;
+}
+
+.mat-expansion-panel-header {
+    --mat-expansion-header-collapsed-state-height: auto;
+    --mat-expansion-header-expanded-state-height: auto;
+    height: auto;
+}
+
+.header-text {
+    // padding here, not on the header: global styles override the header's own padding
+    padding-block: 0.75em;
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise-equipment {
+    font-size: 0.85em;
+    text-transform: capitalize;
+    opacity: 0.8;
+}
+
+.exercise-muscles {
+    margin: 0 0 1em;
+    font-size: 0.85em;
     text-transform: capitalize;
 }

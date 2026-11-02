@@ -8,6 +8,9 @@
       @if (line()) {
         <span class="line">{{ line() }}</span>
       }
+      @for (detail of details(); track $index) {
+        <span class="line">{{ detail }}</span>
+      }
     </div>
   </div>
 </a>

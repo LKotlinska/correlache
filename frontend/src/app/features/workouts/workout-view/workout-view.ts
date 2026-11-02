@@ -39,4 +39,8 @@ export class WorkoutView {
     }
     return [...groups.values()].sort((a, b) => a.id - b.id);
   }
+
+  muscleNames(exercise: WorkoutExerciseDetail): string {
+    return exercise.muscles.map((m) => m.name).join(', ');
+  }
 }

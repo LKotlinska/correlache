@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus, ParseDatePipe, ParseIntPipe, Query } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 import { ExerciseDto } from './dto/exercise.dto.js';
 import { Workout } from './entities/workout.entity.js';
+import { assertOrderedRange } from '../common/validators/ordered-range.js';
 
 @Controller('workout')
 export class WorkoutController {
@@ -21,8 +22,14 @@ export class WorkoutController {
   }
 
   @Get('')
-  async getWorkouts(@CurrentUser() user: User): Promise<Workout[]> {
-    return await this.workoutService.getWorkouts(user.id)
+  async getWorkouts(
+    @CurrentUser() user: User,
+    @Query('from', new ParseDatePipe({ optional: true })) from?: Date,
+    @Query('to', new ParseDatePipe({ optional: true })) to?: Date,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ): Promise<Workout[]> {
+    assertOrderedRange(from, to);
+    return await this.workoutService.getWorkouts(user.id, from, to, limit);
   }
 
   @Get(':id')

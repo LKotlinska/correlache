@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { CreateHeadachePayload, Headache, HeadacheDetail, HeadacheOptions } from '../models/headache.model';
 import { Observable } from 'rxjs';
+import { dateRangeParams } from '../utils/date';
 
 
 @Service()
@@ -16,8 +17,9 @@ export class HeadacheService {
         return this.http.get<HeadacheOptions>('/api/headaches/options');
     };
 
-    getHeadaches(): Observable<HeadacheDetail[]> {
-        return this.http.get<HeadacheDetail[]>('/api/headaches');
+    /** Headaches newest first, optionally only those started from `from` (inclusive) until `to` (exclusive), and at most `limit`. */
+    getHeadaches(range: { from?: Date; to?: Date; limit?: number } = {}): Observable<Headache[]> {
+        return this.http.get<Headache[]>('/api/headaches', { params: dateRangeParams(range) });
     }
 
     update(id: string, payload: CreateHeadachePayload) {

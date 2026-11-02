@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateWorkoutPayload, Exercise, Workout, WorkoutDetail } from '../models/workout.model';
+import { dateRangeParams } from '../utils/date';
 
 @Service()
 export class WorkoutService {
@@ -12,19 +13,20 @@ export class WorkoutService {
     }
 
     create(payload: CreateWorkoutPayload) {
-        return this.http.post('/api/workout', payload);
+        return this.http.post<Workout>('/api/workout', payload);
     }
 
     update(id: string, payload: CreateWorkoutPayload) {
-        return this.http.put(`/api/workout/${id}`, payload);
+        return this.http.put<Workout>(`/api/workout/${id}`, payload);
     }
 
     delete(id: string) {
         return this.http.delete<void>(`/api/workout/${id}`);
     }
 
-    getWorkouts(): Observable<Workout[]> {
-        return this.http.get<Workout[]>('/api/workout');
+    /** Workouts newest first, optionally only those started from `from` (inclusive) until `to` (exclusive), and at most `limit`. */
+    getWorkouts(range: { from?: Date; to?: Date; limit?: number } = {}): Observable<Workout[]> {
+        return this.http.get<Workout[]>('/api/workout', { params: dateRangeParams(range) });
     }
 
     getWorkoutById(id: string): Observable<WorkoutDetail> {

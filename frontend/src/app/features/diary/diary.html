@@ -1,22 +1,53 @@
-@if (headaches.isLoading() || workouts.isLoading()) {
-  <p>Loading…</p>
-} @else if (headaches.error() || workouts.error()) {
+@if (hasInitialError()) {
   <p>Couldn't load headaches or workouts.</p>
+  <app-button appearance="outlined" (click)="retry()">Try again</app-button>
+} @else if (isInitialLoading()) {
+  <mat-progress-bar mode="indeterminate" />
 } @else {
-  @for (headache of headaches.value(); track headache.id) {
-    <app-list-item
-      [link]="['/user/headache', headache.id]"
-      [title]="'Attack - ' + headache.painLevel + '/10'"
-      tone="attack"
-    />
+  <mat-chip-listbox aria-label="Filter diary" [value]="filter()" (change)="onFilterChange($event)">
+    <mat-chip-option value="all">All</mat-chip-option>
+    <mat-chip-option value="headache">Headaches</mat-chip-option>
+    <mat-chip-option value="activity">Workouts</mat-chip-option>
+  </mat-chip-listbox>
 
-    @for (loc of headache.locations; track loc.id) {
-      <p></p>
-    }
+  @for (week of weeks(); track week.key) {
+    <section>
+      <h2 class="week-heading">
+        <span>{{ week.isCurrent ? 'This week' : week.label }}</span>
+        <span class="week-summary">{{ week.summary }}</span>
+      </h2>
+
+      @for (day of week.days; track day.key) {
+        <h3 class="day-heading">{{ day.label }}</h3>
+        @for (entry of day.entries; track entry.kind + entry.id) {
+          <app-list-item
+            [link]="entry.link"
+            [title]="entry.title"
+            [line]="entry.line"
+            [details]="entry.details"
+            [tone]="entry.kind"
+          />
+        }
+      }
+    </section>
   } @empty {
-    <p>No headaches logged yet.</p>
+    <p>Nothing logged in the last {{ weeksLoaded() }} weeks.</p>
   }
-  @for (workout of workouts.value(); track workout.id) {
-    <app-list-item [link]="['/user/workout', workout.id]" [title]="workout.title" tone="activity" />
+
+  @if (isLoadingMore()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (hasLoadMoreError()) {
+    <p>Couldn't load earlier weeks.</p>
+    <app-button appearance="outlined" [isFullWidth]="true" (click)="retry()">Try again</app-button>
+  } @else if (hasEarlier()) {
+    <app-button
+      appearance="outlined"
+      [isFullWidth]="true"
+      [disabled]="isLoadingMore()"
+      (click)="loadEarlier()"
+    >
+      Load earlier weeks
+    </app-button>
   }
 }
