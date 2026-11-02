@@ -7,10 +7,12 @@
       <h1 class="nav-title">{{ activeItem()?.label }}</h1>
     </div>
   </header>
-  <main class="page-wrapper page-content">
-    <mat-tab-nav-panel #tabPanel>
-      <router-outlet />
-    </mat-tab-nav-panel>
+  <div class="page-area">
+    <main class="page-wrapper page-content">
+      <mat-tab-nav-panel #tabPanel>
+        <router-outlet />
+      </mat-tab-nav-panel>
+    </main>
 
     <div class="action-menu">
       @if (open()) {
@@ -39,7 +41,7 @@
         <mat-icon>{{ open() ? 'close' : 'add' }}</mat-icon>
       </button>
     </div>
-  </main>
+  </div>
 
   <nav mat-tab-nav-bar [tabPanel]="tabPanel" headerPosition="below" class="nav-wrapper">
     @for (item of items; track item.path) {

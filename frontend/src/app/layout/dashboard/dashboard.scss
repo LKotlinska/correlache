@@ -33,11 +33,16 @@
         }
     }
 
-    .page-content {
+    .page-area {
         flex: 1;
         min-height: 0; // lets a flex child shrink so overflow works
-        overflow-y: auto; // content scrolls; header and nav stay put
-        position: relative; // anchors the action menu
+        position: relative; // anchors the action menu outside the scrolling content
+
+        .page-content {
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto; // content scrolls; header, nav and action menu stay put
+        }
 
         .action-menu {
             position: absolute;
