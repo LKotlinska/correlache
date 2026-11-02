@@ -53,14 +53,46 @@
               @for (set of ex.sets; track set.id) {
                 <li>
                   @switch (ex.trackingMode) {
-                    @case ('reps') { {{ set.reps ?? '–' }} reps }
-                    @case ('duration') { {{ set.durationSeconds | duration }} }
-                    @case ('duration_distance') { {{ set.distance ?? '–' }} km · {{ set.durationSeconds | duration }} }
-                    @default { {{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }} }
+                    @case ('reps') {
+                      {{ set.reps ?? '–' }} reps
+                    }
+                    <!-- @case ('weight_reps') {
+                      {{ ex.volume.primary.value | number: '1.0-0' }} kg
+                    } -->
+                    @case ('duration') {
+                      {{ set.durationSeconds | duration }}
+                    }
+                    @case ('duration_distance') {
+                      {{ set.distance ?? '–' }} km · {{ set.durationSeconds | duration }}
+                    }
+                    @default {
+                      {{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }}
+                    }
                   }
                 </li>
               }
             </ol>
+            <p class="summary">
+              @switch (ex.trackingMode) {
+                @case ('weight_reps') {
+                  Volume {{ ex.volume.primary.value | number: '1.0-0' }} kg ·
+                  {{ ex.volume.totalReps }} reps
+                }
+                @case ('reps') {
+                  Total {{ ex.volume.totalReps }} reps
+                }
+                @case ('duration') {
+                  Total {{ ex.volume.totalSeconds | duration }}
+                }
+                @case ('duration_distance') {
+                  Total {{ ex.volume.totalDistanceKm | number: '1.0-1' }} km ·
+                  {{ ex.volume.totalSeconds | duration }}
+                  @if (ex.volume.avgSpeedKmh; as speed) {
+                    · avg {{ speed | number: '1.0-1' }} km/h
+                  }
+                }
+              }
+            </p>
           </mat-expansion-panel>
         }
       </mat-accordion>

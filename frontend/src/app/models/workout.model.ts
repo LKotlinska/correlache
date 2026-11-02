@@ -73,8 +73,19 @@ export interface Workout {
 // Mirrors WorkoutDetailDto, returned by GET /api/workout/:id
 export interface WorkoutExerciseDetail extends WorkoutExercise {
     muscles: ExerciseMuscle[];
+    volume: ExerciseVolume;
 }
 
 export interface WorkoutDetail extends Workout {
     exercises: WorkoutExerciseDetail[];
 }
+
+export interface ExerciseVolume {
+    primary: { value: number; unit: VolumeUnit };
+    totalReps: number;
+    totalDistanceKm: number;
+    totalSeconds: number;
+    avgSpeedKmh: number | null;
+}
+
+export type VolumeUnit = 'kg' | 'reps' | 'seconds' | 'km';

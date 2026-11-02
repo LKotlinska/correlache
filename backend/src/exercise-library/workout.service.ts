@@ -8,6 +8,7 @@ import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
 import { ExerciseDto, ExerciseMuscleDto, WorkoutDetailDto } from './dto/exercise.dto.js';
 import { TRACKED_FIELDS } from './tracking-mode.js';
+import { exerciseVolume } from './volume.js';
 
 @Injectable()
 export class WorkoutService {
@@ -166,6 +167,7 @@ export class WorkoutService {
       exercises: workout.exercises.map((e) => ({
         ...e,
         muscles: musclesByExerciseId.get(e.exerciseId ?? -1) ?? [],
+        volume: exerciseVolume(e.trackingMode, e.sets),
       })),
     };
   }
