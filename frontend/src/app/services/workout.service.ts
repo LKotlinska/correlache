@@ -13,11 +13,11 @@ export class WorkoutService {
     }
 
     create(payload: CreateWorkoutPayload) {
-        return this.http.post('/api/workout', payload);
+        return this.http.post<Workout>('/api/workout', payload);
     }
 
     update(id: string, payload: CreateWorkoutPayload) {
-        return this.http.put(`/api/workout/${id}`, payload);
+        return this.http.put<Workout>(`/api/workout/${id}`, payload);
     }
 
     delete(id: string) {
