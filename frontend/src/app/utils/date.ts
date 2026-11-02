@@ -1,3 +1,5 @@
+const LOCALE = 'en-GB';
+
 export function isSameDay(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear()
     && a.getMonth() === b.getMonth()
@@ -32,19 +34,25 @@ export function dayKey(date: Date): string {
 export function dayLabel(date: Date, now = new Date()): string {
   if (isSameDay(date, now)) return 'Today';
   if (isSameDay(date, addDays(now, -1))) return 'Yesterday';
-  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  return date.toLocaleDateString(LOCALE, { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+/** "14:05". */
+export function formatTime(date: Date): string {
+  return date.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
 }
 
 /** "20 – 26 Oct" for the week starting at `monday`. */
 export function weekLabel(monday: Date): string {
   const sunday = addDays(monday, 6);
-  const short = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const short = (d: Date) => d.toLocaleDateString(LOCALE, { day: 'numeric', month: 'short' });
   return `${short(monday)} – ${short(sunday)}`;
 }
 
-/** Query params for an optional `from`/`to` range, as ISO strings. */
-export function dateRangeParams({ from, to }: { from?: Date; to?: Date }): Record<string, string> {
+/** Query params for an optional `from`/`to` range as ISO strings, and an optional `limit`. */
+export function dateRangeParams({ from, to, limit }: { from?: Date; to?: Date; limit?: number }): Record<string, string> {
   const params: Record<string, string> = {};
+  if (limit) params['limit'] = String(limit);
   if (from) params['from'] = from.toISOString();
   if (to) params['to'] = to.toISOString();
   return params;

@@ -102,12 +102,13 @@ export class HeadacheService {
     return { triggers, symptoms, reliefMeasures, headacheLocations };
   }
 
-  /** The user's headaches, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive). */
-  async getHeadaches(userId: string, from?: Date, to?: Date): Promise<Headache[]> {
+  /** The user's headaches, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive), and to at most `limit` of them. */
+  async getHeadaches(userId: string, from?: Date, to?: Date, limit?: number): Promise<Headache[]> {
     const headaches = await this.headacheRepo.find({
       where: { userId, startedAt: dateRange(from, to) },
       relations: { locations: true, symptoms: true },
       order: { startedAt: 'DESC'},
+      take: limit,
     });
 
     return headaches;

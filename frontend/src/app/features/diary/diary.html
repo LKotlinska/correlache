@@ -1,5 +1,6 @@
-@if (headaches.error() || workouts.error()) {
+@if (hasInitialError()) {
   <p>Couldn't load headaches or workouts.</p>
+  <app-button appearance="outlined" (click)="retry()">Try again</app-button>
 } @else if (isInitialLoading()) {
   <mat-progress-bar mode="indeterminate" />
 } @else {
@@ -36,12 +37,17 @@
   @if (isLoadingMore()) {
     <mat-progress-bar mode="indeterminate" />
   }
-  <app-button
-    appearance="outlined"
-    [isFullWidth]="true"
-    [disabled]="isLoadingMore()"
-    (click)="loadEarlier()"
-  >
-    Load earlier weeks
-  </app-button>
+  @if (hasLoadMoreError()) {
+    <p>Couldn't load earlier weeks.</p>
+    <app-button appearance="outlined" [isFullWidth]="true" (click)="retry()">Try again</app-button>
+  } @else if (hasEarlier()) {
+    <app-button
+      appearance="outlined"
+      [isFullWidth]="true"
+      [disabled]="isLoadingMore()"
+      (click)="loadEarlier()"
+    >
+      Load earlier weeks
+    </app-button>
+  }
 }

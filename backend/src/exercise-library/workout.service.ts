@@ -120,8 +120,8 @@ export class WorkoutService {
     }));
   }
 
-  /** The user's workouts, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive). */
-  async getWorkouts(userId: string, from?: Date, to?: Date): Promise<Workout[]> {
+  /** The user's workouts, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive), and to at most `limit` of them. */
+  async getWorkouts(userId: string, from?: Date, to?: Date, limit?: number): Promise<Workout[]> {
   return await this.workoutRepo.find({
       where: { userId, startedAt: dateRange(from, to) },
       relations: { exercises: { sets: true } },
@@ -129,6 +129,7 @@ export class WorkoutService {
         startedAt: 'DESC',
         exercises: { order: 'ASC', sets: { order: 'ASC' } },
       },
+      take: limit,
     });
   }
 
@@ -154,7 +155,9 @@ export class WorkoutService {
     const musclesByExerciseId = new Map<number, ExerciseMuscleDto[]>();
     const equipmentByExerciseId = new Map<number, LookupDto>();
     for (const exercise of libraryExercises) {
-      equipmentByExerciseId.set(exercise.id, { id: exercise.equipment.id, name: exercise.equipment.name });
+      if (exercise.equipment) {
+        equipmentByExerciseId.set(exercise.id, { id: exercise.equipment.id, name: exercise.equipment.name });
+      }
       musclesByExerciseId.set(
         exercise.id,
         exercise.muscles.map((em) => ({

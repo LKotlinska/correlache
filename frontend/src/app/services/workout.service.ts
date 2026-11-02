@@ -24,8 +24,8 @@ export class WorkoutService {
         return this.http.delete<void>(`/api/workout/${id}`);
     }
 
-    /** Workouts newest first, optionally only those started from `from` (inclusive) until `to` (exclusive). */
-    getWorkouts(range: { from?: Date; to?: Date } = {}): Observable<Workout[]> {
+    /** Workouts newest first, optionally only those started from `from` (inclusive) until `to` (exclusive), and at most `limit`. */
+    getWorkouts(range: { from?: Date; to?: Date; limit?: number } = {}): Observable<Workout[]> {
         return this.http.get<Workout[]>('/api/workout', { params: dateRangeParams(range) });
     }
 
