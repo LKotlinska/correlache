@@ -49,47 +49,77 @@
             <mat-expansion-panel-header>
               <mat-panel-title class="exercise-name">{{ ex.exerciseName }}</mat-panel-title>
             </mat-expansion-panel-header>
-            <ol class="sets">
-              @for (set of ex.sets; track set.id) {
-                <li>
+            <table class="sets">
+              <thead>
+                <tr>
+                  <th>Set</th>
                   @switch (ex.trackingMode) {
                     @case ('reps') {
-                      {{ set.reps ?? '–' }} reps
+                      <th>Reps</th>
                     }
-                    <!-- @case ('weight_reps') {
-                      {{ ex.volume.primary.value | number: '1.0-0' }} kg
-                    } -->
                     @case ('duration') {
-                      {{ set.durationSeconds | duration }}
+                      <th>Time</th>
                     }
                     @case ('duration_distance') {
-                      {{ set.distance ?? '–' }} km · {{ set.durationSeconds | duration }}
+                      <th>Distance</th>
+                      <th>Time</th>
                     }
                     @default {
-                      {{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }}
+                      <th>Weight</th>
+                      <th>Reps</th>
                     }
                   }
-                </li>
-              }
-            </ol>
+                </tr>
+              </thead>
+              <tbody>
+                @for (set of ex.sets; track set.id; let i = $index) {
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    @switch (ex.trackingMode) {
+                      @case ('reps') {
+                        <td>{{ set.reps ?? '–' }}</td>
+                      }
+                      @case ('duration') {
+                        <td>{{ set.durationSeconds | duration }}</td>
+                      }
+                      @case ('duration_distance') {
+                        <td>{{ set.distance ?? '–' }} km</td>
+                        <td>{{ set.durationSeconds | duration }}</td>
+                      }
+                      @default {
+                        <td>{{ set.weight ?? '–' }} kg</td>
+                        <td>{{ set.reps ?? '–' }}</td>
+                      }
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
             <p class="summary">
               @switch (ex.trackingMode) {
                 @case ('weight_reps') {
-                  Volume {{ ex.volume.primary.value | number: '1.0-0' }} kg ·
-                  {{ ex.volume.totalReps }} reps
+                  <span>Volume</span>
+                  <span>
+                    {{ ex.volume.primary.value | number: '1.0-0' }} kg · {{ ex.volume.totalReps }} reps
+                  </span>
                 }
                 @case ('reps') {
-                  Total {{ ex.volume.totalReps }} reps
+                  <span>Total</span>
+                  <span>{{ ex.volume.totalReps }} reps</span>
                 }
                 @case ('duration') {
-                  Total {{ ex.volume.totalSeconds | duration }}
+                  <span>Total</span>
+                  <span>{{ ex.volume.totalSeconds | duration }}</span>
                 }
                 @case ('duration_distance') {
-                  Total {{ ex.volume.totalDistanceKm | number: '1.0-1' }} km ·
-                  {{ ex.volume.totalSeconds | duration }}
-                  @if (ex.volume.avgSpeedKmh; as speed) {
-                    · avg {{ speed | number: '1.0-1' }} km/h
-                  }
+                  <span>Total</span>
+                  <span>
+                    {{ ex.volume.totalDistanceKm | number: '1.0-1' }} km ·
+                    {{ ex.volume.totalSeconds | duration }}
+                    @if (ex.volume.avgSpeedKmh; as speed) {
+                      · avg {{ speed | number: '1.0-1' }} km/h
+                    }
+                  </span>
                 }
               }
             </p>
