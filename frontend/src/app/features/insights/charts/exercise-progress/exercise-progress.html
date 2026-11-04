@@ -7,11 +7,25 @@
       @if (exercises().length) {
         <mat-form-field class="exercise-select" appearance="outline" subscriptSizing="dynamic">
           <mat-label>Exercise</mat-label>
-          <mat-select [value]="selectedKey()" (selectionChange)="selectedKey.set($event.value)">
-            @for (exercise of exercises(); track exercise.key) {
+          <input
+            matInput
+            [matAutocomplete]="exerciseOptions"
+            [value]="query()"
+            (input)="query.set($any($event.target).value)"
+          />
+          <mat-autocomplete
+            #exerciseOptions
+            [displayWith]="nameOf"
+            (optionSelected)="select($event.option.value)"
+            (closed)="resetQuery()"
+          >
+            @for (exercise of filteredExercises(); track exercise.key) {
               <mat-option [value]="exercise.key">{{ exercise.name }}</mat-option>
+            } @empty {
+              <!-- Keeps the panel open while typing, so resetQuery() only runs when the user leaves the field. -->
+              <mat-option disabled>No matching exercises</mat-option>
             }
-          </mat-select>
+          </mat-autocomplete>
         </mat-form-field>
 
         @if (summary(); as s) {

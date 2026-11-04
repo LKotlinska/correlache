@@ -3,7 +3,8 @@ import { WorkoutService } from '../../../../services/workout.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -32,7 +33,7 @@ interface ExerciseOption {
 @Component({
   imports: [
     BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar,
-    MatFormField, MatLabel, MatSelect, MatOption,
+    MatFormField, MatLabel, MatInput, MatAutocomplete, MatAutocompleteTrigger, MatOption,
   ],
   selector: 'app-exercise-progress',
   styleUrl: './exercise-progress.scss',
@@ -72,6 +73,29 @@ export class ExerciseProgress {
   selectedKey = linkedSignal(() => this.exercises()[0]?.key ?? null);
 
   selected = computed(() => this.exercises().find(e => e.key === this.selectedKey()) ?? null);
+
+  /** Text in the exercise field. Shows the picked exercise's name until the user types. */
+  query = linkedSignal(() => this.selected()?.name ?? '');
+
+  /** Exercises whose name contains the typed text. All of them while the field still shows the picked name. */
+  filteredExercises = computed(() => {
+    const query = this.query().trim().toLowerCase();
+    if (query === this.selected()?.name.toLowerCase()) return this.exercises();
+    return this.exercises().filter(e => e.name.toLowerCase().includes(query));
+  });
+
+  /** Shows the exercise's name in the field after an option, whose value is the key, is picked. */
+  nameOf = (key: string | null) => this.exercises().find(e => e.key === key)?.name ?? '';
+
+  select(key: string) {
+    this.selectedKey.set(key);
+    this.query.set(this.nameOf(key));
+  }
+
+  /** Puts the picked exercise's name back when the field is left with typed text that wasn't picked. */
+  resetQuery() {
+    this.query.set(this.selected()?.name ?? '');
+  }
 
   metric = computed(() => {
     const exercise = this.selected();
