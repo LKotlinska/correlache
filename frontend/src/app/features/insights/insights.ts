@@ -8,6 +8,7 @@ import { ExerciseProgress } from './charts/exercise-progress/exercise-progress';
 import { MuscleBalance } from './charts/muscle-balance/muscle-balance';
 import { WorkoutsVsHeadaches } from './charts/workouts-vs-headaches/workouts-vs-headaches';
 import { WorkoutDayHeadaches } from './charts/workout-day-headaches/workout-day-headaches';
+import { TimeSinceWorkout } from './charts/time-since-workout/time-since-workout';
 import { InsightsData } from './insights-data';
 
 @Component({
@@ -19,6 +20,7 @@ import { InsightsData } from './insights-data';
     WorkoutsPerWeek,
     WorkoutsVsHeadaches,
     WorkoutDayHeadaches,
+    TimeSinceWorkout,
     ExerciseProgress,
     MuscleBalance,
   ],
