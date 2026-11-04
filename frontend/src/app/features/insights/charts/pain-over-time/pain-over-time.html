@@ -1,0 +1,31 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Pain level over time</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (headaches.hasValue()) {
+      @if (summary(); as s) {
+        <div class="summary">
+          <p>
+            Your average pain level was <strong>{{ s.average }}</strong> out of 10.
+            @switch (s.trend) {
+              @case ('lower') { The last 4 weeks have been <strong>milder</strong> than before. }
+              @case ('higher') { The last 4 weeks have been <strong>more painful</strong> than before. }
+              @case ('same') { The last 4 weeks have been about the same as before. }
+            }
+          </p>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="line" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>No headaches logged in the last 3 months.</p>
+      }
+    } @else if (headaches.error()) {
+      <p>Couldn't load headache data.</p>
+    } @else if (headaches.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

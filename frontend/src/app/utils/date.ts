@@ -63,3 +63,8 @@ export function maxTimeFor(date: Date | null): Date | null {
   const now = new Date();
   return date && isSameDay(date, now) ? now : null;
 }
+
+/** First day of the month `monthsAgo` months before the current one, e.g. 0 for this month. */
+export function monthStart(monthsAgo: number, now = new Date()): Date {
+  return new Date(now.getFullYear(), now.getMonth() - monthsAgo, 1);
+}

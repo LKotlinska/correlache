@@ -52,7 +52,7 @@ export function exerciseVolume(mode: TrackingMode, sets: VolumeSet[]): ExerciseV
     let totalReps = 0;
     let totalDistanceKm = 0;
     let totalSeconds = 0;
-    let avgSpeedKmh = null;
+    let avgSpeedKmh: number | null = null;
 
     for ( const set of sets) {
         const values = trackedValues(mode, set);
@@ -64,7 +64,7 @@ export function exerciseVolume(mode: TrackingMode, sets: VolumeSet[]): ExerciseV
 
     // Total distance over total time
     if (mode === 'duration_distance' && totalSeconds > 0 && totalDistanceKm > 0) {
-        const avgSpeedKmh = totalDistanceKm / (totalSeconds / 3600);
+        avgSpeedKmh = totalDistanceKm / (totalSeconds / 3600);
     }
 
     return {
