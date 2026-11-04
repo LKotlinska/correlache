@@ -9,3 +9,10 @@ export const baseBarOptions: ChartConfiguration<'bar'>['options'] = {
   maintainAspectRatio: false,
   plugins: { legend: { display: false } },
 };
+
+/** Same starting point as baseBarOptions, for line charts. */
+export const baseLineOptions: ChartConfiguration<'line'>['options'] = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+};
