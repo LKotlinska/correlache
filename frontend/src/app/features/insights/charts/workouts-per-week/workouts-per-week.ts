@@ -6,6 +6,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseBarOptions, CHART_COLOR } from '../../chart-defaults';
+import { addDays, startOfWeek } from '../../../../utils/date';
 
 const WEEKS_SHOWN = 8;
 
@@ -28,11 +29,8 @@ export class WorkoutsPerWeek {
 
   /** Monday 00:00 of each shown week, oldest to newest. */
   private weekStarts = computed(() => {
-    const now = new Date();
-    // getDay() counts from Sunday, so shift it to count from Monday.
-    const thisMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (now.getDay() + 6) % 7);
-    return Array.from({ length: WEEKS_SHOWN }, (_, i) =>
-      new Date(thisMonday.getFullYear(), thisMonday.getMonth(), thisMonday.getDate() - 7 * (WEEKS_SHOWN - 1 - i)));
+    const thisMonday = startOfWeek(new Date());
+    return Array.from({ length: WEEKS_SHOWN }, (_, i) => addDays(thisMonday, -7 * (WEEKS_SHOWN - 1 - i)));
   });
 
   /** Oldest to newest, including weeks without any workouts. */

@@ -1,0 +1,28 @@
+.exercise-select {
+  width: 100%;
+  margin: 1rem 0;
+  text-transform: capitalize;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container, #f0ebeb);
+
+  p {
+    margin: 0;
+  }
+}
+
+.metric {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 220px;
+}

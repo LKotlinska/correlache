@@ -1,0 +1,45 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Exercise progress</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue()) {
+      @if (exercises().length) {
+        <mat-form-field class="exercise-select" appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Exercise</mat-label>
+          <mat-select [value]="selectedKey()" (selectionChange)="selectedKey.set($event.value)">
+            @for (exercise of exercises(); track exercise.key) {
+              <mat-option [value]="exercise.key">{{ exercise.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              Your best is <strong>{{ s.best }}</strong>.
+              @if (s.improved) {
+                That is <strong>{{ s.change }}</strong> since {{ s.since }}.
+              } @else {
+                Change since {{ s.since }}: <strong>{{ s.change }}</strong>.
+              }
+            </p>
+          </div>
+        } @else {
+          <p>Log this exercise again to see your progress.</p>
+        }
+
+        <p class="metric">{{ metric()?.label }} ({{ metric()?.unit === 's' ? 'min:sec' : metric()?.unit }})</p>
+        <div class="chart-wrap">
+          <canvas baseChart type="line" [data]="chartData()" [options]="chartOptions()"></canvas>
+        </div>
+      } @else {
+        <p>No workouts logged in the last 6 months.</p>
+      }
+    } @else if (workouts.error()) {
+      <p>Couldn't load workout data.</p>
+    } @else if (workouts.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
