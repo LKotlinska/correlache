@@ -6,8 +6,10 @@ import { EntityManager, In, Repository } from 'typeorm';
 import { Workout } from './entities/workout.entity.js';
 import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
-import { ExerciseDto, ExerciseMuscleDto, WorkoutDetailDto } from './dto/exercise.dto.js';
+import { ExerciseDto, ExerciseMuscleDto, LookupDto, WorkoutDetailDto } from './dto/exercise.dto.js';
 import { TRACKED_FIELDS } from './tracking-mode.js';
+import { exerciseVolume } from './volume.js';
+import { dateRange } from '../common/date-range.js';
 
 @Injectable()
 export class WorkoutService {
@@ -118,14 +120,16 @@ export class WorkoutService {
     }));
   }
 
-  async getWorkouts(userId: string): Promise<Workout[]> {
+  /** The user's workouts, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive), and to at most `limit` of them. */
+  async getWorkouts(userId: string, from?: Date, to?: Date, limit?: number): Promise<Workout[]> {
   return await this.workoutRepo.find({
-      where: { userId },
+      where: { userId, startedAt: dateRange(from, to) },
       relations: { exercises: { sets: true } },
       order: {
         startedAt: 'DESC',
         exercises: { order: 'ASC', sets: { order: 'ASC' } },
       },
+      take: limit,
     });
   }
 
@@ -144,12 +148,16 @@ export class WorkoutService {
     const libraryExercises = exerciseIds.length
       ? await this.exerciseRepo.find({
           where: { id: In(exerciseIds) },
-          relations: { muscles: { muscle: { muscleGroup: true } } },
+          relations: { equipment: true, muscles: { muscle: { muscleGroup: true } } },
         })
       : [];
 
     const musclesByExerciseId = new Map<number, ExerciseMuscleDto[]>();
+    const equipmentByExerciseId = new Map<number, LookupDto>();
     for (const exercise of libraryExercises) {
+      if (exercise.equipment) {
+        equipmentByExerciseId.set(exercise.id, { id: exercise.equipment.id, name: exercise.equipment.name });
+      }
       musclesByExerciseId.set(
         exercise.id,
         exercise.muscles.map((em) => ({
@@ -165,7 +173,9 @@ export class WorkoutService {
       ...workout,
       exercises: workout.exercises.map((e) => ({
         ...e,
+        equipment: equipmentByExerciseId.get(e.exerciseId ?? -1) ?? null,
         muscles: musclesByExerciseId.get(e.exerciseId ?? -1) ?? [],
+        volume: exerciseVolume(e.trackingMode, e.sets),
       })),
     };
   }

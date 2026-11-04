@@ -235,7 +235,7 @@ export class WorkoutForm {
       ? this.workoutService.update(this.workoutId, payload)
       : this.workoutService.create(payload);
     request.subscribe({
-      next: () => this.onSaved(),
+      next: (saved) => this.onSaved(saved.id),
       error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
         this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
@@ -243,16 +243,14 @@ export class WorkoutForm {
     });
   }
 
-  private onSaved() {
+  private onSaved(savedId: string) {
     this.submitted = true;
     if (this.workoutId) {
       this.exerciseDraftService.endEdit();
-      this.router.navigate(['/user/workout', this.workoutId], { replaceUrl: true });
-      return;
+    } else {
+      this.exerciseDraftService.clear();
     }
-    this.exerciseDraftService.clear();
-    // Temporary snackbar - should redirect to workout view
-    this.snackBar.open('Workout has been added', 'Close', { panelClass: 'snackbar-success' });
+    this.router.navigate(['/user/workout', this.workoutId ?? savedId], { replaceUrl: true });
   }
 
   private buildPayload(): CreateWorkoutPayload {

@@ -1,0 +1,28 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Time from workout to headache</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue() && headaches.hasValue()) {
+      @if (list().length) {
+        @let s = summary();
+        <div class="summary">
+          <p>
+            <strong>{{ s.withinDay }}</strong> of your <strong>{{ s.total }}</strong>
+            {{ s.total === 1 ? 'headache' : 'headaches' }} started within 24 hours after a workout.
+          </p>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>No headaches logged in the last 8 weeks.</p>
+      }
+    } @else if (workouts.error() || headaches.error()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

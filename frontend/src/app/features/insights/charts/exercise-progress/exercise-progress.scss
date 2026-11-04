@@ -1,0 +1,21 @@
+@use '../../summary';
+
+.exercise-select {
+  width: 100%;
+  text-transform: capitalize;
+  margin-top: 1rem;
+}
+
+.summary {
+  @include summary.summary;
+}
+
+.metric {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 220px;
+}

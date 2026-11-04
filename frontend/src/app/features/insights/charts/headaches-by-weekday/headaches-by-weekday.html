@@ -1,0 +1,28 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headaches by day of the week</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (headaches.hasValue()) {
+      @if (list().length) {
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              Your headaches most often start on <strong>{{ s.days }}</strong>.
+            </p>
+          </div>
+        }
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>No headaches logged in the last 3 months.</p>
+      }
+    } @else if (headaches.error()) {
+      <p>Couldn't load headache data.</p>
+    } @else if (headaches.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

@@ -47,20 +47,90 @@
         @for (ex of w.exercises; track ex.id) {
           <mat-expansion-panel [disabled]="!ex.sets.length">
             <mat-expansion-panel-header>
-              <mat-panel-title class="exercise-name">{{ ex.exerciseName }}</mat-panel-title>
+              <div class="header-text">
+                <mat-panel-title class="exercise-name">{{ ex.exerciseName }}</mat-panel-title>
+                @if (ex.equipment) {
+                  <span class="exercise-equipment">{{ ex.equipment.name }}</span>
+                }
+              </div>
             </mat-expansion-panel-header>
-            <ol class="sets">
-              @for (set of ex.sets; track set.id) {
-                <li>
+            @if (ex.muscles.length) {
+              <p class="exercise-muscles">{{ muscleNames(ex) }}</p>
+            }
+            <table class="sets">
+              <thead>
+                <tr>
+                  <th>Set</th>
                   @switch (ex.trackingMode) {
-                    @case ('reps') { {{ set.reps ?? '–' }} reps }
-                    @case ('duration') { {{ set.durationSeconds | duration }} }
-                    @case ('duration_distance') { {{ set.distance ?? '–' }} km · {{ set.durationSeconds | duration }} }
-                    @default { {{ set.weight ?? '–' }} kg x {{ set.reps ?? '–' }} }
+                    @case ('reps') {
+                      <th>Reps</th>
+                    }
+                    @case ('duration') {
+                      <th>Time</th>
+                    }
+                    @case ('duration_distance') {
+                      <th>Distance</th>
+                      <th>Time</th>
+                    }
+                    @default {
+                      <th>Weight</th>
+                      <th>Reps</th>
+                    }
                   }
-                </li>
+                </tr>
+              </thead>
+              <tbody>
+                @for (set of ex.sets; track set.id; let i = $index) {
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    @switch (ex.trackingMode) {
+                      @case ('reps') {
+                        <td>{{ set.reps ?? '–' }}</td>
+                      }
+                      @case ('duration') {
+                        <td>{{ set.durationSeconds | duration }}</td>
+                      }
+                      @case ('duration_distance') {
+                        <td>{{ set.distance ?? '–' }} km</td>
+                        <td>{{ set.durationSeconds | duration }}</td>
+                      }
+                      @default {
+                        <td>{{ set.weight ?? '–' }} kg</td>
+                        <td>{{ set.reps ?? '–' }}</td>
+                      }
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+            <p class="summary">
+              @switch (ex.trackingMode) {
+                @case ('weight_reps') {
+                  <span>Volume</span>
+                  <span>
+                    {{ ex.volume.primary.value | number: '1.0-0' }} kg · {{ ex.volume.totalReps }} reps
+                  </span>
+                }
+                @case ('reps') {
+                  <span>Total</span>
+                  <span>{{ ex.volume.totalReps }} reps</span>
+                }
+                @case ('duration') {
+                  <span>Total</span>
+                  <span>{{ ex.volume.totalSeconds | duration }}</span>
+                }
+                @case ('duration_distance') {
+                  <span>Total</span>
+                  <span>
+                    {{ ex.volume.totalDistanceKm | number: '1.0-1' }} km ·
+                    {{ ex.volume.totalSeconds | duration }}
+                    @if (ex.volume.avgSpeedKmh; as speed) {
+                      · avg {{ speed | number: '1.0-1' }} km/h
+                    }
+                  </span>
+                }
               }
-            </ol>
+            </p>
           </mat-expansion-panel>
         }
       </mat-accordion>

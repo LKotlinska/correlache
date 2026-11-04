@@ -1,0 +1,11 @@
+@use '../../summary';
+
+.summary {
+  @include summary.summary;
+  margin-bottom: 1rem;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 220px;
+}

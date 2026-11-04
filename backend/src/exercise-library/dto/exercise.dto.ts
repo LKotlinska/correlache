@@ -1,6 +1,7 @@
 import { MuscleRole } from '../entities/exercise-muscle.entity.js';
 import { Workout } from '../entities/workout.entity.js';
 import { WorkoutExercise } from '../entities/workout-exercise.entity.js';
+import { ExerciseVolume } from '../volume.js';
 
 export class LookupDto {
     id: number;
@@ -25,7 +26,9 @@ export class ExerciseDto {
 }
 
 export class WorkoutExerciseDetailDto extends WorkoutExercise {
+    equipment: LookupDto | null;
     muscles: ExerciseMuscleDto[];
+    volume: ExerciseVolume;
 }
 
 export class WorkoutDetailDto extends Workout {

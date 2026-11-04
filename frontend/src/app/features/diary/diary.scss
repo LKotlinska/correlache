@@ -1,0 +1,29 @@
+.week-heading {
+  display: flex;
+  justify-content: space-between;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.week-summary {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.day-heading {
+  margin: 1rem 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+mat-chip-listbox {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+app-button {
+  display: block;
+  margin-top: 1.5rem;
+}

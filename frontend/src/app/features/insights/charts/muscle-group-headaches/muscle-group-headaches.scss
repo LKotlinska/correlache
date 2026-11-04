@@ -1,0 +1,16 @@
+@use '../../summary';
+
+.summary {
+  @include summary.summary;
+  margin-bottom: 1rem;
+}
+
+.note {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+/* Height is set from the component, one row per muscle group. */
+.chart-wrap {
+  position: relative;
+}

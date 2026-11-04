@@ -1,0 +1,33 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Muscle balance</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (hasData()) {
+      @if (summary(); as s) {
+        <div class="summary">
+          <p>
+            In the last 4 weeks you trained <strong>{{ s.most }}</strong> the most.
+            @if (s.untrained) {
+              You haven't trained <strong>{{ s.untrained }}</strong
+              >.
+            }
+          </p>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="radar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+        <p class="note">Sets per muscle group.</p>
+      } @else if (list().length) {
+        <p>None of your workouts in the last 4 weeks trained a tracked muscle group.</p>
+      } @else {
+        <p>No workouts logged in the last 4 weeks.</p>
+      }
+    } @else if (hasError()) {
+      <p>Couldn't load workout data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,15 @@
+@use '../../summary';
+
+.summary {
+  @include summary.summary;
+}
+
+.year {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 200px;
+}
