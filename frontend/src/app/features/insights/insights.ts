@@ -5,9 +5,10 @@ import { PainOverTime } from './charts/pain-over-time/pain-over-time';
 import { HeadachesByWeekday } from './charts/headaches-by-weekday/headaches-by-weekday';
 import { WorkoutsPerWeek } from './charts/workouts-per-week/workouts-per-week';
 import { ExerciseProgress } from './charts/exercise-progress/exercise-progress';
+import { MuscleBalance } from './charts/muscle-balance/muscle-balance';
 
 @Component({
-  imports: [HeadachesPerMonth, TopTriggers, PainOverTime, HeadachesByWeekday, WorkoutsPerWeek, ExerciseProgress],
+  imports: [HeadachesPerMonth, TopTriggers, PainOverTime, HeadachesByWeekday, WorkoutsPerWeek, ExerciseProgress, MuscleBalance],
   selector: 'app-insights',
   styleUrl: './insights.scss',
   templateUrl: './insights.html',

@@ -16,3 +16,10 @@ export const baseLineOptions: ChartConfiguration<'line'>['options'] = {
   maintainAspectRatio: false,
   plugins: { legend: { display: false } },
 };
+
+/** Same starting point as baseBarOptions, for radar charts. */
+export const baseRadarOptions: ChartConfiguration<'radar'>['options'] = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+};

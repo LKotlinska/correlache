@@ -1,0 +1,30 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Muscle balance</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (data.hasValue()) {
+      @if (summary(); as s) {
+        <div class="summary">
+          <p>
+            In the last 4 weeks you trained <strong>{{ s.most }}</strong> the most.
+            @if (s.untrained) {
+              You haven't trained <strong>{{ s.untrained }}</strong>.
+            }
+          </p>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="radar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+        <p class="note">Sets per muscle group. Muscles an exercise works secondarily count as half a set.</p>
+      } @else {
+        <p>No workouts logged in the last 4 weeks.</p>
+      }
+    } @else if (data.error()) {
+      <p>Couldn't load workout data.</p>
+    } @else if (data.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
