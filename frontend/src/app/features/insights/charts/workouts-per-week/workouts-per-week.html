@@ -1,0 +1,28 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Workouts per week</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue()) {
+      @if (workouts.value().length) {
+        <div class="summary">
+          <p>
+            You have worked out <strong>{{ summary().thisWeek }}</strong>
+            {{ summary().thisWeek === 1 ? 'time' : 'times' }} this week, and on average
+            <strong>{{ summary().average }}</strong> times a week.
+          </p>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>No workouts logged in the last 8 weeks.</p>
+      }
+    } @else if (workouts.error()) {
+      <p>Couldn't load workout data.</p>
+    } @else if (workouts.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
