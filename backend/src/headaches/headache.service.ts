@@ -106,7 +106,7 @@ export class HeadacheService {
   async getHeadaches(userId: string, from?: Date, to?: Date, limit?: number): Promise<Headache[]> {
     const headaches = await this.headacheRepo.find({
       where: { userId, startedAt: dateRange(from, to) },
-      relations: { locations: true, symptoms: true },
+      relations: { locations: true, symptoms: true, triggers: true },
       order: { startedAt: 'DESC'},
       take: limit,
     });

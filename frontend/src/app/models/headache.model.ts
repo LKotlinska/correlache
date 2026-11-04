@@ -35,7 +35,8 @@ export interface Headache {
     notes: string | null,
     /** Included in the list response only */
     locations?: LookupOption[],
-    symptoms?: LookupOption[]
+    symptoms?: LookupOption[],
+    triggers?: LookupOption[]
 }
 
 export interface HeadacheDetail extends Headache {
