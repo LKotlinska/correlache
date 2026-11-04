@@ -69,12 +69,10 @@ export class Diary {
   private pages = signal<DiaryPage[]>([]);
 
   pageResource = rxResource({
-    /** Re-run the resource whenever page changes */
     params: () => ({ page: this.page() }),
     stream: ({ params: { page } }) => {
       const from = this.pageStart(page);
       const to = page === 0 ? undefined : this.pageStart(page - 1);
-      /** forkJoin could cause the whole page to fail if one request fails - keep for now */
       return forkJoin({
         headaches: this.headacheService.getHeadaches({ from, to }),
         workouts: this.workoutService.getWorkouts({ from, to }),
@@ -91,8 +89,7 @@ export class Diary {
     },
   });
 
-  /** Describe the state of the diary's paged loading. */
-  /** Update whenever pages or pageResource changes. */
+  /** True only before the first page has loaded, so loading earlier weeks does not blank the list. */
   isInitialLoading = computed(() => this.pages().length === 0 && !this.pageResource.error());
   hasInitialError = computed(() => this.pages().length === 0 && !!this.pageResource.error());
   hasLoadMoreError = computed(() => this.pages().length > 0 && !!this.pageResource.error());
@@ -100,23 +97,19 @@ export class Diary {
   hasEarlier = computed(() => this.pages().at(-1)?.hasEarlier ?? false);
   weeksLoaded = computed(() => this.pages().length * WEEKS_PER_PAGE);
 
-  /** Builds a new array from the old one. */
   constructor() {
     effect(() => {
       if (!this.pageResource.hasValue()) return;
       const loaded = this.pageResource.value();
-      /** Untracked means the effect re-runs only when the resource produces a new value. */
       untracked(() => this.pages.update((pages) => [...pages.slice(0, loaded.page), loaded]));
     });
   }
 
-  /** Turns the flat list of loaded entries into entries grouped by week */
   weeks = computed<DiaryWeek[]>(() => {
     const filter = this.filter();
     const entries = [...this.headacheEntries(), ...this.workoutEntries()]
       .filter((entry) => filter === 'all' || entry.kind === filter)
-      /** Subtracting a from b gives a descending sort. */
-      .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime()); 
+      .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime());
     const weeks = new Map<string, { monday: Date; entries: DiaryEntry[] }>();
     for (const entry of entries) {
       const monday = startOfWeek(entry.startedAt);
@@ -135,7 +128,7 @@ export class Diary {
   });
 
   onFilterChange(event: MatChipListboxChange) {
-    /** Clicking the selected chip would clear the selection, so keep the current filter instead. */ 
+    // Clicking the selected chip would clear the selection; keep the current filter instead
     if (event.value) this.filter.set(event.value);
     else event.source.value = this.filter();
   }
@@ -187,7 +180,6 @@ export class Diary {
     return [...days.values()];
   }
 
-  /** Builds the short summary string for a week, such as "2 workouts, 1 headache" */
   private summarise(entries: DiaryEntry[]): string {
     const workouts = entries.filter((e) => e.kind === 'activity').length;
     const headaches = entries.length - workouts;
@@ -207,7 +199,6 @@ export class Diary {
     return [formatTime(new Date(startedAt)), formatDuration(seconds)].filter(Boolean).join(' · ');
   }
 
-  /** Builds the one-line description for a single workout - "4 exercises, 12 sets" */
   private workoutDetail(workout: Workout): string {
     const exercises = workout.exercises.length;
     const sets = workout.exercises.reduce((sum, e) => sum + e.sets.length, 0);

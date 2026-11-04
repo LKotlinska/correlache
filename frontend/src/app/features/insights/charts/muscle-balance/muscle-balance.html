@@ -3,13 +3,14 @@
     <mat-card-title>Muscle balance</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    @if (data.hasValue()) {
+    @if (hasData()) {
       @if (summary(); as s) {
         <div class="summary">
           <p>
             In the last 4 weeks you trained <strong>{{ s.most }}</strong> the most.
             @if (s.untrained) {
-              You haven't trained <strong>{{ s.untrained }}</strong>.
+              You haven't trained <strong>{{ s.untrained }}</strong
+              >.
             }
           </p>
         </div>
@@ -17,13 +18,15 @@
         <div class="chart-wrap">
           <canvas baseChart type="radar" [data]="chartData()" [options]="chartOptions"></canvas>
         </div>
-        <p class="note">Sets per muscle group. Muscles an exercise works secondarily count as half a set.</p>
+        <p class="note">Sets per muscle group.</p>
+      } @else if (list().length) {
+        <p>None of your workouts in the last 4 weeks trained a tracked muscle group.</p>
       } @else {
         <p>No workouts logged in the last 4 weeks.</p>
       }
-    } @else if (data.error()) {
+    } @else if (hasError()) {
       <p>Couldn't load workout data.</p>
-    } @else if (data.isLoading()) {
+    } @else {
       <mat-progress-bar mode="indeterminate" />
     }
   </mat-card-content>

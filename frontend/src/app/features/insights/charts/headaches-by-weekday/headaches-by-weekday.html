@@ -4,7 +4,7 @@
   </mat-card-header>
   <mat-card-content>
     @if (headaches.hasValue()) {
-      @if (headaches.value().length) {
+      @if (list().length) {
         @if (summary(); as s) {
           <div class="summary">
             <p>

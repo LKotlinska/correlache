@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TopTriggers } from './top-triggers';
+import { InsightsData } from '../../insights-data';
 
 describe('TopTriggers', () => {
   let component: TopTriggers;
@@ -8,6 +9,7 @@ describe('TopTriggers', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TopTriggers],
+      providers: [InsightsData],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TopTriggers);

@@ -4,20 +4,24 @@
   </mat-card-header>
   <mat-card-content>
     @if (headaches.hasValue()) {
-      @if (!summary().allEqual) {
-        <div class="summary">
-          <p>
-            You have had most headaches in <strong>{{ summary().most }}</strong> and least in
-            <strong>{{ summary().least }}</strong
-            >.
-          </p>
-        </div>
-      }
+      @if (list().length) {
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              You have had most headaches in <strong>{{ s.most }}</strong> and least in
+              <strong>{{ s.least }}</strong
+              >.
+            </p>
+          </div>
+        }
 
-      <p class="year">{{ year() }}</p>
-      <div class="chart-wrap">
-        <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
-      </div>
+        <p class="year">{{ year() }}</p>
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>No headaches logged in the last 3 months.</p>
+      }
     } @else if (headaches.error()) {
       <p>Couldn't load headache data.</p>
     } @else if (headaches.isLoading()) {

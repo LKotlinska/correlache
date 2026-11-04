@@ -1,6 +1,4 @@
 import { Component, computed, inject, linkedSignal } from '@angular/core';
-import { WorkoutService } from '../../../../services/workout.service';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -8,10 +6,9 @@ import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/mat
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseLineOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { InsightsData } from '../../insights-data';
 import { TrackingMode, WorkoutSet } from '../../../../models/workout.model';
-
-const MONTHS_SHOWN = 6;
 
 /** What is plotted for each tracking mode: the best set of a session, or the session's average speed. */
 const METRICS: Record<TrackingMode, { label: string; unit: string }> = {
@@ -27,6 +24,9 @@ interface ExerciseOption {
   name: string;
   /** Mode of the newest session. Sessions tracked in another mode are left out, as their values don't compare. */
   mode: TrackingMode;
+  /** Mode whose metric is plotted: reps for weight_reps exercises logged without any weight, such as pull-ups. */
+  plotMode: TrackingMode;
+  /** Sessions tracked in `mode`. */
   sessions: number;
 }
 
@@ -40,31 +40,32 @@ interface ExerciseOption {
   templateUrl: './exercise-progress.html',
 })
 export class ExerciseProgress {
-  private workoutService = inject(WorkoutService);
-
   /** Short date for session labels, e.g. "3 Nov". */
   private dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
 
-  /** Workouts from the first day of the oldest shown month until now, newest first. */
-  workouts = rxResource({
-    stream: () => {
-      const now = new Date();
-      const from = new Date(now.getFullYear(), now.getMonth() - (MONTHS_SHOWN - 1), 1);
-      return this.workoutService.getWorkouts({ from });
-    },
-  })
+  /** Workouts from the first day of the oldest shown month until now, newest first, shared by the insights charts. */
+  workouts = inject(InsightsData).workouts;
 
   /** Every exercise done in the period, most often done first. */
   exercises = computed(() => {
     const options = new Map<string, ExerciseOption>();
+    const weighted = new Set<string>();
     // Workouts arrive newest first, so the first time an exercise is seen gives its current mode.
     for (const w of this.workouts.value() ?? []) {
       for (const e of w.exercises) {
         const key = this.keyOf(e);
-        const option = options.get(key);
-        if (option) option.sessions++;
-        else options.set(key, { key, name: e.exerciseName, mode: e.trackingMode, sessions: 1 });
+        let option = options.get(key);
+        if (!option) {
+          option = { key, name: e.exerciseName, mode: e.trackingMode, plotMode: e.trackingMode, sessions: 0 };
+          options.set(key, option);
+        }
+        if (e.trackingMode !== option.mode) continue;
+        option.sessions++;
+        if (e.sets.some(s => (s.weight ?? 0) > 0)) weighted.add(key);
       }
+    }
+    for (const option of options.values()) {
+      if (option.mode === 'weight_reps' && !weighted.has(option.key)) option.plotMode = 'reps';
     }
     return [...options.values()].sort((a, b) => b.sessions - a.sessions || a.name.localeCompare(b.name));
   });
@@ -99,7 +100,7 @@ export class ExerciseProgress {
 
   metric = computed(() => {
     const exercise = this.selected();
-    return exercise ? METRICS[exercise.mode] : null;
+    return exercise ? METRICS[exercise.plotMode] : null;
   });
 
   /** Oldest to newest, one point per session of the picked exercise that has a value. */
@@ -111,7 +112,7 @@ export class ExerciseProgress {
     for (const w of this.workouts.value() ?? []) {
       for (const e of w.exercises) {
         if (this.keyOf(e) !== exercise.key || e.trackingMode !== exercise.mode) continue;
-        const value = this.sessionValue(exercise.mode, e.sets);
+        const value = this.sessionValue(exercise.plotMode, e.sets);
         if (value !== null) points.push({ date: new Date(w.startedAt), value });
       }
     }
@@ -148,17 +149,21 @@ export class ExerciseProgress {
     };
   });
 
-  /** Rebuilt per exercise so the tooltip shows the right unit. */
+  /** Rebuilt per exercise so the tooltip and, for durations, the y-axis show the right unit. */
   chartOptions = computed<ChartConfiguration<'line'>['options']>(() => {
     const metric = this.metric();
     return {
-      ...baseLineOptions,
+      ...baseChartOptions,
       scales: {
         x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true } },
-        y: { beginAtZero: false, grid: { display: false } },
+        y: {
+          beginAtZero: false,
+          grid: { display: false },
+          ticks: metric?.unit === 's' ? { callback: value => this.format(Number(value), 's') } : {},
+        },
       },
       plugins: {
-        ...baseLineOptions?.plugins,
+        ...baseChartOptions.plugins,
         tooltip: {
           callbacks: {
             label: item => `${metric?.label}: ${this.format(item.parsed.y ?? 0, metric?.unit ?? '')}`,

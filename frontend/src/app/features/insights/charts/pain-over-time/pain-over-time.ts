@@ -1,11 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
-import { HeadacheService } from '../../../../services/headache.service';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseLineOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { InsightsData } from '../../insights-data';
+import { monthStart, startOfWeek } from '../../../../utils/date';
 
 const MONTHS_SHOWN = 3;
 /** Recent weeks compared against the rest of the period in the summary. */
@@ -19,22 +19,20 @@ const DAY_MS = 24 * 60 * 60 * 1000;
   templateUrl: './pain-over-time.html',
 })
 export class PainOverTime {
-  private headacheService = inject(HeadacheService);
-
   /** Short date for week labels, e.g. "3 Nov". */
   private weekFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
 
   /** Monday of the week containing the first day of the oldest shown month. */
-  private start = this.mondayOf(new Date(new Date().getFullYear(), new Date().getMonth() - (MONTHS_SHOWN - 1), 1));
+  private start = startOfWeek(monthStart(MONTHS_SHOWN - 1));
+
+  /** Headaches shared by the insights charts. */
+  headaches = inject(InsightsData).headaches;
 
   /** Headaches from the first shown Monday until now. */
-  headaches = rxResource({
-    stream: () => this.headacheService.getHeadaches({ from: this.start }),
-  })
+  list = computed(() => (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= this.start));
 
   /** Oldest to newest, one entry per week. `average` is null for weeks without headaches. */
   weeklyPain = computed(() => {
-    const list = this.headaches.value() ?? [];
     const weekCount = this.weeksSinceStart(new Date()) + 1;
 
     const weeks = Array.from({ length: weekCount }, (_, i) => ({
@@ -43,7 +41,7 @@ export class PainOverTime {
       count: 0,
     }));
 
-    for (const h of list) {
+    for (const h of this.list()) {
       const week = weeks[this.weeksSinceStart(new Date(h.startedAt))];
       if (!week) continue;
       week.total += h.painLevel;
@@ -55,7 +53,7 @@ export class PainOverTime {
 
   /** Average pain over the whole period, and whether the last RECENT_WEEKS were milder or worse than before. */
   summary = computed(() => {
-    const list = this.headaches.value() ?? [];
+    const list = this.list();
     if (list.length === 0) return null;
 
     const recentFrom = this.weeklyPain().at(-RECENT_WEEKS)?.date ?? this.start;
@@ -93,13 +91,13 @@ export class PainOverTime {
 
   /** Pain scale fixed at 1-10 so weeks are comparable at a glance. */
   chartOptions: ChartConfiguration<'line'>['options'] = {
-    ...baseLineOptions,
+    ...baseChartOptions,
     scales: {
       x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true } },
       y: { min: 1, max: 10, ticks: { stepSize: 1 }, grid: { display: false } },
     },
     plugins: {
-      ...baseLineOptions?.plugins,
+      ...baseChartOptions.plugins,
       tooltip: {
         callbacks: {
           title: items => `Week of ${items[0].label}`,
@@ -111,13 +109,7 @@ export class PainOverTime {
 
   /** Index of `d`'s week from the first shown Monday. Days are rounded, as daylight saving time makes some weeks an hour shorter or longer. */
   private weeksSinceStart(d: Date) {
-    const days = Math.round((this.mondayOf(d).getTime() - this.start.getTime()) / DAY_MS);
+    const days = Math.round((startOfWeek(d).getTime() - this.start.getTime()) / DAY_MS);
     return Math.floor(days / 7);
-  }
-
-  /** Midnight on the Monday of `d`'s week. */
-  private mondayOf(d: Date) {
-    const daysSinceMonday = (d.getDay() + 6) % 7;
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate() - daysSinceMonday);
   }
 }

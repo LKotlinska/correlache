@@ -5,8 +5,9 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { forkJoin } from 'rxjs';
-import { baseRadarOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { InsightsData } from '../../insights-data';
+import { joinNames } from '../../../../utils/join-names';
 import { addDays, startOfWeek } from '../../../../utils/date';
 import { MuscleRole } from '../../../../models/workout.model';
 
@@ -27,23 +28,34 @@ const HIDDEN_GROUPS = new Set(['Cardio']);
 export class MuscleBalance {
   private workoutService = inject(WorkoutService);
 
-  /** Workouts from the Monday WEEKS_SHOWN weeks ago, and the exercise library for each exercise's muscles. */
-  data = rxResource({
-    stream: () => forkJoin({
-      workouts: this.workoutService.getWorkouts({ from: addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1)) }),
-      exercises: this.workoutService.getExercises(),
-    }),
-  })
+  /** Workouts shared by the insights charts. */
+  workouts = inject(InsightsData).workouts;
+
+  /** The exercise library, for each exercise's muscles. */
+  exercises = rxResource({
+    stream: () => this.workoutService.getExercises(),
+  });
+
+  /** Both the workouts and the library have loaded. */
+  hasData = computed(() => this.workouts.hasValue() && this.exercises.hasValue());
+
+  hasError = computed(() => !!this.workouts.error() || !!this.exercises.error());
+
+  /** Workouts from the Monday WEEKS_SHOWN weeks ago until now. */
+  list = computed(() => {
+    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1));
+    return (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= from);
+  });
 
   /** Every muscle group in the library, in id order, with its weighted set count. */
   groupSets = computed(() => {
-    const data = this.data.value();
-    if (!data) return [];
+    const exercises = this.exercises.value();
+    if (!exercises) return [];
 
     const groups = new Map<number, { name: string; sets: number }>();
     // Weight per muscle group for each library exercise. A group hit by several of its muscles counts once, at its highest role.
     const weightsByExercise = new Map<number, Map<number, number>>();
-    for (const exercise of data.exercises) {
+    for (const exercise of exercises) {
       const weights = new Map<number, number>();
       for (const m of exercise.muscles) {
         if (HIDDEN_GROUPS.has(m.muscleGroup.name)) continue;
@@ -54,7 +66,7 @@ export class MuscleBalance {
     }
 
     // Exercises no longer in the library have no muscles, so they are skipped.
-    for (const w of data.workouts) {
+    for (const w of this.list()) {
       for (const e of w.exercises) {
         for (const [groupId, weight] of weightsByExercise.get(e.exerciseId) ?? []) {
           groups.get(groupId)!.sets += weight * e.sets.length;
@@ -72,7 +84,7 @@ export class MuscleBalance {
     if (!most || most.sets === 0) return null;
     return {
       most: most.name,
-      untrained: this.joinNames(groups.filter(g => g.sets === 0).map(g => g.name)),
+      untrained: joinNames(groups.filter(g => g.sets === 0).map(g => g.name)),
     };
   });
 
@@ -92,12 +104,12 @@ export class MuscleBalance {
 
   /** Scale starts at zero with hidden tick numbers, as the shape matters more than exact counts. */
   chartOptions: ChartConfiguration<'radar'>['options'] = {
-    ...baseRadarOptions,
+    ...baseChartOptions,
     scales: {
       r: { beginAtZero: true, ticks: { display: false } },
     },
     plugins: {
-      ...baseRadarOptions?.plugins,
+      ...baseChartOptions.plugins,
       tooltip: {
         callbacks: {
           label: item => `${Math.round(item.parsed.r * 10) / 10} sets`,
@@ -105,9 +117,4 @@ export class MuscleBalance {
       },
     },
   };
-
-  /** "A", "A and B", "A, B and C". */
-  private joinNames(names: string[]) {
-    return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
-  }
 }

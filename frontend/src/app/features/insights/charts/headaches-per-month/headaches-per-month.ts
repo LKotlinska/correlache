@@ -1,11 +1,12 @@
 import { Component, computed, inject } from '@angular/core';
-import { HeadacheService } from '../../../../services/headache.service';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseBarOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { InsightsData } from '../../insights-data';
+import { monthStart } from '../../../../utils/date';
+import { joinNames } from '../../../../utils/join-names';
 
 const MONTHS_SHOWN = 3;
 
@@ -16,34 +17,26 @@ const MONTHS_SHOWN = 3;
   templateUrl: './headaches-per-month.html',
 })
 export class HeadachesPerMonth {
-  private headacheService = inject(HeadacheService);
-
   /** English month names: short for chart labels, long for the summary text. */
   private monthShortFmt = new Intl.DateTimeFormat('en-GB', { month: 'short' });
   private monthLongFmt = new Intl.DateTimeFormat('en-GB', { month: 'long' });
 
+  /** Headaches shared by the insights charts. */
+  headaches = inject(InsightsData).headaches;
+
   /** Headaches from the first day of the oldest shown month until now. */
-  headaches = rxResource({
-    stream: () => {
-      const now = new Date();
-      const from = new Date(now.getFullYear(), now.getMonth() - (MONTHS_SHOWN - 1), 1);
-      return this.headacheService.getHeadaches({ from });
-    },
-  })
+  list = computed(() => {
+    const from = monthStart(MONTHS_SHOWN - 1);
+    return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
+  });
 
   /** Oldest to newest, including months without any headaches. */
   monthlyCounts = computed(() => {
-    const list = this.headaches.value() ?? [];
-    const now = new Date();
-
     // One zeroed list per month, so months without headaches still appear.
-    const months = Array.from({ length: MONTHS_SHOWN }, (_, i) => {
-      const date = new Date(now.getFullYear(), now.getMonth() - (MONTHS_SHOWN - 1 - i), 1);
-      return { date, count: 0 };
-    });
+    const months = Array.from({ length: MONTHS_SHOWN }, (_, i) => ({ date: monthStart(MONTHS_SHOWN - 1 - i), count: 0 }));
 
     // Count each headache in the list matching its year and month.
-    for (const h of list) {
+    for (const h of this.list()) {
       const d = new Date(h.startedAt);
       const month = months.find(m => m.date.getFullYear() === d.getFullYear() && m.date.getMonth() === d.getMonth());
       if (month) month.count++;
@@ -54,16 +47,16 @@ export class HeadachesPerMonth {
   /** Year of the newest month shown. */
   year = computed(() => this.monthlyCounts()[MONTHS_SHOWN - 1].date.getFullYear());
 
-  /** Most and least month. allEqual lets the template skip the comparison when there is no difference. */
+  /** Month(s) with the most and the least headaches, or null when every month is equal. */
   summary = computed(() => {
     const months = this.monthlyCounts();
-    const most = months.reduce((a, b) => (b.count > a.count ? b : a));
-    const least = months.reduce((a, b) => (b.count < a.count ? b : a));
-    return {
-      most: this.monthLongFmt.format(most.date),
-      least: this.monthLongFmt.format(least.date),
-      allEqual: most.count === least.count,
-    };
+    const counts = months.map(m => m.count);
+    const max = Math.max(...counts);
+    const min = Math.min(...counts);
+    if (max === min) return null;
+
+    const namesWith = (count: number) => joinNames(months.filter(m => m.count === count).map(m => this.monthLongFmt.format(m.date)));
+    return { most: namesWith(max), least: namesWith(min) };
   });
 
   /** Chart.js data - one bar per month, labelled with its capitalised short name. */
@@ -81,7 +74,7 @@ export class HeadachesPerMonth {
 
   /** Horizontal bars (months on y) that fill the container. */
   chartOptions: ChartConfiguration<'bar'>['options'] = {
-    ...baseBarOptions,
+    ...baseChartOptions,
     indexAxis: 'y',
     scales: {
       x: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } },

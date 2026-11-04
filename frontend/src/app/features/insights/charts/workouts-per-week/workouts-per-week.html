@@ -4,7 +4,7 @@
   </mat-card-header>
   <mat-card-content>
     @if (workouts.hasValue()) {
-      @if (workouts.value().length) {
+      @if (list().length) {
         <div class="summary">
           <p>
             You have worked out <strong>{{ summary().thisWeek }}</strong>

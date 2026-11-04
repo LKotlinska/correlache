@@ -1,11 +1,10 @@
 import { Component, computed, inject } from '@angular/core';
-import { WorkoutService } from '../../../../services/workout.service';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseBarOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { InsightsData } from '../../insights-data';
 import { addDays, startOfWeek } from '../../../../utils/date';
 
 const WEEKS_SHOWN = 8;
@@ -17,15 +16,14 @@ const WEEKS_SHOWN = 8;
   templateUrl: './workouts-per-week.html',
 })
 export class WorkoutsPerWeek {
-  private workoutService = inject(WorkoutService);
-
   /** Day and short month of a week's Monday, e.g. "4 Nov". */
   private weekStartFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
 
+  /** Workouts shared by the insights charts. */
+  workouts = inject(InsightsData).workouts;
+
   /** Workouts from the Monday of the oldest shown week until now. */
-  workouts = rxResource({
-    stream: () => this.workoutService.getWorkouts({ from: this.weekStarts()[0] }),
-  })
+  list = computed(() => (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= this.weekStarts()[0]));
 
   /** Monday 00:00 of each shown week, oldest to newest. */
   private weekStarts = computed(() => {
@@ -35,12 +33,11 @@ export class WorkoutsPerWeek {
 
   /** Oldest to newest, including weeks without any workouts. */
   weeklyCounts = computed(() => {
-    const list = this.workouts.value() ?? [];
     const weeks = this.weekStarts().map(date => ({ date, count: 0 }));
 
     // Count each workout in the latest week that started on or before it.
     const newestFirst = [...weeks].reverse();
-    for (const w of list) {
+    for (const w of this.list()) {
       const d = new Date(w.startedAt);
       const week = newestFirst.find(wk => wk.date <= d);
       if (week) week.count++;
@@ -73,7 +70,7 @@ export class WorkoutsPerWeek {
 
   /** Vertical bars (weeks on x) that fill the container. */
   chartOptions: ChartConfiguration<'bar'>['options'] = {
-    ...baseBarOptions,
+    ...baseChartOptions,
     scales: {
       x: { grid: { display: false } },
       y: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } },

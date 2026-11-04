@@ -107,6 +107,8 @@ export class HeadacheService {
     const headaches = await this.headacheRepo.find({
       where: { userId, startedAt: dateRange(from, to) },
       relations: { locations: true, symptoms: true, triggers: true },
+      // One query per relation, as joining all three multiplies the rows per headache.
+      relationLoadStrategy: 'query',
       order: { startedAt: 'DESC'},
       take: limit,
     });

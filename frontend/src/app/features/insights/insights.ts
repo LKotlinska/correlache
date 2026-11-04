@@ -6,9 +6,11 @@ import { HeadachesByWeekday } from './charts/headaches-by-weekday/headaches-by-w
 import { WorkoutsPerWeek } from './charts/workouts-per-week/workouts-per-week';
 import { ExerciseProgress } from './charts/exercise-progress/exercise-progress';
 import { MuscleBalance } from './charts/muscle-balance/muscle-balance';
+import { InsightsData } from './insights-data';
 
 @Component({
   imports: [HeadachesPerMonth, TopTriggers, PainOverTime, HeadachesByWeekday, WorkoutsPerWeek, ExerciseProgress, MuscleBalance],
+  providers: [InsightsData],
   selector: 'app-insights',
   styleUrl: './insights.scss',
   templateUrl: './insights.html',

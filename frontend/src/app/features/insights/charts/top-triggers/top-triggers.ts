@@ -1,11 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
-import { HeadacheService } from '../../../../services/headache.service';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseBarOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { InsightsData } from '../../insights-data';
+import { monthStart } from '../../../../utils/date';
 
 const MONTHS_SHOWN = 3;
 const TRIGGERS_SHOWN = 6;
@@ -19,23 +19,20 @@ const BAR_HEIGHT = 36;
   templateUrl: './top-triggers.html',
 })
 export class TopTriggers {
-  private headacheService = inject(HeadacheService);
+  /** Headaches shared by the insights charts. */
+  headaches = inject(InsightsData).headaches;
 
   /** Headaches from the first day of the oldest shown month until now. */
-  headaches = rxResource({
-    stream: () => {
-      const now = new Date();
-      const from = new Date(now.getFullYear(), now.getMonth() - (MONTHS_SHOWN - 1), 1);
-      return this.headacheService.getHeadaches({ from });
-    },
-  })
+  list = computed(() => {
+    const from = monthStart(MONTHS_SHOWN - 1);
+    return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
+  });
 
   /** Most common triggers first, at most TRIGGERS_SHOWN. Ties keep alphabetical order. */
   triggerCounts = computed(() => {
-    const list = this.headaches.value() ?? [];
     const counts = new Map<string, number>();
 
-    for (const h of list) {
+    for (const h of this.list()) {
       for (const t of h.triggers ?? []) {
         counts.set(t.name, (counts.get(t.name) ?? 0) + 1);
       }
@@ -51,7 +48,7 @@ export class TopTriggers {
   summary = computed(() => {
     const top = this.triggerCounts()[0];
     if (!top) return null;
-    return { name: top.name, count: top.count, total: this.headaches.value()?.length ?? 0 };
+    return { name: top.name, count: top.count, total: this.list().length };
   });
 
   chartHeight = computed(() => this.triggerCounts().length * BAR_HEIGHT);
@@ -71,7 +68,7 @@ export class TopTriggers {
 
   /** Horizontal bars (triggers on y) that fill the container. */
   chartOptions: ChartConfiguration<'bar'>['options'] = {
-    ...baseBarOptions,
+    ...baseChartOptions,
     indexAxis: 'y',
     scales: {
       x: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } },
