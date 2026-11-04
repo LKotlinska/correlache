@@ -1,0 +1,29 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Workouts vs headaches</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue() && headaches.hasValue()) {
+      @if (hasEntries()) {
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              In your more active weeks you had <strong>{{ s.active }}</strong> headaches on average, compared with
+              <strong>{{ s.quiet }}</strong> in quieter weeks.
+            </p>
+          </div>
+        }
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>No workouts or headaches logged in the last 8 weeks.</p>
+      }
+    } @else if (workouts.error() || headaches.error()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

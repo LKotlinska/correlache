@@ -1,0 +1,36 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headaches after workouts</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue() && headaches.hasValue()) {
+      @if (enoughData()) {
+        @let s = summary();
+        <div class="summary">
+          <p>
+            You had a headache that day or the next after <strong>{{ s.workout }}%</strong> of your workout days,
+            compared with <strong>{{ s.rest }}%</strong> of rest days.
+            @switch (s.trend) {
+              @case ('higher') { Headaches were <strong>more common</strong> after working out. }
+              @case ('lower') { Headaches were <strong>less common</strong> after working out. }
+              @case ('same') { That is about the same. }
+            }
+          </p>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>
+          Log at least {{ minDays }} workout days and {{ minDays }} rest days in the last 8 weeks to compare
+          headaches after workouts.
+        </p>
+      }
+    } @else if (workouts.error() || headaches.error()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
