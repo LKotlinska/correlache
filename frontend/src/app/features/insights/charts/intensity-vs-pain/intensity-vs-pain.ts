@@ -5,12 +5,7 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { addDays, startOfWeek } from '../../../../utils/date';
 
-const WEEKS_SHOWN = 8;
-const HOUR_MS = 60 * 60 * 1000;
-/** Headaches starting up to this many hours after a workout ends are linked to it. */
-const WINDOW_HOURS = 24;
 /** Durations are rounded to this many minutes, so similar workouts share one bubble. */
 const ROUND_MINUTES = 5;
 /** Fewest workouts needed before the summary compares longer and shorter ones. */
@@ -29,24 +24,16 @@ export class IntensityVsPain {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /**
-   * Each workout from the oldest shown Monday whose window is over, with its duration in minutes
-   * and the highest pain of headaches starting from its start until WINDOW_HOURS after it ended (0 for none).
-   */
-  points = computed(() => {
-    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1)).getTime();
-    const now = Date.now();
-    const headaches = (this.headaches.value() ?? []).map(h => ({ start: new Date(h.startedAt).getTime(), pain: h.painLevel }));
+  /** Each linked workout's duration in minutes and the highest pain of its linked headaches (0 for none). */
+  points = computed(() =>
+    this.data.linkedWorkouts().linked.map(({ workout, pains }) => ({
+      minutes: workout.durationSeconds / 60,
+      pain: pains.length ? Math.max(...pains) : 0,
+    })),
+  );
 
-    return (this.workouts.value() ?? []).flatMap(w => {
-      const start = new Date(w.startedAt).getTime();
-      const until = start + w.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS;
-      if (start < from || until > now) return [];
-
-      const pains = headaches.filter(h => h.start >= start && h.start < until).map(h => h.pain);
-      return [{ minutes: w.durationSeconds / 60, pain: pains.length ? Math.max(...pains) : 0 }];
-    });
-  });
+  /** Whether a workout is left out because its window is not over yet. */
+  hasPending = computed(() => this.data.linkedWorkouts().hasPending);
 
   /** Points grouped by rounded duration and pain, with how many workouts share each. */
   bubbles = computed(() => {
@@ -78,16 +65,6 @@ export class IntensityVsPain {
 
     const percent = (ps: typeof points) => Math.round((ps.filter(p => p.pain > 0).length / ps.length) * 100);
     return { median, longer: percent(longer), shorter: percent(shorter) };
-  });
-
-  /** Whether a workout from the oldest shown Monday is left out because its window is not over yet. */
-  hasPending = computed(() => {
-    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1)).getTime();
-    const now = Date.now();
-    return (this.workouts.value() ?? []).some(w => {
-      const start = new Date(w.startedAt).getTime();
-      return start >= from && start + w.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS > now;
-    });
   });
 
   /** Chart.js data - one bubble per duration and pain, sized by how many workouts it holds. */

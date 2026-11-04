@@ -5,7 +5,7 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { addDays, startOfWeek } from '../../../../utils/date';
+import { weekIndex, weekStarts } from '../../../../utils/date';
 
 const WEEKS_SHOWN = 8;
 
@@ -26,29 +26,20 @@ export class WorkoutsVsHeadaches {
   headaches = this.data.headaches;
 
   /** Monday 00:00 of each shown week, oldest to newest. */
-  private weekStarts = computed(() => {
-    const thisMonday = startOfWeek(new Date());
-    return Array.from({ length: WEEKS_SHOWN }, (_, i) => addDays(thisMonday, -7 * (WEEKS_SHOWN - 1 - i)));
-  });
+  private weekStarts = computed(() => weekStarts(WEEKS_SHOWN));
 
-  /** Oldest to newest, including weeks without any workouts or headaches. */
+  /** Oldest to newest, including weeks without any workouts or headaches. Entries before the oldest week are skipped. */
   weeklyCounts = computed(() => {
-    const weeks = this.weekStarts().map(date => ({ date, workouts: 0, headaches: 0 }));
-
-    // Each entry belongs to the latest week that started on or before it; older entries are skipped.
-    const newestFirst = [...weeks].reverse();
-    const weekOf = (startedAt: string) => {
-      const d = new Date(startedAt);
-      return newestFirst.find(wk => wk.date <= d);
-    };
+    const mondays = this.weekStarts();
+    const weeks = mondays.map(date => ({ date, workouts: 0, headaches: 0 }));
 
     for (const w of this.workouts.value() ?? []) {
-      const week = weekOf(w.startedAt);
-      if (week) week.workouts++;
+      const i = weekIndex(mondays, new Date(w.startedAt));
+      if (i >= 0) weeks[i].workouts++;
     }
     for (const h of this.headaches.value() ?? []) {
-      const week = weekOf(h.startedAt);
-      if (week) week.headaches++;
+      const i = weekIndex(mondays, new Date(h.startedAt));
+      if (i >= 0) weeks[i].headaches++;
     }
     return weeks;
   });

@@ -5,12 +5,7 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { addDays, startOfWeek } from '../../../../utils/date';
 
-const WEEKS_SHOWN = 8;
-const HOUR_MS = 60 * 60 * 1000;
-/** Headaches starting up to this many hours after a workout ends are linked to it. */
-const WINDOW_HOURS = 24;
 /** Fewest workouts a muscle group needs before its rate is trusted. Groups below it are shown faded. */
 const MIN_WORKOUTS = 3;
 /** Height of one bar row in pixels, so the chart grows with the number of muscle groups. */
@@ -43,46 +38,28 @@ export class MuscleGroupHeadaches {
 
   hasError = computed(() => !!this.workouts.error() || !!this.headaches.error() || !!this.exercises.error());
 
-  /**
-   * Each workout from the oldest shown Monday whose window is over, with the muscle groups its exercises
-   * work as a primary muscle, and whether a headache started from its start until WINDOW_HOURS after it ended.
-   */
+  /** Each linked workout, with the muscle groups its exercises work as a primary muscle and whether it had a linked headache. */
   sessions = computed(() => {
-    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1)).getTime();
-    const now = Date.now();
-    const headacheStarts = (this.headaches.value() ?? []).map(h => new Date(h.startedAt).getTime());
-
     // Primary muscle groups of each library exercise. Exercises no longer in the library have none.
     const groupsByExercise = new Map<number, { id: number; name: string }[]>();
     for (const exercise of this.exercises.value() ?? []) {
       groupsByExercise.set(exercise.id, exercise.muscles.filter(m => m.role === 'primary').map(m => m.muscleGroup));
     }
 
-    return (this.workouts.value() ?? []).flatMap(w => {
-      const start = new Date(w.startedAt).getTime();
-      const until = start + w.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS;
-      if (start < from || until > now) return [];
-
+    return this.data.linkedWorkouts().linked.map(({ workout, pains }) => {
       const groups = new Map<number, string>();
-      for (const e of w.exercises) {
+      for (const e of workout.exercises) {
         for (const g of groupsByExercise.get(e.exerciseId) ?? []) groups.set(g.id, g.name);
       }
-      return [{ groups, headache: headacheStarts.some(h => h >= start && h < until) }];
+      return { groups, headache: pains.length > 0 };
     });
   });
 
   /** Headache rate after all shown workouts, the baseline each muscle group is compared with. */
   overall = computed<GroupRate>(() => this.rate('All workouts', this.sessions()));
 
-  /** Whether a workout from the oldest shown Monday is left out because its window is not over yet. */
-  hasPending = computed(() => {
-    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1)).getTime();
-    const now = Date.now();
-    return (this.workouts.value() ?? []).some(w => {
-      const start = new Date(w.startedAt).getTime();
-      return start >= from && start + w.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS > now;
-    });
-  });
+  /** Whether a workout is left out because its window is not over yet. */
+  hasPending = computed(() => this.data.linkedWorkouts().hasPending);
 
   /** Headache rate per muscle group trained in the shown workouts. Groups with enough workouts come first, then highest rate. */
   groupRates = computed(() => {

@@ -5,7 +5,7 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { addDays, startOfWeek } from '../../../../utils/date';
+import { weekIndex, weekStarts } from '../../../../utils/date';
 
 const WEEKS_SHOWN = 8;
 
@@ -26,21 +26,15 @@ export class WorkoutsPerWeek {
   list = computed(() => (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= this.weekStarts()[0]));
 
   /** Monday 00:00 of each shown week, oldest to newest. */
-  private weekStarts = computed(() => {
-    const thisMonday = startOfWeek(new Date());
-    return Array.from({ length: WEEKS_SHOWN }, (_, i) => addDays(thisMonday, -7 * (WEEKS_SHOWN - 1 - i)));
-  });
+  private weekStarts = computed(() => weekStarts(WEEKS_SHOWN));
 
   /** Oldest to newest, including weeks without any workouts. */
   weeklyCounts = computed(() => {
-    const weeks = this.weekStarts().map(date => ({ date, count: 0 }));
-
-    // Count each workout in the latest week that started on or before it.
-    const newestFirst = [...weeks].reverse();
+    const mondays = this.weekStarts();
+    const weeks = mondays.map(date => ({ date, count: 0 }));
     for (const w of this.list()) {
-      const d = new Date(w.startedAt);
-      const week = newestFirst.find(wk => wk.date <= d);
-      if (week) week.count++;
+      const i = weekIndex(mondays, new Date(w.startedAt));
+      if (i >= 0) weeks[i].count++;
     }
     return weeks;
   });
