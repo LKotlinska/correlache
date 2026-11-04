@@ -1,1 +1,27 @@
-<p>insights works!</p>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headaches per month</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (headaches.hasValue()) {
+      @if (!summary().allEqual) {
+        <div class="summary">
+          <p>
+            You have had most headaches in <strong>{{ summary().most }}</strong> and least in
+            <strong>{{ summary().least }}</strong
+            >.
+          </p>
+        </div>
+      }
+
+      <p class="year">{{ year() }}</p>
+      <div class="chart-wrap">
+        <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+      </div>
+    } @else if (headaches.error()) {
+      <p>Couldn't load headache data.</p>
+    } @else if (headaches.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
