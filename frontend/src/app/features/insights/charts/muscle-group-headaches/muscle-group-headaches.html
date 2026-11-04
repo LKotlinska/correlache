@@ -1,0 +1,31 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headaches by muscle group</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (hasData()) {
+      @if (groupRates().length) {
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              <strong>{{ s.top.percent }}%</strong> of your workouts that trained <strong>{{ s.top.name }}</strong> were
+              followed by a headache within 24 hours, compared with <strong>{{ s.overall.percent }}%</strong> of all
+              workouts.
+            </p>
+          </div>
+        }
+
+        <div class="chart-wrap" [style.height.px]="chartHeight()">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+        <p class="note">Faded bars have fewer than {{ minWorkouts }} workouts.</p>
+      } @else {
+        <p>No workouts in the last 8 weeks trained a tracked muscle group.</p>
+      }
+    } @else if (hasError()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

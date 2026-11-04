@@ -27,4 +27,9 @@ export class InsightsData {
   workouts = rxResource({
     stream: () => this.workoutService.getWorkouts({ from: monthStart(WORKOUT_MONTHS - 1) }),
   });
+
+  /** The exercise library, for each exercise's muscles. */
+  exercises = rxResource({
+    stream: () => this.workoutService.getExercises(),
+  });
 }
