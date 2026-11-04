@@ -23,6 +23,20 @@ export function addDays(date: Date, days: number): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
 }
 
+/** Midnight on the Monday of each of the last `count` weeks, oldest first and ending with this week. */
+export function weekStarts(count: number, now = new Date()): Date[] {
+  const thisMonday = startOfWeek(now);
+  return Array.from({ length: count }, (_, i) => addDays(thisMonday, -7 * (count - 1 - i)));
+}
+
+/** Index in `mondays` (oldest first) of the latest week starting on or before `date`, or -1 when `date` is before them all. */
+export function weekIndex(mondays: Date[], date: Date): number {
+  for (let i = mondays.length - 1; i >= 0; i--) {
+    if (mondays[i] <= date) return i;
+  }
+  return -1;
+}
+
 /** Local calendar day as `YYYY-MM-DD`, for grouping. */
 export function dayKey(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');

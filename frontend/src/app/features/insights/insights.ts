@@ -6,10 +6,28 @@ import { HeadachesByWeekday } from './charts/headaches-by-weekday/headaches-by-w
 import { WorkoutsPerWeek } from './charts/workouts-per-week/workouts-per-week';
 import { ExerciseProgress } from './charts/exercise-progress/exercise-progress';
 import { MuscleBalance } from './charts/muscle-balance/muscle-balance';
+import { WorkoutsVsHeadaches } from './charts/workouts-vs-headaches/workouts-vs-headaches';
+import { WorkoutDayHeadaches } from './charts/workout-day-headaches/workout-day-headaches';
+import { TimeSinceWorkout } from './charts/time-since-workout/time-since-workout';
+import { IntensityVsPain } from './charts/intensity-vs-pain/intensity-vs-pain';
+import { MuscleGroupHeadaches } from './charts/muscle-group-headaches/muscle-group-headaches';
 import { InsightsData } from './insights-data';
 
 @Component({
-  imports: [HeadachesPerMonth, TopTriggers, PainOverTime, HeadachesByWeekday, WorkoutsPerWeek, ExerciseProgress, MuscleBalance],
+  imports: [
+    HeadachesPerMonth,
+    TopTriggers,
+    PainOverTime,
+    HeadachesByWeekday,
+    WorkoutsPerWeek,
+    WorkoutsVsHeadaches,
+    WorkoutDayHeadaches,
+    TimeSinceWorkout,
+    IntensityVsPain,
+    MuscleGroupHeadaches,
+    ExerciseProgress,
+    MuscleBalance,
+  ],
   providers: [InsightsData],
   selector: 'app-insights',
   styleUrl: './insights.scss',

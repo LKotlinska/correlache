@@ -1,6 +1,4 @@
 import { Component, computed, inject } from '@angular/core';
-import { WorkoutService } from '../../../../services/workout.service';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -26,15 +24,11 @@ const HIDDEN_GROUPS = new Set(['Cardio']);
   templateUrl: './muscle-balance.html',
 })
 export class MuscleBalance {
-  private workoutService = inject(WorkoutService);
+  private data = inject(InsightsData);
 
-  /** Workouts shared by the insights charts. */
-  workouts = inject(InsightsData).workouts;
-
-  /** The exercise library, for each exercise's muscles. */
-  exercises = rxResource({
-    stream: () => this.workoutService.getExercises(),
-  });
+  /** Workouts and the exercise library shared by the insights charts. */
+  workouts = this.data.workouts;
+  exercises = this.data.exercises;
 
   /** Both the workouts and the library have loaded. */
   hasData = computed(() => this.workouts.hasValue() && this.exercises.hasValue());
