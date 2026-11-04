@@ -69,14 +69,25 @@ export class IntensityVsPain {
     const points = this.points();
     if (points.length < MIN_WORKOUTS) return null;
 
+    // Rounded before splitting, so the minutes shown in the summary match the split.
     const sorted = points.map(p => p.minutes).sort((a, b) => a - b);
-    const median = sorted[Math.floor(sorted.length / 2)];
+    const median = Math.round(sorted[Math.floor(sorted.length / 2)]);
     const longer = points.filter(p => p.minutes > median);
     const shorter = points.filter(p => p.minutes <= median);
     if (!longer.length || !shorter.length) return null;
 
     const percent = (ps: typeof points) => Math.round((ps.filter(p => p.pain > 0).length / ps.length) * 100);
-    return { median: Math.round(median), longer: percent(longer), shorter: percent(shorter) };
+    return { median, longer: percent(longer), shorter: percent(shorter) };
+  });
+
+  /** Whether a workout from the oldest shown Monday is left out because its window is not over yet. */
+  hasPending = computed(() => {
+    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1)).getTime();
+    const now = Date.now();
+    return (this.workouts.value() ?? []).some(w => {
+      const start = new Date(w.startedAt).getTime();
+      return start >= from && start + w.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS > now;
+    });
   });
 
   /** Chart.js data - one bubble per duration and pain, sized by how many workouts it holds. */

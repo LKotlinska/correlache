@@ -74,7 +74,17 @@ export class MuscleGroupHeadaches {
   /** Headache rate after all shown workouts, the baseline each muscle group is compared with. */
   overall = computed<GroupRate>(() => this.rate('All workouts', this.sessions()));
 
-  /** Headache rate per muscle group trained in the shown workouts, highest first. */
+  /** Whether a workout from the oldest shown Monday is left out because its window is not over yet. */
+  hasPending = computed(() => {
+    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1)).getTime();
+    const now = Date.now();
+    return (this.workouts.value() ?? []).some(w => {
+      const start = new Date(w.startedAt).getTime();
+      return start >= from && start + w.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS > now;
+    });
+  });
+
+  /** Headache rate per muscle group trained in the shown workouts. Groups with enough workouts come first, then highest rate. */
   groupRates = computed(() => {
     const byGroup = new Map<number, { name: string; sessions: { headache: boolean }[] }>();
     for (const s of this.sessions()) {
@@ -86,7 +96,11 @@ export class MuscleGroupHeadaches {
     }
     return [...byGroup.values()]
       .map(g => this.rate(g.name, g.sessions))
-      .sort((a, b) => b.percent - a.percent || b.workouts - a.workouts);
+      .sort((a, b) =>
+        Number(b.workouts >= MIN_WORKOUTS) - Number(a.workouts >= MIN_WORKOUTS)
+        || b.percent - a.percent
+        || b.workouts - a.workouts,
+      );
   });
 
   /** Muscle group with the highest rate among those with enough workouts, or null when none has enough. */

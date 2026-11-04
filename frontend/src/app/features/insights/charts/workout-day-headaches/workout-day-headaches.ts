@@ -44,7 +44,8 @@ export class WorkoutDayHeadaches {
   /**
    * Workout days and rest days, each with how many were followed by a headache.
    * A day is followed by one when a headache started that day or the next. On workout days,
-   * only headaches starting after the day's first workout count.
+   * only headaches starting after the day's first workout count. On rest days, the window ends
+   * at the next day's first workout, so its headaches are not counted for both groups.
    */
   groups = computed(() => {
     // Earliest workout start of each day.
@@ -63,7 +64,7 @@ export class WorkoutDayHeadaches {
     for (const day of this.days()) {
       const workoutStart = firstWorkout.get(dayKey(day));
       const from = workoutStart ?? day;
-      const until = addDays(day, 2);
+      const until = workoutStart ? addDays(day, 2) : (firstWorkout.get(dayKey(addDays(day, 1))) ?? addDays(day, 2));
       const group = workoutStart ? workoutDays : restDays;
 
       group.days++;

@@ -57,10 +57,11 @@ export class WorkoutsVsHeadaches {
 
   /**
    * Average headaches in weeks with more workouts than the average week, compared with the other weeks.
-   * Null when every week falls on the same side, as there is nothing to compare.
+   * The current week is left out, as it is not over yet. Null when every week falls on the same side,
+   * as there is nothing to compare.
    */
   summary = computed(() => {
-    const weeks = this.weeklyCounts();
+    const weeks = this.weeklyCounts().slice(0, -1);
     const avgWorkouts = weeks.reduce((sum, w) => sum + w.workouts, 0) / weeks.length;
     const active = weeks.filter(w => w.workouts > avgWorkouts);
     const quiet = weeks.filter(w => w.workouts <= avgWorkouts);

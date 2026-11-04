@@ -19,6 +19,8 @@
           <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
         </div>
         <p class="note">Faded bars have fewer than {{ minWorkouts }} workouts.</p>
+      } @else if (hasPending()) {
+        <p>Your workouts will show here once 24 hours have passed since they ended.</p>
       } @else {
         <p>No workouts in the last 8 weeks trained a tracked muscle group.</p>
       }

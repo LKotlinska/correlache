@@ -17,6 +17,8 @@
         <div class="chart-wrap">
           <canvas baseChart type="bubble" [data]="chartData()" [options]="chartOptions"></canvas>
         </div>
+      } @else if (hasPending()) {
+        <p>Your workouts will show here once 24 hours have passed since they ended.</p>
       } @else {
         <p>No workouts logged in the last 8 weeks.</p>
       }

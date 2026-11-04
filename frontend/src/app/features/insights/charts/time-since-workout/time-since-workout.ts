@@ -12,7 +12,7 @@ const HOUR_MS = 60 * 60 * 1000;
 /** Headaches starting up to this many hours after a workout count as "within a day" in the summary. */
 const SUMMARY_HOURS = 24;
 
-/** Upper bound in hours of each bucket, in order. The last bucket also holds headaches with no earlier workout. */
+/** Upper bound in hours of each bucket, in order. Headaches with no earlier workout are in none of them. */
 const BUCKETS = [
   { label: 'Under 2h', maxHours: 2 },
   { label: '2–6h', maxHours: 6 },
@@ -61,12 +61,11 @@ export class TimeSinceWorkout {
     });
   });
 
-  /** Number of headaches in each bucket, in BUCKETS order. */
+  /** Number of headaches in each bucket, in BUCKETS order. Headaches with no earlier workout are skipped. */
   bucketCounts = computed(() => {
     const counts = BUCKETS.map(() => 0);
     for (const hours of this.hoursSinceWorkout()) {
-      const index = hours === null ? BUCKETS.length - 1 : BUCKETS.findIndex(b => hours < b.maxHours);
-      counts[index]++;
+      if (hours !== null) counts[BUCKETS.findIndex(b => hours < b.maxHours)]++;
     }
     return counts;
   });
