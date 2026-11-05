@@ -5,6 +5,7 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
+import { periodLabel } from '../../period';
 
 /** Durations are rounded to this many minutes, so similar workouts share one bubble. */
 const ROUND_MINUTES = 5;
@@ -23,6 +24,8 @@ export class IntensityVsPain {
   /** Workouts and headaches shared by the insights charts. */
   workouts = this.data.workouts;
   headaches = this.data.headaches;
+
+  periodLabel = computed(() => periodLabel(this.data.linkedPeriod()));
 
   /** Each linked workout's duration in minutes and the highest pain of its linked headaches (0 for none). */
   points = computed(() =>

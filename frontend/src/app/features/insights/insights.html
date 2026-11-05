@@ -5,6 +5,15 @@
   <mat-chip-option value="correlations">Correlations</mat-chip-option>
 </mat-chip-listbox>
 
+<mat-form-field class="range-select" appearance="outline" subscriptSizing="dynamic">
+  <mat-label>Time range</mat-label>
+  <mat-select [value]="rangeKey()" (selectionChange)="onRangeChange($event.value)">
+    @for (range of ranges; track range.key) {
+      <mat-option [value]="range.key">{{ range.label }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+
 <div class="charts">
   @if (shows('headaches')) {
     <app-headaches-per-month />

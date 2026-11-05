@@ -5,10 +5,10 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { monthStart } from '../../../../utils/date';
 import { joinNames } from '../../../../utils/join-names';
+import { Period, periodLabel, periodMonths, periodStart } from '../../period';
 
-const MONTHS_SHOWN = 3;
+const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 
 @Component({
   imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
@@ -21,19 +21,25 @@ export class HeadachesPerMonth {
   private monthShortFmt = new Intl.DateTimeFormat('en-GB', { month: 'short' });
   private monthLongFmt = new Intl.DateTimeFormat('en-GB', { month: 'long' });
 
-  /** Headaches shared by the insights charts. */
-  headaches = inject(InsightsData).headaches;
+  private data = inject(InsightsData);
 
-  /** Headaches from the first day of the oldest shown month until now. */
+  /** Headaches shared by the insights charts. */
+  headaches = this.data.headaches;
+
+  /** The picked range, or the last 3 months. */
+  period = this.data.periodOr(DEFAULT_PERIOD);
+  periodLabel = computed(() => periodLabel(this.period()));
+
+  /** Headaches from the first shown day until now. */
   list = computed(() => {
-    const from = monthStart(MONTHS_SHOWN - 1);
+    const from = periodStart(this.period());
     return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
   });
 
   /** Oldest to newest, including months without any headaches. */
   monthlyCounts = computed(() => {
     // One zeroed list per month, so months without headaches still appear.
-    const months = Array.from({ length: MONTHS_SHOWN }, (_, i) => ({ date: monthStart(MONTHS_SHOWN - 1 - i), count: 0 }));
+    const months = periodMonths(this.period()).map(date => ({ date, count: 0 }));
 
     // Count each headache in the list matching its year and month.
     for (const h of this.list()) {
@@ -44,8 +50,13 @@ export class HeadachesPerMonth {
     return months;
   });
 
-  /** Year of the newest month shown. */
-  year = computed(() => this.monthlyCounts()[MONTHS_SHOWN - 1].date.getFullYear());
+  /** Year of the months shown, e.g. "2026", or "2025 – 2026" when they span two years. */
+  year = computed(() => {
+    const months = this.monthlyCounts();
+    const first = months[0].date.getFullYear();
+    const last = months[months.length - 1].date.getFullYear();
+    return first === last ? `${last}` : `${first} – ${last}`;
+  });
 
   /** Month(s) with the most and the least headaches, or null when every month is equal. */
   summary = computed(() => {

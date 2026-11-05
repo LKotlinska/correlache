@@ -5,9 +5,10 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { addDays, dayKey, startOfWeek } from '../../../../utils/date';
+import { addDays, dayKey } from '../../../../utils/date';
+import { Period, periodLabel, periodStart } from '../../period';
 
-const WEEKS_SHOWN = 8;
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workout days and rest days needed before the rates are compared. */
 const MIN_DAYS = 5;
 /** Difference in percentage points below which the rates count as about the same. */
@@ -28,13 +29,17 @@ export class WorkoutDayHeadaches {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
+  /** The picked range, or the last 8 weeks. */
+  period = this.data.periodOr(DEFAULT_PERIOD);
+  periodLabel = computed(() => periodLabel(this.period()));
+
   /**
-   * Every day from the Monday of the oldest shown week until two days ago, oldest first.
+   * Every day from the first shown day until two days ago, oldest first.
    * Yesterday and today are left out, as the day after them is not over yet.
    */
   private days = computed(() => {
     const today = new Date();
-    const first = addDays(startOfWeek(today), -7 * (WEEKS_SHOWN - 1));
+    const first = periodStart(this.period());
     const last = addDays(today, -2);
     const days: Date[] = [];
     for (let d = first; d <= last; d = addDays(d, 1)) days.push(d);

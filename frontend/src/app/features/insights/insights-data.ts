@@ -1,22 +1,23 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HeadacheService } from '../../services/headache.service';
 import { WorkoutService } from '../../services/workout.service';
 import { Workout } from '../../models/workout.model';
-import { monthStart, startOfWeek, weekStarts } from '../../utils/date';
+import { startOfWeek } from '../../utils/date';
+import { Period, periodStart } from './period';
 
-/** Headache months shown by the headache charts. */
-const HEADACHE_MONTHS = 3;
-/** Workout months shown by the exercise progress chart, the longest workout period. */
-const WORKOUT_MONTHS = 6;
-/** Weeks of workouts linked to headaches, shown by the charts comparing workouts with the headaches after them. */
-const LINKED_WEEKS = 8;
+/** Longest default period of the headache charts. */
+const HEADACHE_PERIOD: Period = { unit: 'month', count: 3 };
+/** Longest default period of the workout charts, shown by exercise progress. */
+const WORKOUT_PERIOD: Period = { unit: 'month', count: 6 };
+/** Default period of workouts linked to headaches, shown by the charts comparing workouts with the headaches after them. */
+const LINKED_PERIOD: Period = { unit: 'week', count: 8 };
 const HOUR_MS = 60 * 60 * 1000;
 /** Headaches starting from a workout's start until this many hours after it ends are linked to it. */
 const WINDOW_HOURS = 24;
 
 /**
- * Data shared by the insights charts, loaded once per visit to Insights.
+ * Data shared by the insights charts, loaded once per visit to Insights and again when a longer range is picked.
  * Each resource covers the longest period any chart needs, and charts filter it to their own period.
  */
 @Injectable()
@@ -24,14 +25,19 @@ export class InsightsData {
   private headacheService = inject(HeadacheService);
   private workoutService = inject(WorkoutService);
 
-  /** Headaches from the Monday of the week holding the first shown month's first day, as pain over time starts on that Monday. */
+  /** Period picked for every chart, or null for each chart's own default period. */
+  range = signal<Period | null>(null);
+
+  /** Headaches from the Monday of the week holding the first shown day, as charts by week start on that Monday. */
   headaches = rxResource({
-    stream: () => this.headacheService.getHeadaches({ from: startOfWeek(monthStart(HEADACHE_MONTHS - 1)) }),
+    params: () => this.loadFrom(HEADACHE_PERIOD),
+    stream: ({ params: from }) => this.headacheService.getHeadaches({ from: new Date(from) }),
   });
 
-  /** Workouts from the first day of the oldest shown month, newest first. */
+  /** Workouts from the Monday of the week holding the first shown day, newest first. */
   workouts = rxResource({
-    stream: () => this.workoutService.getWorkouts({ from: monthStart(WORKOUT_MONTHS - 1) }),
+    params: () => this.loadFrom(WORKOUT_PERIOD),
+    stream: ({ params: from }) => this.workoutService.getWorkouts({ from: new Date(from) }),
   });
 
   /** The exercise library, for each exercise's muscles. */
@@ -39,13 +45,15 @@ export class InsightsData {
     stream: () => this.workoutService.getExercises(),
   });
 
+  /** Period of the linked workouts. */
+  linkedPeriod = this.periodOr(LINKED_PERIOD);
+
   /**
-   * Workouts from the Monday of the oldest of the last LINKED_WEEKS weeks whose window is over, each with
-   * the pain levels of its linked headaches. `hasPending` is true when a workout is left out because its
-   * window is not over yet.
+   * Workouts from the first day of the linked period whose window is over, each with the pain levels of
+   * its linked headaches. `hasPending` is true when a workout is left out because its window is not over yet.
    */
   linkedWorkouts = computed(() => {
-    const from = weekStarts(LINKED_WEEKS)[0].getTime();
+    const from = periodStart(this.linkedPeriod()).getTime();
     const now = Date.now();
     const headaches = (this.headaches.value() ?? []).map(h => ({ start: new Date(h.startedAt).getTime(), pain: h.painLevel }));
 
@@ -63,4 +71,19 @@ export class InsightsData {
     }
     return { linked, hasPending };
   });
+
+  /** The picked period, or `fallback` while none is picked. */
+  periodOr(fallback: Period) {
+    return computed(() => this.range() ?? fallback);
+  }
+
+  /**
+   * Time of the Monday of the week holding the first day of `longest` or of the picked range, whichever is earlier.
+   * A number, so picking a range inside what is already loaded does not load it again.
+   */
+  private loadFrom(longest: Period): number {
+    const range = this.range();
+    const start = Math.min(periodStart(longest).getTime(), range ? periodStart(range).getTime() : Infinity);
+    return startOfWeek(new Date(start)).getTime();
+  }
 }

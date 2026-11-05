@@ -5,6 +5,7 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
+import { periodLabel } from '../../period';
 
 /** Fewest workouts a muscle group needs before its rate is trusted. Groups below it are shown faded. */
 const MIN_WORKOUTS = 3;
@@ -37,6 +38,8 @@ export class MuscleGroupHeadaches {
   hasData = computed(() => this.workouts.hasValue() && this.headaches.hasValue() && this.exercises.hasValue());
 
   hasError = computed(() => !!this.workouts.error() || !!this.headaches.error() || !!this.exercises.error());
+
+  periodLabel = computed(() => periodLabel(this.data.linkedPeriod()));
 
   /** Each linked workout, with the muscle groups its exercises work as a primary muscle and whether it had a linked headache. */
   sessions = computed(() => {

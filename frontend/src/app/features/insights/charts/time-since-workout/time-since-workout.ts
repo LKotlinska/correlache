@@ -5,9 +5,9 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { addDays, startOfWeek } from '../../../../utils/date';
+import { Period, periodLabel, periodStart } from '../../period';
 
-const WEEKS_SHOWN = 8;
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 const HOUR_MS = 60 * 60 * 1000;
 /** Headaches starting up to this many hours after a workout count as "within a day" in the summary. */
 const SUMMARY_HOURS = 24;
@@ -35,9 +35,13 @@ export class TimeSinceWorkout {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** Headaches from the Monday of the oldest shown week until now. */
+  /** The picked range, or the last 8 weeks. */
+  period = this.data.periodOr(DEFAULT_PERIOD);
+  periodLabel = computed(() => periodLabel(this.period()));
+
+  /** Headaches from the first shown day until now. */
   list = computed(() => {
-    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1));
+    const from = periodStart(this.period());
     return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
   });
 

@@ -5,9 +5,10 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { weekIndex, weekStarts } from '../../../../utils/date';
+import { weekIndex } from '../../../../utils/date';
+import { Period, periodLabel, periodWeeks } from '../../period';
 
-const WEEKS_SHOWN = 8;
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 
 @Component({
   imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
@@ -19,14 +20,20 @@ export class WorkoutsPerWeek {
   /** Day and short month of a week's Monday, e.g. "4 Nov". */
   private weekStartFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
 
+  private data = inject(InsightsData);
+
   /** Workouts shared by the insights charts. */
-  workouts = inject(InsightsData).workouts;
+  workouts = this.data.workouts;
+
+  /** The picked range, or the last 8 weeks. */
+  period = this.data.periodOr(DEFAULT_PERIOD);
+  periodLabel = computed(() => periodLabel(this.period()));
 
   /** Workouts from the Monday of the oldest shown week until now. */
   list = computed(() => (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= this.weekStarts()[0]));
 
   /** Monday 00:00 of each shown week, oldest to newest. */
-  private weekStarts = computed(() => weekStarts(WEEKS_SHOWN));
+  private weekStarts = computed(() => periodWeeks(this.period()));
 
   /** Oldest to newest, including weeks without any workouts. */
   weeklyCounts = computed(() => {
@@ -44,8 +51,8 @@ export class WorkoutsPerWeek {
     const weeks = this.weeklyCounts();
     const total = weeks.reduce((sum, w) => sum + w.count, 0);
     return {
-      thisWeek: weeks[WEEKS_SHOWN - 1].count,
-      average: Math.round((total / WEEKS_SHOWN) * 10) / 10,
+      thisWeek: weeks[weeks.length - 1].count,
+      average: Math.round((total / weeks.length) * 10) / 10,
     };
   });
 

@@ -5,9 +5,9 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { monthStart } from '../../../../utils/date';
+import { Period, periodLabel, periodStart } from '../../period';
 
-const MONTHS_SHOWN = 3;
+const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 const TRIGGERS_SHOWN = 6;
 /** Pixel height per bar, so the chart grows with the number of triggers instead of stretching a few bars. */
 const BAR_HEIGHT = 36;
@@ -19,12 +19,18 @@ const BAR_HEIGHT = 36;
   templateUrl: './top-triggers.html',
 })
 export class TopTriggers {
-  /** Headaches shared by the insights charts. */
-  headaches = inject(InsightsData).headaches;
+  private data = inject(InsightsData);
 
-  /** Headaches from the first day of the oldest shown month until now. */
+  /** Headaches shared by the insights charts. */
+  headaches = this.data.headaches;
+
+  /** The picked range, or the last 3 months. */
+  period = this.data.periodOr(DEFAULT_PERIOD);
+  periodLabel = computed(() => periodLabel(this.period()));
+
+  /** Headaches from the first shown day until now. */
   list = computed(() => {
-    const from = monthStart(MONTHS_SHOWN - 1);
+    const from = periodStart(this.period());
     return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
   });
 

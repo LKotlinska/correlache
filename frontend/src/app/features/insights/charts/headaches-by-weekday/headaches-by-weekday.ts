@@ -5,10 +5,10 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { monthStart } from '../../../../utils/date';
 import { joinNames } from '../../../../utils/join-names';
+import { Period, periodLabel, periodStart } from '../../period';
 
-const MONTHS_SHOWN = 3;
+const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 
 @Component({
   imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
@@ -21,12 +21,18 @@ export class HeadachesByWeekday {
   private dayShortFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short' });
   private dayLongFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'long' });
 
-  /** Headaches shared by the insights charts. */
-  headaches = inject(InsightsData).headaches;
+  private data = inject(InsightsData);
 
-  /** Headaches from the first day of the oldest shown month until now. */
+  /** Headaches shared by the insights charts. */
+  headaches = this.data.headaches;
+
+  /** The picked range, or the last 3 months. */
+  period = this.data.periodOr(DEFAULT_PERIOD);
+  periodLabel = computed(() => periodLabel(this.period()));
+
+  /** Headaches from the first shown day until now. */
   list = computed(() => {
-    const from = monthStart(MONTHS_SHOWN - 1);
+    const from = periodStart(this.period());
     return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
   });
 

@@ -5,9 +5,10 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { weekIndex, weekStarts } from '../../../../utils/date';
+import { weekIndex } from '../../../../utils/date';
+import { Period, periodLabel, periodWeeks } from '../../period';
 
-const WEEKS_SHOWN = 8;
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 
 @Component({
   imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
@@ -25,8 +26,12 @@ export class WorkoutsVsHeadaches {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
+  /** The picked range, or the last 8 weeks. */
+  period = this.data.periodOr(DEFAULT_PERIOD);
+  periodLabel = computed(() => periodLabel(this.period()));
+
   /** Monday 00:00 of each shown week, oldest to newest. */
-  private weekStarts = computed(() => weekStarts(WEEKS_SHOWN));
+  private weekStarts = computed(() => periodWeeks(this.period()));
 
   /** Oldest to newest, including weeks without any workouts or headaches. Entries before the oldest week are skipped. */
   weeklyCounts = computed(() => {
