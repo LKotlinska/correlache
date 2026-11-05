@@ -5,9 +5,12 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { Period, periodLabel, periodStart } from '../../period';
+import { addDays } from '../../../../utils/date';
+import { Period } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
+/** Days before the first shown day searched for the workout before each headache. */
+const LOOKBACK_DAYS = 28;
 const HOUR_MS = 60 * 60 * 1000;
 /** Headaches starting up to this many hours after a workout count as "within a day" in the summary. */
 const SUMMARY_HOURS = 24;
@@ -36,21 +39,21 @@ export class TimeSinceWorkout {
   headaches = this.data.headaches;
 
   /** The picked range, or the last 8 weeks. */
-  period = this.data.periodOr(DEFAULT_PERIOD);
-  periodLabel = computed(() => periodLabel(this.period()));
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
 
   /** Headaches from the first shown day until now. */
-  list = computed(() => {
-    const from = periodStart(this.period());
-    return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
-  });
+  list = this.data.since('headaches', this.shown.start);
+
+  /** Workouts from LOOKBACK_DAYS before the first shown day, so early headaches can find the workout before them. */
+  private workoutList = this.data.since('workouts', computed(() => addDays(this.shown.start(), -LOOKBACK_DAYS)));
 
   /**
-   * Hours from the end of the latest workout started before each headache, or null when there is none.
-   * A headache starting during a workout counts as 0 hours.
+   * Hours from the end of the latest workout started before each headache, or null when there is none
+   * within LOOKBACK_DAYS before the first shown day. A headache starting during a workout counts as 0 hours.
    */
   hoursSinceWorkout = computed(() => {
-    const workouts = (this.workouts.value() ?? []).map(w => {
+    const workouts = this.workoutList().map(w => {
       const start = new Date(w.startedAt).getTime();
       return { start, end: start + w.durationSeconds * 1000 };
     });

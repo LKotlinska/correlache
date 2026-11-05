@@ -7,7 +7,7 @@ import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
 import { MuscleRole } from '../../../../models/workout.model';
-import { Period, periodLabel, periodStart } from '../../period';
+import { Period } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 4 };
 
@@ -36,14 +36,11 @@ export class MuscleBalance {
   hasError = computed(() => !!this.workouts.error() || !!this.exercises.error());
 
   /** The picked range, or the last 4 weeks. */
-  period = this.data.periodOr(DEFAULT_PERIOD);
-  periodLabel = computed(() => periodLabel(this.period()));
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
 
   /** Workouts from the first shown day until now. */
-  list = computed(() => {
-    const from = periodStart(this.period());
-    return (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= from);
-  });
+  list = this.data.since('workouts', this.shown.start);
 
   /** Every muscle group in the library, in id order, with its weighted set count. */
   groupSets = computed(() => {

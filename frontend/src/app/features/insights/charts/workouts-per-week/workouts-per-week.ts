@@ -6,7 +6,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { weekIndex } from '../../../../utils/date';
-import { Period, periodLabel, periodWeeks } from '../../period';
+import { Period, periodWeeks } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 
@@ -25,15 +25,15 @@ export class WorkoutsPerWeek {
   /** Workouts shared by the insights charts. */
   workouts = this.data.workouts;
 
-  /** The picked range, or the last 8 weeks. */
-  period = this.data.periodOr(DEFAULT_PERIOD);
-  periodLabel = computed(() => periodLabel(this.period()));
+  /** The picked range, or the last 8 weeks, from the Monday of its oldest week so every week is whole. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'week');
+  periodLabel = this.shown.label;
 
   /** Workouts from the Monday of the oldest shown week until now. */
-  list = computed(() => (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= this.weekStarts()[0]));
+  list = this.data.since('workouts', this.shown.start);
 
   /** Monday 00:00 of each shown week, oldest to newest. */
-  private weekStarts = computed(() => periodWeeks(this.period()));
+  private weekStarts = computed(() => periodWeeks(this.shown.period()));
 
   /** Oldest to newest, including weeks without any workouts. */
   weeklyCounts = computed(() => {
@@ -46,13 +46,14 @@ export class WorkoutsPerWeek {
     return weeks;
   });
 
-  /** This week's count and the average per week over all shown weeks. */
+  /** This week's count and the average per week over the shown weeks before it, as this week is not over yet. */
   summary = computed(() => {
     const weeks = this.weeklyCounts();
-    const total = weeks.reduce((sum, w) => sum + w.count, 0);
+    const past = weeks.slice(0, -1);
+    const total = past.reduce((sum, w) => sum + w.count, 0);
     return {
       thisWeek: weeks[weeks.length - 1].count,
-      average: Math.round((total / weeks.length) * 10) / 10,
+      average: Math.round((total / past.length) * 10) / 10,
     };
   });
 

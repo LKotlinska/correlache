@@ -5,8 +5,9 @@ import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { periodLabel } from '../../period';
+import { Period } from '../../period';
 
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workouts a muscle group needs before its rate is trusted. Groups below it are shown faded. */
 const MIN_WORKOUTS = 3;
 /** Height of one bar row in pixels, so the chart grows with the number of muscle groups. */
@@ -39,7 +40,11 @@ export class MuscleGroupHeadaches {
 
   hasError = computed(() => !!this.workouts.error() || !!this.headaches.error() || !!this.exercises.error());
 
-  periodLabel = computed(() => periodLabel(this.data.linkedPeriod()));
+  /** The picked range, or the last 8 weeks. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
+
+  private linkedWorkouts = this.data.linkedWorkouts(this.shown.start);
 
   /** Each linked workout, with the muscle groups its exercises work as a primary muscle and whether it had a linked headache. */
   sessions = computed(() => {
@@ -49,7 +54,7 @@ export class MuscleGroupHeadaches {
       groupsByExercise.set(exercise.id, exercise.muscles.filter(m => m.role === 'primary').map(m => m.muscleGroup));
     }
 
-    return this.data.linkedWorkouts().linked.map(({ workout, pains }) => {
+    return this.linkedWorkouts().linked.map(({ workout, pains }) => {
       const groups = new Map<number, string>();
       for (const e of workout.exercises) {
         for (const g of groupsByExercise.get(e.exerciseId) ?? []) groups.set(g.id, g.name);
@@ -62,7 +67,7 @@ export class MuscleGroupHeadaches {
   overall = computed<GroupRate>(() => this.rate('All workouts', this.sessions()));
 
   /** Whether a workout is left out because its window is not over yet. */
-  hasPending = computed(() => this.data.linkedWorkouts().hasPending);
+  hasPending = computed(() => this.linkedWorkouts().hasPending);
 
   /** Headache rate per muscle group trained in the shown workouts. Groups with enough workouts come first, then highest rate. */
   groupRates = computed(() => {

@@ -9,7 +9,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { TrackingMode, WorkoutSet } from '../../../../models/workout.model';
-import { Period, periodLabel, periodStart } from '../../period';
+import { Period } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 
@@ -52,14 +52,11 @@ export class ExerciseProgress {
   workouts = this.data.workouts;
 
   /** The picked range, or the last 6 months. */
-  period = this.data.periodOr(DEFAULT_PERIOD);
-  periodLabel = computed(() => periodLabel(this.period()));
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
 
   /** Workouts from the first shown day until now, newest first. */
-  list = computed(() => {
-    const from = periodStart(this.period());
-    return (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= from);
-  });
+  list = this.data.since('workouts', this.shown.start);
 
   /** Every exercise done in the period, most often done first. */
   exercises = computed(() => {

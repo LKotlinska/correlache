@@ -6,7 +6,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { weekIndex } from '../../../../utils/date';
-import { Period, periodLabel, periodWeeks } from '../../period';
+import { Period, periodWeeks } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 /** Recent weeks compared against the rest of the period in the summary. */
@@ -27,15 +27,15 @@ export class PainOverTime {
   /** Headaches shared by the insights charts. */
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 3 months. */
-  period = this.data.periodOr(DEFAULT_PERIOD);
-  periodLabel = computed(() => periodLabel(this.period()));
+  /** The picked range, or the last 3 months, from the Monday of its oldest week so every week is whole. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'week');
+  periodLabel = this.shown.label;
 
   /** Monday of each shown week, oldest first, starting with the week holding the period's first day. */
-  private weekStarts = computed(() => periodWeeks(this.period()));
+  private weekStarts = computed(() => periodWeeks(this.shown.period()));
 
   /** Headaches from the first shown Monday until now. */
-  list = computed(() => (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= this.weekStarts()[0]));
+  list = this.data.since('headaches', this.shown.start);
 
   /** Oldest to newest, one entry per week. `average` is null for weeks without headaches. */
   weeklyPain = computed(() => {

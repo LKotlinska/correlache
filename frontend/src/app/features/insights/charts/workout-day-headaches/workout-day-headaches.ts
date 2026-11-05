@@ -6,7 +6,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { addDays, dayKey } from '../../../../utils/date';
-import { Period, periodLabel, periodStart } from '../../period';
+import { Period } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workout days and rest days needed before the rates are compared. */
@@ -30,8 +30,12 @@ export class WorkoutDayHeadaches {
   headaches = this.data.headaches;
 
   /** The picked range, or the last 8 weeks. */
-  period = this.data.periodOr(DEFAULT_PERIOD);
-  periodLabel = computed(() => periodLabel(this.period()));
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
+
+  /** Workouts and headaches from the first shown day until now. */
+  private workoutList = this.data.since('workouts', this.shown.start);
+  private headacheList = this.data.since('headaches', this.shown.start);
 
   /**
    * Every day from the first shown day until two days ago, oldest first.
@@ -39,7 +43,7 @@ export class WorkoutDayHeadaches {
    */
   private days = computed(() => {
     const today = new Date();
-    const first = periodStart(this.period());
+    const first = this.shown.start();
     const last = addDays(today, -2);
     const days: Date[] = [];
     for (let d = first; d <= last; d = addDays(d, 1)) days.push(d);
@@ -55,14 +59,14 @@ export class WorkoutDayHeadaches {
   groups = computed(() => {
     // Earliest workout start of each day.
     const firstWorkout = new Map<string, Date>();
-    for (const w of this.workouts.value() ?? []) {
+    for (const w of this.workoutList()) {
       const start = new Date(w.startedAt);
       const key = dayKey(start);
       const earliest = firstWorkout.get(key);
       if (!earliest || start < earliest) firstWorkout.set(key, start);
     }
 
-    const headacheStarts = (this.headaches.value() ?? []).map(h => new Date(h.startedAt));
+    const headacheStarts = this.headacheList().map(h => new Date(h.startedAt));
 
     const workoutDays = { days: 0, withHeadache: 0 };
     const restDays = { days: 0, withHeadache: 0 };

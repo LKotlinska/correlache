@@ -6,7 +6,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
-import { Period, periodLabel, periodMonths, periodStart } from '../../period';
+import { Period, periodMonths } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 
@@ -26,20 +26,17 @@ export class HeadachesPerMonth {
   /** Headaches shared by the insights charts. */
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 3 months. */
-  period = this.data.periodOr(DEFAULT_PERIOD);
-  periodLabel = computed(() => periodLabel(this.period()));
+  /** The picked range, or the last 3 months, from the first day of its oldest month so every bar is a whole month. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'month');
+  periodLabel = this.shown.label;
 
-  /** Headaches from the first shown day until now. */
-  list = computed(() => {
-    const from = periodStart(this.period());
-    return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
-  });
+  /** Headaches from the first day of the oldest shown month until now. */
+  list = this.data.since('headaches', this.shown.start);
 
   /** Oldest to newest, including months without any headaches. */
   monthlyCounts = computed(() => {
     // One zeroed list per month, so months without headaches still appear.
-    const months = periodMonths(this.period()).map(date => ({ date, count: 0 }));
+    const months = periodMonths(this.shown.period()).map(date => ({ date, count: 0 }));
 
     // Count each headache in the list matching its year and month.
     for (const h of this.list()) {
