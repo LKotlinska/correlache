@@ -7,6 +7,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { getErrorMessage } from '../../utils/error-message';
 import { DraftStorage, HEADACHE_DRAFT_KEY } from '../../services/draft-storage';
 import { ExerciseDraftService } from '../../services/exercise-draft';
+import { DialogService } from '../../components/dialog/dialog.service';
+import { ConfirmDialog, ConfirmDialogData } from '../../components/dialog/confirm-dialog/confirm-dialog';
 
 @Component({
   imports: [Button],
@@ -20,6 +22,7 @@ export class Settings {
   private snackBar = inject(MatSnackBar);
   private draftStorage = inject(DraftStorage);
   private workoutDraft = inject(ExerciseDraftService);
+  private dialogService = inject(DialogService);
 
   /** Drafts live in sessionStorage, so without this the next person in this tab would see them. */
   private clearDrafts() {
@@ -42,6 +45,31 @@ export class Settings {
         }
         this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
       },
+    });
+  }
+
+  confirmDeleteAccount() {
+    const data: ConfirmDialogData = {
+      heading: 'Delete account?',
+      message: 'This permanently deletes your account and all your headaches and workouts. This can\'t be undone.',
+      confirmLabel: 'Delete',
+    };
+    this.dialogService
+      .open(ConfirmDialog, data)
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) this.deleteAccount();
+      });
+  }
+
+  private deleteAccount() {
+    this.userService.deleteAccount().subscribe({
+      next: () => {
+        this.clearDrafts();
+        this.router.navigate(['/']);
+      },
+      error: (err: HttpErrorResponse) =>
+        this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' }),
     });
   }
 }
