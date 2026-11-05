@@ -1,0 +1,17 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ title() }}: needs more data</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>More data needed before patterns can be considered reliable.</p>
+    @for (p of progress(); track p.label) {
+      <div class="progress">
+        <span>{{ p.value }} / {{ p.needed }} {{ p.label }}</span>
+        <mat-progress-bar mode="determinate" [value]="p.percent" />
+      </div>
+    }
+  </mat-card-content>
+  <mat-card-actions>
+    <button matButton (click)="show.emit()">I understand, show anyway</button>
+  </mat-card-actions>
+</mat-card>
