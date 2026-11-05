@@ -6,17 +6,23 @@ mat-chip-listbox {
   ::ng-deep .mdc-evolution-chip-set__chips {
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 1em;
+    padding-bottom: 0.5em;
   }
 }
 
 .range-select {
   display: block;
   margin-bottom: 1rem;
+  padding-top: 0.5em;
 }
 
 .charts {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.disclaimer {
+  margin: 0;
+  font-style: italic;
 }

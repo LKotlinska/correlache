@@ -14,6 +14,7 @@ import { WorkoutsVsHeadaches } from './charts/workouts-vs-headaches/workouts-vs-
 import { WorkoutDayHeadaches } from './charts/workout-day-headaches/workout-day-headaches';
 import { TimeSinceWorkout } from './charts/time-since-workout/time-since-workout';
 import { MuscleGroupHeadaches } from './charts/muscle-group-headaches/muscle-group-headaches';
+import { DataNotice } from './data-notice/data-notice';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
 
@@ -30,6 +31,17 @@ const RANGES: { key: string; label: string; period: Period | null }[] = [
   { key: '12m', label: 'Last 12 months', period: { unit: 'month', count: 12 } },
 ];
 
+const DISMISSED_KEY = 'insights-data-notice-dismissed';
+
+function loadDismissed(): InsightsCategory[] {
+  try {
+    const stored = JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]');
+    return Array.isArray(stored) ? stored : [];
+  } catch {
+    return [];
+  }
+}
+
 @Component({
   imports: [
     MatChipListbox,
@@ -38,6 +50,7 @@ const RANGES: { key: string; label: string; period: Period | null }[] = [
     MatLabel,
     MatSelect,
     MatOption,
+    DataNotice,
     HeadachesPerMonth,
     TopTriggers,
     TopSymptoms,
@@ -64,6 +77,26 @@ export class Insights {
   filter = signal<InsightsFilter>('all');
 
   rangeKey = signal('default');
+
+  readiness = this.data.readiness;
+
+  /** Categories whose "needs more data" notice the user has dismissed. */
+  private dismissed = signal<InsightsCategory[]>(loadDismissed());
+
+  /** True while a category has too little data and the user has not chosen to look anyway. */
+  gated(category: InsightsCategory): boolean {
+    const r = this.readiness()?.[category];
+    return !!r && !r.ready && !this.dismissed().includes(category);
+  }
+
+  dismiss(category: InsightsCategory) {
+    this.dismissed.update(d => [...d, category]);
+    try {
+      localStorage.setItem(DISMISSED_KEY, JSON.stringify(this.dismissed()));
+    } catch {
+      // Storage unavailable: the notice comes back next visit
+    }
+  }
 
   shows(category: InsightsCategory): boolean {
     return this.filter() === 'all' || this.filter() === category;

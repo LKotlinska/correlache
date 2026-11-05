@@ -16,21 +16,46 @@
 
 <div class="charts">
   @if (shows('correlations')) {
-    <app-workouts-vs-headaches />
-    <app-workout-day-headaches />
-    <app-time-since-workout />
-    <app-muscle-group-headaches />
+    @if (gated('correlations')) {
+      <app-data-notice
+        title="Correlations"
+        [readiness]="readiness()!.correlations"
+        (show)="dismiss('correlations')"
+      />
+    } @else {
+      <p class="disclaimer">Charts show correlation, not causation.</p>
+      <app-workouts-vs-headaches />
+      <app-workout-day-headaches />
+      <app-time-since-workout />
+      <app-muscle-group-headaches />
+    }
   }
   @if (shows('headaches')) {
-    <app-headaches-per-month />
-    <app-top-triggers />
-    <app-top-symptoms />
-    <app-pain-over-time />
-    <app-headaches-by-weekday />
+    @if (gated('headaches')) {
+      <app-data-notice
+        title="Headaches"
+        [readiness]="readiness()!.headaches"
+        (show)="dismiss('headaches')"
+      />
+    } @else {
+      <app-headaches-per-month />
+      <app-top-triggers />
+      <app-top-symptoms />
+      <app-pain-over-time />
+      <app-headaches-by-weekday />
+    }
   }
   @if (shows('workouts')) {
-    <app-workouts-per-week />
-    <app-exercise-progress />
-    <app-muscle-balance />
+    @if (gated('workouts')) {
+      <app-data-notice
+        title="Workouts"
+        [readiness]="readiness()!.workouts"
+        (show)="dismiss('workouts')"
+      />
+    } @else {
+      <app-workouts-per-week />
+      <app-exercise-progress />
+      <app-muscle-balance />
+    }
   }
 </div>

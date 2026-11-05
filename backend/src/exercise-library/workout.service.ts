@@ -9,7 +9,7 @@ import { WorkoutSet } from './entities/set.entity.js';
 import { ExerciseDto, ExerciseMuscleDto, LookupDto, WorkoutDetailDto } from './dto/exercise.dto.js';
 import { TRACKED_FIELDS } from './tracking-mode.js';
 import { exerciseVolume } from './volume.js';
-import { dateRange } from '../common/date-range.js';
+import { startedWithin } from '../common/date-range.js';
 
 @Injectable()
 export class WorkoutService {
@@ -123,7 +123,7 @@ export class WorkoutService {
   /** The user's workouts, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive), and to at most `limit` of them. */
   async getWorkouts(userId: string, from?: Date, to?: Date, limit?: number): Promise<Workout[]> {
   return await this.workoutRepo.find({
-      where: { userId, startedAt: dateRange(from, to) },
+      where: { userId, ...startedWithin(from, to) },
       relations: { exercises: { sets: true } },
       order: {
         startedAt: 'DESC',

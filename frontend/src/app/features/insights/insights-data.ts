@@ -6,6 +6,8 @@ import { Headache } from '../../models/headache.model';
 import { Workout } from '../../models/workout.model';
 import { startOfWeek } from '../../utils/date';
 import { Period, periodLabel, periodStart } from './period';
+import { InsightsCategory } from './insights';
+import { Readiness, readiness } from './readiness';
 
 const HOUR_MS = 60 * 60 * 1000;
 /** Headaches starting from a workout's start until this many hours after it ends are linked to it. */
@@ -50,6 +52,22 @@ export class InsightsData {
   workouts = rxResource({
     params: this.loadFrom('workouts'),
     stream: ({ params: from }) => this.workoutService.getWorkouts({ from: new Date(from) }),
+  });
+
+  /** Every entry, only to tell whether there is enough history for the charts to mean something. */
+  private allHeadaches = rxResource({ stream: () => this.headacheService.getHeadaches() });
+  private allWorkouts = rxResource({ stream: () => this.workoutService.getWorkouts() });
+
+  /** How ready each category is, or undefined while the entries load. */
+  readiness = computed<Record<InsightsCategory, Readiness> | undefined>(() => {
+    if (!this.allHeadaches.hasValue() || !this.allWorkouts.hasValue()) return undefined;
+    const headaches = this.allHeadaches.value();
+    const workouts = this.allWorkouts.value();
+    return {
+      headaches: readiness('headaches', headaches, workouts),
+      workouts: readiness('workouts', headaches, workouts),
+      correlations: readiness('correlations', headaches, workouts),
+    };
   });
 
   /** The exercise library, for each exercise's muscles. */
