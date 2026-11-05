@@ -3,9 +3,11 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
+import { Period } from '../../period';
 
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Durations are rounded to this many minutes, so similar workouts share one bubble. */
 const ROUND_MINUTES = 5;
 /** Fewest workouts needed before the summary compares longer and shorter ones. */
@@ -24,16 +26,22 @@ export class IntensityVsPain {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
+  /** The picked range, or the last 8 weeks. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
+
+  private linkedWorkouts = this.data.linkedWorkouts(this.shown.start);
+
   /** Each linked workout's duration in minutes and the highest pain of its linked headaches (0 for none). */
   points = computed(() =>
-    this.data.linkedWorkouts().linked.map(({ workout, pains }) => ({
+    this.linkedWorkouts().linked.map(({ workout, pains }) => ({
       minutes: workout.durationSeconds / 60,
       pain: pains.length ? Math.max(...pains) : 0,
     })),
   );
 
   /** Whether a workout is left out because its window is not over yet. */
-  hasPending = computed(() => this.data.linkedWorkouts().hasPending);
+  hasPending = computed(() => this.linkedWorkouts().hasPending);
 
   /** Points grouped by rounded duration and pain, with how many workouts share each. */
   bubbles = computed(() => {
@@ -72,7 +80,7 @@ export class IntensityVsPain {
     datasets: [{
       data: this.bubbles().map(b => ({ x: b.x, y: b.y, r: 4 + Math.sqrt(b.count) * 3 })),
       backgroundColor: `${CHART_COLOR}99`,
-      borderColor: CHART_COLOR,
+      borderColor: CHART_COLOR_SECONDARY,
     }],
   }));
 

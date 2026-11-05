@@ -6,10 +6,10 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
-import { addDays, startOfWeek } from '../../../../utils/date';
 import { MuscleRole } from '../../../../models/workout.model';
+import { Period } from '../../period';
 
-const WEEKS_SHOWN = 4;
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 4 };
 
 /** How much one set counts towards a muscle group, by the muscle's role in the exercise. */
 const ROLE_WEIGHT: Record<MuscleRole, number> = { primary: 1, secondary: 0.5 };
@@ -35,11 +35,12 @@ export class MuscleBalance {
 
   hasError = computed(() => !!this.workouts.error() || !!this.exercises.error());
 
-  /** Workouts from the Monday WEEKS_SHOWN weeks ago until now. */
-  list = computed(() => {
-    const from = addDays(startOfWeek(new Date()), -7 * (WEEKS_SHOWN - 1));
-    return (this.workouts.value() ?? []).filter(w => new Date(w.startedAt) >= from);
-  });
+  /** The picked range, or the last 4 weeks. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
+
+  /** Workouts from the first shown day until now. */
+  list = this.data.since('workouts', this.shown.start);
 
   /** Every muscle group in the library, in id order, with its weighted set count. */
   groupSets = computed(() => {

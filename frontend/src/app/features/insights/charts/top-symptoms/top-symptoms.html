@@ -8,7 +8,7 @@
         <div class="summary">
           <p>
             You had <strong>{{ s.name }}</strong> with {{ s.count }} of your {{ s.total }} headaches
-            in the last 3 months.
+            in {{ periodLabel() }}.
           </p>
         </div>
 
@@ -16,7 +16,7 @@
           <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
         </div>
       } @else {
-        <p>No symptoms logged in the last 3 months.</p>
+        <p>No symptoms logged in {{ periodLabel() }}.</p>
       }
     } @else if (headaches.error()) {
       <p>Couldn't load headache data.</p>

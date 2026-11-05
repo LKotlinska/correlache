@@ -1,14 +1,36 @@
+<mat-chip-listbox aria-label="Filter insights" [value]="filter()" (change)="onFilterChange($event)">
+  <mat-chip-option value="all">All</mat-chip-option>
+  <mat-chip-option value="headaches">Headaches</mat-chip-option>
+  <mat-chip-option value="workouts">Workouts</mat-chip-option>
+  <mat-chip-option value="correlations">Correlations</mat-chip-option>
+</mat-chip-listbox>
+
+<mat-form-field class="range-select" appearance="outline" subscriptSizing="dynamic">
+  <mat-label>Time range</mat-label>
+  <mat-select [value]="rangeKey()" (selectionChange)="onRangeChange($event.value)">
+    @for (range of ranges; track range.key) {
+      <mat-option [value]="range.key">{{ range.label }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+
 <div class="charts">
-  <app-headaches-per-month />
-  <app-top-triggers />
-  <app-top-symptoms />
-  <app-pain-over-time />
-  <app-headaches-by-weekday />
-  <app-workouts-per-week />
-  <app-workouts-vs-headaches />
-  <app-workout-day-headaches />
-  <app-time-since-workout />
-  <app-muscle-group-headaches />
-  <app-exercise-progress />
-  <app-muscle-balance />
+  @if (shows('correlations')) {
+    <app-workouts-vs-headaches />
+    <app-workout-day-headaches />
+    <app-time-since-workout />
+    <app-muscle-group-headaches />
+  }
+  @if (shows('headaches')) {
+    <app-headaches-per-month />
+    <app-top-triggers />
+    <app-top-symptoms />
+    <app-pain-over-time />
+    <app-headaches-by-weekday />
+  }
+  @if (shows('workouts')) {
+    <app-workouts-per-week />
+    <app-exercise-progress />
+    <app-muscle-balance />
+  }
 </div>

@@ -9,6 +9,9 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { TrackingMode, WorkoutSet } from '../../../../models/workout.model';
+import { Period } from '../../period';
+
+const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 
 /** What is plotted for each tracking mode: the best set of a session, or the session's average speed. */
 const METRICS: Record<TrackingMode, { label: string; unit: string }> = {
@@ -43,15 +46,24 @@ export class ExerciseProgress {
   /** Short date for session labels, e.g. "3 Nov". */
   private dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
 
-  /** Workouts from the first day of the oldest shown month until now, newest first, shared by the insights charts. */
-  workouts = inject(InsightsData).workouts;
+  private data = inject(InsightsData);
+
+  /** Workouts shared by the insights charts. */
+  workouts = this.data.workouts;
+
+  /** The picked range, or the last 6 months. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
+
+  /** Workouts from the first shown day until now, newest first. */
+  list = this.data.since('workouts', this.shown.start);
 
   /** Every exercise done in the period, most often done first. */
   exercises = computed(() => {
     const options = new Map<string, ExerciseOption>();
     const weighted = new Set<string>();
     // Workouts arrive newest first, so the first time an exercise is seen gives its current mode.
-    for (const w of this.workouts.value() ?? []) {
+    for (const w of this.list()) {
       for (const e of w.exercises) {
         const key = this.keyOf(e);
         let option = options.get(key);
@@ -109,7 +121,7 @@ export class ExerciseProgress {
     if (!exercise) return [];
 
     const points: { date: Date; value: number }[] = [];
-    for (const w of this.workouts.value() ?? []) {
+    for (const w of this.list()) {
       for (const e of w.exercises) {
         if (this.keyOf(e) !== exercise.key || e.trackingMode !== exercise.mode) continue;
         const value = this.sessionValue(exercise.plotMode, e.sets);

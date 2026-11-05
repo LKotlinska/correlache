@@ -3,11 +3,11 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { monthStart } from '../../../../utils/date';
+import { Period } from '../../period';
 
-const MONTHS_SHOWN = 3;
+const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 const SYMPTOMS_SHOWN = 6;
 /** Pixel height per bar, so the chart grows with the number of symptoms instead of stretching a few bars. */
 const BAR_HEIGHT = 36;
@@ -19,14 +19,17 @@ const BAR_HEIGHT = 36;
   templateUrl: './top-symptoms.html',
 })
 export class TopSymptoms {
-  /** Headaches shared by the insights charts. */
-  headaches = inject(InsightsData).headaches;
+  private data = inject(InsightsData);
 
-  /** Headaches from the first day of the oldest shown month until now. */
-  list = computed(() => {
-    const from = monthStart(MONTHS_SHOWN - 1);
-    return (this.headaches.value() ?? []).filter(h => new Date(h.startedAt) >= from);
-  });
+  /** Headaches shared by the insights charts. */
+  headaches = this.data.headaches;
+
+  /** The picked range, or the last 3 months. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  periodLabel = this.shown.label;
+
+  /** Headaches from the first shown day until now. */
+  list = this.data.since('headaches', this.shown.start);
 
   /** Most common symptoms first, at most SYMPTOMS_SHOWN. Ties keep alphabetical order. */
   symptomCounts = computed(() => {
@@ -60,7 +63,7 @@ export class TopSymptoms {
       labels: symptoms.map(s => s.name),
       datasets: [{
         data: symptoms.map(s => s.count),
-        backgroundColor: CHART_COLOR,
+        backgroundColor: CHART_COLOR_SECONDARY,
         borderRadius: 4,
       }],
     };

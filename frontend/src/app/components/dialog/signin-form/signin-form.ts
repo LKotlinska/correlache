@@ -48,7 +48,7 @@ export class SigninForm {
     }).subscribe({
       next: () => {
         this.dialogRef.close();
-        this.router.navigate(['/user/insights']);
+        this.router.navigate(['/user/diary']);
       },
       error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);

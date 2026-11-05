@@ -17,7 +17,7 @@
           <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
         </div>
       } @else {
-        <p>No workouts logged in the last 8 weeks.</p>
+        <p>No workouts logged in {{ periodLabel() }}.</p>
       }
     } @else if (workouts.error()) {
       <p>Couldn't load workout data.</p>

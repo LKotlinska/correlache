@@ -1,37 +1,55 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, linkedSignal, Signal, signal, untracked } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HeadacheService } from '../../services/headache.service';
 import { WorkoutService } from '../../services/workout.service';
+import { Headache } from '../../models/headache.model';
 import { Workout } from '../../models/workout.model';
-import { monthStart, startOfWeek, weekStarts } from '../../utils/date';
+import { startOfWeek } from '../../utils/date';
+import { Period, periodLabel, periodStart } from './period';
 
-/** Headache months shown by the headache charts. */
-const HEADACHE_MONTHS = 3;
-/** Workout months shown by the exercise progress chart, the longest workout period. */
-const WORKOUT_MONTHS = 6;
-/** Weeks of workouts linked to headaches, shown by the charts comparing workouts with the headaches after them. */
-const LINKED_WEEKS = 8;
 const HOUR_MS = 60 * 60 * 1000;
 /** Headaches starting from a workout's start until this many hours after it ends are linked to it. */
 const WINDOW_HOURS = 24;
 
+/** Entries of each loaded source, newest first. */
+interface Loaded {
+  headaches: Headache[];
+  workouts: Workout[];
+}
+
+/** What a chart shows: the picked range or its own default period, with its label and first shown day. */
+export interface ChartPeriod {
+  period: Signal<Period>;
+  label: Signal<string>;
+  start: Signal<Date>;
+}
+
 /**
- * Data shared by the insights charts, loaded once per visit to Insights.
- * Each resource covers the longest period any chart needs, and charts filter it to their own period.
+ * Data shared by the insights charts. Each source is loaded back to the earliest day a shown chart needs,
+ * through `since()`, and loaded again only when a chart needs an earlier day.
  */
 @Injectable()
 export class InsightsData {
   private headacheService = inject(HeadacheService);
   private workoutService = inject(WorkoutService);
 
-  /** Headaches from the Monday of the week holding the first shown month's first day, as pain over time starts on that Monday. */
+  /** Period picked for every chart, or null for each chart's own default period. */
+  range = signal<Period | null>(null);
+
+  /** First day each shown chart needs from each source. */
+  private needs = {
+    headaches: signal<Signal<Date>[]>([]),
+    workouts: signal<Signal<Date>[]>([]),
+  };
+
   headaches = rxResource({
-    stream: () => this.headacheService.getHeadaches({ from: startOfWeek(monthStart(HEADACHE_MONTHS - 1)) }),
+    params: this.loadFrom('headaches'),
+    stream: ({ params: from }) => this.headacheService.getHeadaches({ from: new Date(from) }),
   });
 
-  /** Workouts from the first day of the oldest shown month, newest first. */
   workouts = rxResource({
-    stream: () => this.workoutService.getWorkouts({ from: monthStart(WORKOUT_MONTHS - 1) }),
+    params: this.loadFrom('workouts'),
+    stream: ({ params: from }) => this.workoutService.getWorkouts({ from: new Date(from) }),
   });
 
   /** The exercise library, for each exercise's muscles. */
@@ -40,27 +58,77 @@ export class InsightsData {
   });
 
   /**
-   * Workouts from the Monday of the oldest of the last LINKED_WEEKS weeks whose window is over, each with
-   * the pain levels of its linked headaches. `hasPending` is true when a workout is left out because its
-   * window is not over yet.
+   * The picked range, or `fallback` while none is picked. Its first shown day is moved back to the start of
+   * its week or month for charts counting whole weeks or months.
    */
-  linkedWorkouts = computed(() => {
-    const from = weekStarts(LINKED_WEEKS)[0].getTime();
-    const now = Date.now();
-    const headaches = (this.headaches.value() ?? []).map(h => ({ start: new Date(h.startedAt).getTime(), pain: h.painLevel }));
+  chartPeriod(fallback: Period, align: 'day' | 'week' | 'month' = 'day'): ChartPeriod {
+    const period = computed(() => this.range() ?? fallback);
+    return {
+      period,
+      label: computed(() => periodLabel(period())),
+      start: computed(() => {
+        const start = periodStart(period());
+        if (align === 'week') return startOfWeek(start);
+        if (align === 'month') return new Date(start.getFullYear(), start.getMonth(), 1);
+        return start;
+      }),
+    };
+  }
 
-    const linked: { workout: Workout; pains: number[] }[] = [];
-    let hasPending = false;
-    for (const workout of this.workouts.value() ?? []) {
-      const start = new Date(workout.startedAt).getTime();
-      const until = start + workout.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS;
-      if (start < from) continue;
-      if (until > now) {
-        hasPending = true;
-        continue;
+  /**
+   * Entries of `source` from `from` until now, newest first. Keeps `source` loaded back to `from` while the
+   * calling chart is shown, so it must be called while the chart is created.
+   */
+  since<K extends keyof Loaded>(source: K, from: Signal<Date>): Signal<Loaded[K]> {
+    const needs = this.needs[source];
+    untracked(() => needs.update(n => [...n, from]));
+    inject(DestroyRef).onDestroy(() => needs.update(n => n.filter(f => f !== from)));
+
+    return computed(() => {
+      const entries: { startedAt: string }[] = this[source].value() ?? [];
+      return entries.filter(e => new Date(e.startedAt) >= from()) as Loaded[K];
+    });
+  }
+
+  /**
+   * Workouts from `from` on whose window is over, each with the pain levels of its linked headaches.
+   * `hasPending` is true when a workout is left out because its window is not over yet.
+   */
+  linkedWorkouts(from: Signal<Date>) {
+    const workouts = this.since('workouts', from);
+    const headaches = this.since('headaches', from);
+
+    return computed(() => {
+      const now = Date.now();
+      const starts = headaches().map(h => ({ start: new Date(h.startedAt).getTime(), pain: h.painLevel }));
+
+      const linked: { workout: Workout; pains: number[] }[] = [];
+      let hasPending = false;
+      for (const workout of workouts()) {
+        const start = new Date(workout.startedAt).getTime();
+        const until = start + workout.durationSeconds * 1000 + WINDOW_HOURS * HOUR_MS;
+        if (until > now) {
+          hasPending = true;
+          continue;
+        }
+        linked.push({ workout, pains: starts.filter(h => h.start >= start && h.start < until).map(h => h.pain) });
       }
-      linked.push({ workout, pains: headaches.filter(h => h.start >= start && h.start < until).map(h => h.pain) });
-    }
-    return { linked, hasPending };
-  });
+      return { linked, hasPending };
+    });
+  }
+
+  /**
+   * Time of the earliest day the shown charts need from `source`, or undefined while none needs it.
+   * It only ever moves earlier, so picking a shorter range or hiding charts does not load again.
+   */
+  private loadFrom(source: keyof Loaded) {
+    return linkedSignal<number | undefined, number | undefined>({
+      source: () => {
+        const starts = this.needs[source]().map(from => from().getTime());
+        return starts.length ? Math.min(...starts) : undefined;
+      },
+      computation: (needed, previous) =>
+        previous?.value !== undefined && (needed === undefined || previous.value <= needed) ? previous.value : needed,
+    });
+  }
 }

@@ -5,9 +5,10 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { weekIndex, weekStarts } from '../../../../utils/date';
+import { weekIndex } from '../../../../utils/date';
+import { Period, periodWeeks } from '../../period';
 
-const WEEKS_SHOWN = 8;
+const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 
 @Component({
   imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
@@ -25,19 +26,27 @@ export class WorkoutsVsHeadaches {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** Monday 00:00 of each shown week, oldest to newest. */
-  private weekStarts = computed(() => weekStarts(WEEKS_SHOWN));
+  /** The picked range, or the last 8 weeks, from the Monday of its oldest week so every week is whole. */
+  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'week');
+  periodLabel = this.shown.label;
 
-  /** Oldest to newest, including weeks without any workouts or headaches. Entries before the oldest week are skipped. */
+  /** Monday 00:00 of each shown week, oldest to newest. */
+  private weekStarts = computed(() => periodWeeks(this.shown.period()));
+
+  /** Workouts and headaches from the Monday of the oldest shown week until now. */
+  private workoutList = this.data.since('workouts', this.shown.start);
+  private headacheList = this.data.since('headaches', this.shown.start);
+
+  /** Oldest to newest, including weeks without any workouts or headaches. */
   weeklyCounts = computed(() => {
     const mondays = this.weekStarts();
     const weeks = mondays.map(date => ({ date, workouts: 0, headaches: 0 }));
 
-    for (const w of this.workouts.value() ?? []) {
+    for (const w of this.workoutList()) {
       const i = weekIndex(mondays, new Date(w.startedAt));
       if (i >= 0) weeks[i].workouts++;
     }
-    for (const h of this.headaches.value() ?? []) {
+    for (const h of this.headacheList()) {
       const i = weekIndex(mondays, new Date(h.startedAt));
       if (i >= 0) weeks[i].headaches++;
     }
