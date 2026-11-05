@@ -28,35 +28,11 @@ html {
   );
   @include mat.form-field-density(-2);
 
-  // Figma palette, applied on top of the generated Material theme.
   @include mat.theme-overrides(
     (
       primary: $brand-primary,
-      on-primary: $white,
-      primary-container: $brand-tint,
-      on-primary-container: $text-strong,
-      secondary-container: $brand-tint,
-      on-secondary-container: $text-strong,
-      surface: $surface,
-      background: $surface,
-      surface-container-lowest: $white,
-      surface-container-low: $surface-low,
-      surface-container: $surface-low,
-      surface-container-high: $surface-high,
-      surface-container-highest: $surface-high,
-      surface-variant: $surface-high,
-      on-surface: $text-strong,
-      on-surface-variant: $text-strong,
-      outline: $outline,
-      outline-variant: $disabled,
     )
   );
-
-  // Extra design tokens not covered by Material's system variables.
-  --app-primary-alt: #{$primary-alt};
-  --app-disabled: #{$disabled};
-  --app-surface-low: #{$surface-low};
-  --app-brand-tint: #{$brand-tint};
 }
 
 body {
@@ -69,7 +45,7 @@ body {
   // Angular Material's system-level CSS variables. Learn more about these
   // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+  color: #49454F;
   font: var(--mat-sys-body-medium);
 
   // Reset the user agent margin.
@@ -124,15 +100,6 @@ body {
     border-bottom: none;
   }
 
-  .mat-expansion-panel {
-    background-color: $surface-low;
-  }
-
-  // Outlined inputs are transparent by default; fill them with the same surface.
-  .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-text-field--outlined {
-    background-color: $surface-low;
-    border-radius: 4px;
-  }
   .mat-expansion-panel-body,
   .mat-expansion-panel-header {
     padding: 0 18px 16px;
