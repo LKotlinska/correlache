@@ -17,11 +17,13 @@
 <div class="charts">
   @if (shows('correlations')) {
     @if (gated('correlations')) {
-      <app-data-notice title="Correlations" [readiness]="readiness()!.correlations" (show)="dismiss('correlations')" />
+      <app-data-notice
+        title="Correlations"
+        [readiness]="readiness()!.correlations"
+        (show)="dismiss('correlations')"
+      />
     } @else {
-      @if (early('correlations')) {
-        <p class="early">Early data: treat these correlations as tentative.</p>
-      }
+      <p class="disclaimer">Charts show correlation, not causation.</p>
       <app-workouts-vs-headaches />
       <app-workout-day-headaches />
       <app-time-since-workout />
@@ -30,11 +32,12 @@
   }
   @if (shows('headaches')) {
     @if (gated('headaches')) {
-      <app-data-notice title="Headaches" [readiness]="readiness()!.headaches" (show)="dismiss('headaches')" />
+      <app-data-notice
+        title="Headaches"
+        [readiness]="readiness()!.headaches"
+        (show)="dismiss('headaches')"
+      />
     } @else {
-      @if (early('headaches')) {
-        <p class="early">Early data: treat these patterns as tentative.</p>
-      }
       <app-headaches-per-month />
       <app-top-triggers />
       <app-top-symptoms />
@@ -44,11 +47,12 @@
   }
   @if (shows('workouts')) {
     @if (gated('workouts')) {
-      <app-data-notice title="Workouts" [readiness]="readiness()!.workouts" (show)="dismiss('workouts')" />
+      <app-data-notice
+        title="Workouts"
+        [readiness]="readiness()!.workouts"
+        (show)="dismiss('workouts')"
+      />
     } @else {
-      @if (early('workouts')) {
-        <p class="early">Early data: treat these patterns as tentative.</p>
-      }
       <app-workouts-per-week />
       <app-exercise-progress />
       <app-muscle-balance />

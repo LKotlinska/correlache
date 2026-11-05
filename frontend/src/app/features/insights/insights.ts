@@ -89,12 +89,6 @@ export class Insights {
     return !!r && !r.ready && !this.dismissed().includes(category);
   }
 
-  /** True when a category is shown despite having too little data. */
-  early(category: InsightsCategory): boolean {
-    const r = this.readiness()?.[category];
-    return !!r && !r.ready && this.dismissed().includes(category);
-  }
-
   dismiss(category: InsightsCategory) {
     this.dismissed.update(d => [...d, category]);
     try {
