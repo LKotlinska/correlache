@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { MatChipListbox, MatChipListboxChange, MatChipOption } from '@angular/material/chips';
 import { HeadachesPerMonth } from './charts/headaches-per-month/headaches-per-month';
 import { TopTriggers } from './charts/top-triggers/top-triggers';
 import { TopSymptoms } from './charts/top-symptoms/top-symptoms';
@@ -13,8 +14,13 @@ import { TimeSinceWorkout } from './charts/time-since-workout/time-since-workout
 import { MuscleGroupHeadaches } from './charts/muscle-group-headaches/muscle-group-headaches';
 import { InsightsData } from './insights-data';
 
+export type InsightsCategory = 'headaches' | 'workouts' | 'correlations';
+export type InsightsFilter = 'all' | InsightsCategory;
+
 @Component({
   imports: [
+    MatChipListbox,
+    MatChipOption,
     HeadachesPerMonth,
     TopTriggers,
     TopSymptoms,
@@ -33,4 +39,16 @@ import { InsightsData } from './insights-data';
   styleUrl: './insights.scss',
   templateUrl: './insights.html',
 })
-export class Insights {}
+export class Insights {
+  filter = signal<InsightsFilter>('all');
+
+  shows(category: InsightsCategory): boolean {
+    return this.filter() === 'all' || this.filter() === category;
+  }
+
+  onFilterChange(event: MatChipListboxChange) {
+    // Clicking the selected chip would clear the selection; keep the current filter instead
+    if (event.value) this.filter.set(event.value);
+    else event.source.value = this.filter();
+  }
+}

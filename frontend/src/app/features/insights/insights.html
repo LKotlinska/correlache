@@ -1,14 +1,29 @@
+<mat-chip-listbox aria-label="Filter insights" [value]="filter()" (change)="onFilterChange($event)">
+  <mat-chip-option value="all">All</mat-chip-option>
+  <mat-chip-option value="headaches">Headache</mat-chip-option>
+  <mat-chip-option value="workouts">Workout</mat-chip-option>
+  <mat-chip-option value="correlations">Correlation</mat-chip-option>
+</mat-chip-listbox>
+
 <div class="charts">
-  <app-headaches-per-month />
-  <app-top-triggers />
-  <app-top-symptoms />
-  <app-pain-over-time />
-  <app-headaches-by-weekday />
-  <app-workouts-per-week />
-  <app-workouts-vs-headaches />
-  <app-workout-day-headaches />
-  <app-time-since-workout />
-  <app-muscle-group-headaches />
-  <app-exercise-progress />
-  <app-muscle-balance />
+  @if (shows('headaches')) {
+    <app-headaches-per-month />
+    <app-top-triggers />
+    <app-top-symptoms />
+    <app-pain-over-time />
+    <app-headaches-by-weekday />
+  }
+  @if (shows('workouts')) {
+    <app-workouts-per-week />
+  }
+  @if (shows('correlations')) {
+    <app-workouts-vs-headaches />
+    <app-workout-day-headaches />
+    <app-time-since-workout />
+    <app-muscle-group-headaches />
+  }
+  @if (shows('workouts')) {
+    <app-exercise-progress />
+    <app-muscle-balance />
+  }
 </div>
