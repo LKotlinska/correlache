@@ -3,7 +3,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { monthStart } from '../../../../utils/date';
 
@@ -60,7 +60,7 @@ export class TopSymptoms {
       labels: symptoms.map(s => s.name),
       datasets: [{
         data: symptoms.map(s => s.count),
-        backgroundColor: CHART_COLOR,
+        backgroundColor: CHART_COLOR_SECONDARY,
         borderRadius: 4,
       }],
     };

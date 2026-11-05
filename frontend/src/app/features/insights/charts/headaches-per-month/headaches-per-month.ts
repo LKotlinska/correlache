@@ -3,7 +3,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { monthStart } from '../../../../utils/date';
 import { joinNames } from '../../../../utils/join-names';
@@ -66,7 +66,7 @@ export class HeadachesPerMonth {
       labels: months.map(m => this.capitalize(this.monthShortFmt.format(m.date))),
       datasets: [{
         data: months.map(m => m.count),
-        backgroundColor: CHART_COLOR,
+        backgroundColor: CHART_COLOR_SECONDARY,
         borderRadius: 4,
       }],
     };

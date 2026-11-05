@@ -3,7 +3,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { monthStart, startOfWeek } from '../../../../utils/date';
 
@@ -80,8 +80,8 @@ export class PainOverTime {
       labels: weeks.map(w => this.weekFmt.format(w.date)),
       datasets: [{
         data: weeks.map(w => w.average),
-        borderColor: CHART_COLOR,
-        backgroundColor: CHART_COLOR,
+        borderColor: CHART_COLOR_SECONDARY,
+        backgroundColor: CHART_COLOR_SECONDARY,
         pointRadius: 4,
         tension: 0.3,
         spanGaps: true,

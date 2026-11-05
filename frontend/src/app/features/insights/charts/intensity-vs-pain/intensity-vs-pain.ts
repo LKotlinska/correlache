@@ -3,7 +3,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 
 /** Durations are rounded to this many minutes, so similar workouts share one bubble. */
@@ -72,7 +72,7 @@ export class IntensityVsPain {
     datasets: [{
       data: this.bubbles().map(b => ({ x: b.x, y: b.y, r: 4 + Math.sqrt(b.count) * 3 })),
       backgroundColor: `${CHART_COLOR}99`,
-      borderColor: CHART_COLOR,
+      borderColor: CHART_COLOR_SECONDARY,
     }],
   }));
 
