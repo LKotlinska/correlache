@@ -26,7 +26,8 @@
         [formControl]="addUserForm.controls.termsFormControl"
         [attr.aria-describedby]="termsInvalid ? 'terms-error' : null"
       >
-        I have read and agree to the Terms of Service and Privacy Policy
+        I agree to the Terms of Service and
+        <span class="link" (click)="switchDialog('privacy')">Privacy Policy</span>
       </mat-checkbox>
       @if (termsInvalid) {
         <p id="terms-error" class="terms-error" role="alert">
@@ -43,6 +44,6 @@
   </form>
   <p class="dialog-foot">
     Already registered?
-    <app-button appearance="text" (click)="switchDialog('signin')">Sign in</app-button>
+    <app-button appearance="text" (click)="switchDialog('login')">Sign in</app-button>
   </p>
 </app-dialog>

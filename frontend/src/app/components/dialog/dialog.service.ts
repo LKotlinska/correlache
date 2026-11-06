@@ -1,14 +1,15 @@
 import { inject, Service, Type } from "@angular/core";
-import { SignupForm } from "./register/register";
-import { SigninForm } from "./login/login";
+import { Register } from "./register/register";
+import { Login } from "./login/login";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { OptionPicker } from "../chip-list/option-picker/option-picker";
+import { PrivacyPolicy } from "./privacy-policy/privacy-policy";
 
-export type DialogKey ='signup' | 'signin';
+export type DialogKey ='register' | 'login' | 'privacy';
 
 const DialogComponents: Record<DialogKey, Type<unknown>> = {
-  signup: SignupForm,
-  signin: SigninForm,
+  register: Register,
+  login: Login,
+  privacy: PrivacyPolicy,
 };
 
 @Service()

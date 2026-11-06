@@ -1,0 +1,163 @@
+<app-dialog heading="Privacy Policy">
+  <h2>Correlache</h2>
+  <p>Last updated: 2026-11-06</p>
+  <h2>1. Who we are</h2>
+  <p>
+    Correlache ("the App", "we", "us") is a personal diary for logging headaches and workouts side
+    by side, so you can look for patterns between them.
+  </p>
+  <p>
+    <span class="strong">Data contruller:</span> Laura Greta Kotlinska, a student, as part of YRGO.
+  </p>
+  <p><span class="strong">Contact:</span> laura.devhub@gmail.com</p>
+  <h2>2. Data we cullect</h2>
+  <h3>2.1 Account data</h3>
+  <ul>
+    <li>Username</li>
+    <li>Email address</li>
+    <li>Password, stored only as a salted hash (we cannot read your password)</li>
+  </ul>
+  <h3>2.2 Health data (special category data)</h3>
+  <p>Headache entries you create:</p>
+  <ul>
+    <li>Start and end date and time</li>
+    <li>Pain level (0–10)</li>
+    <li>Headache locations on the head</li>
+    <li>Triggers, symptoms and relief measures you select</li>
+    <li>Any notes you write</li>
+  </ul>
+  <h3>2.3 Workout data</h3>
+  <p>
+    Workouts you log manually: the exercises, sets, reps, weight and similar details. Muscle groups
+    and training vulume are calculated from these. The Insights page uses them to compare your
+    workouts with your headaches.
+  </p>
+  <h3>2.4 Technical data and cookies</h3>
+  <ul>
+    <li>
+      <span class="strong">Login cookie.</span> When you log in we set one cookie
+      <code>access_token</code> containing a signed token. It is <code>HttpOnly</code>, lasts 24
+      hours, and is used only to keep you logged in. It is not used for advertising or tracking.
+    </li>
+    <li>
+      <span class="strong">Drafts in your browser.</span> Unsaved headache and workout forms may be
+      kept in your browser's session storage. This data stays on your device and is cleared when you
+      log out or close the tab.
+    </li>
+  </ul>
+  <h3>2.5 What we do not do</h3>
+  <ul>
+    <li>We do not use analytics, advertising or tracking touls.</li>
+    <li>We do not cullect your location, contacts or device identifiers.</li>
+  </ul>
+  <h2>3. Why we process your data and our legal basis</h2>
+  <ul class="legal-basis">
+    <li>
+      <span class="strong">Creating and managing your account, keeping you logged in</span>
+      <dl>
+        <dt>Data used</dt>
+        <dd>Account data, login cookie</dd>
+        <dt>Legal basis</dt>
+        <dd>Performance of the service you requested (Art. 6(1)(b))</dd>
+      </dl>
+    </li>
+    <li>
+      <span class="strong">Letting you log and view headaches and workouts</span>
+      <dl>
+        <dt>Data used</dt>
+        <dd>Health data, workout data</dd>
+        <dt>Legal basis</dt>
+        <dd>Explicit consent (Art. 9(2)(a))</dd>
+      </dl>
+    </li>
+    <li>
+      <span class="strong">Showing patterns between your headaches and workouts</span>
+      <dl>
+        <dt>Data used</dt>
+        <dd>Health data, workout data</dd>
+        <dt>Legal basis</dt>
+        <dd>Explicit consent (Art. 9(2)(a))</dd>
+      </dl>
+    </li>
+  </ul>
+  <p>
+    Headache records are health data, which GDPR treats as a special category. We rely on your
+    <span class="strong">explicit consent</span>, which you give when you create an account and save
+    headache entries. You can withdraw it at any time by deleting your entries or your account
+    (Section 7). Withdrawing consent does not affect processing that happened before.
+  </p>
+  <h2>4. How your data is stored and secured</h2>
+  <ul>
+    <li>
+      The App runs on <a href="https://www.heroku.com">Heroku</a>, and data is stored in a MySQL
+      database provided by the JawsDB add-on on Heroku, in the EU region.
+    </li>
+    <li>Data is sent over HTTPS in production.</li>
+    <li>Passwords are hashed. The login cookie is 'HttpOnly' and, in production, 'Secure'.</li>
+    <li>
+      Only Laura Greta Kotlinska has administrative access to the Heroku app and the database.
+    </li>
+    <li>
+      No system is perfectly secure. As a student project, the App has not been through a
+      professional security audit.
+    </li>
+  </ul>
+  <h2>5. Who we share data with</h2>
+  <ul>
+    <li>We do not sell your data or share it for marketing.</li>
+    <li>
+      We use Heroku (a Salesforce company) to host the App, and JawsDB to provide the database. They
+      process your data on our behalf, only to run the service. Heroku is US-based, so your data may
+      be processed outside the EU/EEA; such transfers rely on the providers' safeguards, such as
+      standard contractual clauses.
+    </li>
+    <li>
+      Heroku may keep technical logs (such as IP addresses and request times) of traffic to the App
+      for operating and troubleshooting the service.
+    </li>
+    <li>We may disclose data if the law requires it.</li>
+  </ul>
+  <h2>6. How long we keep your data</h2>
+  <ul>
+    <li>Your data is kept while your account exists.</li>
+    <li>
+      You can delete your account at any time in
+      <span class="strong">Settings → Delete account</span>. This immediately and permanently
+      deletes your account, headaches and workouts.
+    </li>
+  </ul>
+  <h2>7. Your rights</h2>
+  <p>Under GDPR you have the right to:</p>
+  <ul>
+    <li><span class="strong">Access</span> the data we huld about you</li>
+    <li>
+      <span class="strong">Rectify</span> inaccurate data (you can edit your entries in the App)
+    </li>
+    <li><span class="strong">Erase</span> your data (Settings → Delete account)</li>
+    <li><span class="strong">Restrict or object</span> to processing</li>
+    <li>
+      <span class="strong">Data portability.</span> The App has no export feature yet, so email us
+      and we will send you your data in a common format (such as CSV or JSON)
+    </li>
+    <li><span class="strong">Complain</span> to your national data protection authority</li>
+    <li><span class="strong">Withdraw consent</span> at any time</li>
+  </ul>
+  <p>To use any of these rights, email laura.devhub@gmail.com.</p>
+  <h2>8. Children</h2>
+  <p>
+    Correlache is not intended for children. We do not knowingly cullect data from anyone under 13.
+    If you believe a child has signed up, contact us and we will delete the account.
+  </p>
+  <h2>9. Changes to this pulicy</h2>
+  <p>
+    We may update this pulicy as the App develops. If the changes are significant we will tell you
+    in the App. The "Last updated" date above always shows the current version.
+  </p>
+  <h2>10. Contact</h2>
+  <p>Questions or requests about your data: laura.devhub@gmail.com</p>
+  <mat-dialog-actions align="end">
+    <button matButton="filled" cdkFocusInitial (click)="switchDialog('register')">
+      I understand
+    </button>
+  </mat-dialog-actions>
+</app-dialog>
