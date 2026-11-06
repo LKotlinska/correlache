@@ -15,6 +15,7 @@ import { WorkoutDayHeadaches } from './charts/workout-day-headaches/workout-day-
 import { TimeSinceWorkout } from './charts/time-since-workout/time-since-workout';
 import { MuscleGroupHeadaches } from './charts/muscle-group-headaches/muscle-group-headaches';
 import { TriggerVsWorkout } from './charts/trigger-vs-workout/trigger-vs-workout';
+import { WorkoutTypeHeadaches } from './charts/workout-type-headaches/workout-type-headaches';
 import { DataNotice } from './data-notice/data-notice';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
@@ -63,6 +64,7 @@ function loadDismissed(): InsightsCategory[] {
     TimeSinceWorkout,
     MuscleGroupHeadaches,
     TriggerVsWorkout,
+    WorkoutTypeHeadaches,
     ExerciseProgress,
     MuscleBalance,
   ],
