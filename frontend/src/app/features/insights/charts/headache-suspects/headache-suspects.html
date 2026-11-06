@@ -1,0 +1,75 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Possible headache suspects</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (hasData()) {
+      @if (canCompare()) {
+        <div class="summary">
+          @if (top(); as t) {
+            <p>
+              <strong>{{ name(t) }}</strong> is most closely linked to your headaches: they followed
+              <strong>{{ rate(t.exposed) | percent }}</strong> of workouts with it, against
+              <strong>{{ rate(t.unexposed) | percent }}</strong> without it.
+            </p>
+          } @else {
+            <p>No exercise or muscle group clearly stands out in {{ periodLabel() }}.</p>
+          }
+        </div>
+
+        @if (suspects().length) {
+          <ol class="suspects">
+            @for (s of suspects(); track s.features[0].key) {
+              <li>
+                <div class="row">
+                  <span class="name">{{ name(s) }}</span>
+                  <span class="chance">{{ s.probability | percent }}</span>
+                </div>
+                <mat-progress-bar mode="determinate" [value]="s.probability * 100" />
+                <p class="detail">
+                  Headache after {{ s.exposed.withHeadache }} of {{ s.exposed.workouts }} workouts
+                  with it, {{ s.unexposed.withHeadache }} of {{ s.unexposed.workouts }} without it.
+                  @if (s.features.length > 1) {
+                    <span class="together"
+                      >Always done together, so these can't be told apart.</span
+                    >
+                  }
+                </p>
+              </li>
+            }
+          </ol>
+        }
+
+        @if (experiment(); as e) {
+          <div class="experiment">
+            <p>
+              <strong>Try this:</strong> leave out <strong>{{ e.skip }}</strong> for your next few
+              workouts but keep doing {{ e.keep.join(', ') }}. If the headaches carry on,
+              {{ e.skip }} is less likely to be linked to them.
+            </p>
+          </div>
+        }
+
+        <p class="note">
+          The percentage is how likely it is that headaches follow workouts with it more often than
+          workouts without it, given how many workouts you've logged. Each needs at least
+          {{ minWorkouts }} workouts with and without it.
+          @if (alwaysDone().length) {
+            {{ alwaysDone().join(', ') }} can't be compared because it's in nearly every workout.
+          }
+        </p>
+      } @else if (hasPending()) {
+        <p>Your workouts will show here once 24 hours have passed since they ended.</p>
+      } @else {
+        <p>
+          Not enough variety in {{ periodLabel() }} yet: each exercise needs
+          {{ minWorkouts }} workouts with and without it.
+        </p>
+      }
+    } @else if (hasError()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

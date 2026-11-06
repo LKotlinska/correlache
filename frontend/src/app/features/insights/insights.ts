@@ -18,6 +18,7 @@ import { MuscleGroupHeadaches } from './charts/muscle-group-headaches/muscle-gro
 import { TriggerVsWorkout } from './charts/trigger-vs-workout/trigger-vs-workout';
 import { WorkoutTypeHeadaches } from './charts/workout-type-headaches/workout-type-headaches';
 import { TrainingLevelHeadaches } from './charts/training-level-headaches/training-level-headaches';
+import { HeadacheSuspects } from './charts/headache-suspects/headache-suspects';
 import { DataNotice } from './data-notice/data-notice';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
@@ -68,6 +69,7 @@ function loadDismissed(): InsightsCategory[] {
     MuscleGroupHeadaches,
     TriggerVsWorkout,
     WorkoutTypeHeadaches,
+    HeadacheSuspects,
     ExerciseProgress,
     MuscleBalance,
   ],
