@@ -19,6 +19,7 @@ import { TriggerVsWorkout } from './charts/trigger-vs-workout/trigger-vs-workout
 import { WorkoutTypeHeadaches } from './charts/workout-type-headaches/workout-type-headaches';
 import { TrainingLevelHeadaches } from './charts/training-level-headaches/training-level-headaches';
 import { HeadacheSuspects } from './charts/headache-suspects/headache-suspects';
+import { HeadachePatterns } from './charts/headache-patterns/headache-patterns';
 import { DataNotice } from './data-notice/data-notice';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
@@ -60,6 +61,7 @@ function loadDismissed(): InsightsCategory[] {
     TopTriggers,
     TopSymptoms,
     TopLocations,
+    HeadachePatterns,
     PainOverTime,
     HeadachesByWeekday,
     WorkoutsPerWeek,
