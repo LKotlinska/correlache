@@ -1,3 +1,11 @@
+@use '../../../../variables' as *;
+
+.link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: $brand-primary;
+}
+
 .terms-field {
     margin: 1em 0;
 }

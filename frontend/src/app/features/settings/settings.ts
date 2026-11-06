@@ -7,7 +7,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { getErrorMessage } from '../../utils/error-message';
 import { DraftStorage, HEADACHE_DRAFT_KEY } from '../../services/draft-storage';
 import { ExerciseDraftService } from '../../services/exercise-draft';
-import { DialogService } from '../../components/dialog/dialog.service';
+import { DialogKey, DialogService } from '../../components/dialog/dialog.service';
 import { ConfirmDialog, ConfirmDialogData } from '../../components/dialog/confirm-dialog/confirm-dialog';
 
 @Component({
@@ -28,6 +28,10 @@ export class Settings {
   private clearDrafts() {
     this.draftStorage.clear(HEADACHE_DRAFT_KEY);
     this.workoutDraft.clear();
+  }
+
+  openDialog(key: DialogKey) {
+    this.dialogService.open(key, { standalone: true });
   }
 
   signOut() {

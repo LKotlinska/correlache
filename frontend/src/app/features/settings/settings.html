@@ -1,2 +1,16 @@
-<app-button (click)="signOut()">Sign out</app-button>
-<app-button appearance="outlined" (click)="confirmDeleteAccount()">Delete account and data</app-button>
+<section class="settings-section">
+  <h2>Your account</h2>
+  <ul class="settings-list">
+    <li><button class="destructive" type="button" (click)="signOut()">Sign out</button></li>
+    <li>
+      <button type="button" (click)="confirmDeleteAccount()">Delete account and data</button>
+    </li>
+  </ul>
+</section>
+<section class="settings-section">
+  <h2>About Correlache</h2>
+  <ul class="settings-list">
+    <li><button type="button" (click)="openDialog('terms')">Terms and conditions</button></li>
+    <li><button type="button" (click)="openDialog('privacy')">Privacy policy</button></li>
+  </ul>
+</section>
