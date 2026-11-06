@@ -1,0 +1,49 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headaches after hard sessions</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue() && headaches.hasValue()) {
+      @if (hasComparison()) {
+        <div class="summary">
+          @for (c of comparisons(); track c.name) {
+            <p>
+              @if (c.verdict === 'few') {
+                Not enough {{ c.name }} sessions yet to compare.
+              } @else {
+                Headaches followed <strong>{{ percent(c.hard) }}%</strong> of your {{ c.name }} sessions, against
+                <strong>{{ percent(c.other) }}%</strong> of other sessions.
+                @switch (c.verdict) {
+                  @case ('more') { They were <strong>more common</strong> after a {{ c.name }}. }
+                  @case ('less') { They were <strong>less common</strong> after a {{ c.name }}. }
+                  @case ('same') { That's no clear difference. }
+                }
+              }
+            </p>
+          }
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+        <p class="note">
+          A load spike is a session after training at least {{ spikePercent }}% more minutes in the past week than your
+          usual week over the last 4 weeks. A personal best beat your heaviest weight, most reps, longest time or
+          fastest pace in an exercise over the previous 3 months.
+          @if (topBests().length) {
+            Your most frequent bests: {{ topBests().join(', ') }}.
+          }
+          Each needs at least {{ minWorkouts }} sessions with and without it.
+        </p>
+      } @else if (hasPending()) {
+        <p>Your workouts will show here once 24 hours have passed since they ended.</p>
+      } @else {
+        <p>No workouts in {{ periodLabel() }}.</p>
+      }
+    } @else if (workouts.error() || headaches.error()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
