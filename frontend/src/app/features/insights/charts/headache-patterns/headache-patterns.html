@@ -17,6 +17,8 @@
         <div class="chart-wrap" [style.height.px]="chartHeight()">
           <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
         </div>
+      } @else if (!list().length) {
+        <p>No headaches logged in {{ periodLabel() }}.</p>
       } @else if (!counts().warnings) {
         <p>Log where it hurt and your symptoms to see which headache patterns yours resemble.</p>
       }

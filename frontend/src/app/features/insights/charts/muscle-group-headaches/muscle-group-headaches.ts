@@ -3,7 +3,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 
@@ -94,8 +94,8 @@ export class MuscleGroupHeadaches {
     return top ? { top, overall: this.overall() } : null;
   });
 
-  /** Chart height in pixels: one row per bar plus room for the axis. */
-  chartHeight = computed(() => (this.groupRates().length + 1) * ROW_HEIGHT + 40);
+  /** Chart height in pixels: the baseline bar plus one per muscle group. */
+  chartHeight = computed(() => barChartHeight(this.groupRates().length + 1, ROW_HEIGHT));
 
   /** Chart.js data - an "All workouts" baseline bar, then one bar per muscle group. Groups with few workouts are faded. */
   chartData = computed<ChartConfiguration<'bar'>['data']>(() => {

@@ -89,7 +89,7 @@ const PATTERNS: Record<PatternKey, Pattern> = {
     // Most of tension's weight is for features being absent, so a location alone would otherwise be enough.
     requires: f => f.symptoms.has('Pressing or tightening') || any(f.triggers, TENSION_TRIGGERS),
     rules: [
-      { weight: 2, label: 'pain on both sides', test: f => any(f.locations, BOTH_SIDES) && !oneSide(f) },
+      { weight: 2, label: 'pain on both sides', test: f => any(f.locations, BOTH_SIDES) },
       { weight: 1.5, label: 'pressing or tightening', test: f => f.symptoms.has('Pressing or tightening') },
       { weight: 1, label: 'not throbbing', test: f => !f.symptoms.has('Throbbing') },
       { weight: 1, label: 'mild to moderate pain', test: f => f.pain <= 6 },
@@ -178,7 +178,10 @@ export type PatternMatch =
 
 /** Every pattern's score for a headache, best first. */
 export function scorePatterns(headache: PatternInput): PatternScore[] {
-  const f = facts(headache);
+  return scoreFacts(facts(headache));
+}
+
+function scoreFacts(f: Facts): PatternScore[] {
   return (Object.keys(PATTERNS) as PatternKey[])
     .map(key => {
       const { rules, requires } = PATTERNS[key];
@@ -198,7 +201,7 @@ export function matchPattern(headache: PatternInput): PatternMatch {
 
   if (!f.locations.size && !f.symptoms.size) return { kind: 'too-little' };
 
-  const scores = scorePatterns(headache);
+  const scores = scoreFacts(f);
   if (scores[0].score < MIN_SCORE) return { kind: 'unclear', scores };
   const patterns = scores.filter(s => s.score >= MIN_SCORE && scores[0].score - s.score < MIXED_GAP);
   return { kind: 'match', patterns, scores };

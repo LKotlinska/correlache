@@ -3,14 +3,12 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
+import { baseChartOptions, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 const LOCATIONS_SHOWN = 6;
-/** Pixel height per bar, so the chart grows with the number of locations instead of stretching a few bars. */
-const BAR_HEIGHT = 36;
 
 @Component({
   imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
@@ -54,7 +52,7 @@ export class TopLocations {
     return { name: top.name, count: top.count, total: this.list().length };
   });
 
-  chartHeight = computed(() => this.locationCounts().length * BAR_HEIGHT);
+  chartHeight = computed(() => barChartHeight(this.locationCounts().length));
 
   /** Chart.js data - one bar per location, most common at the top. */
   chartData = computed<ChartConfiguration<'bar'>['data']>(() => {
