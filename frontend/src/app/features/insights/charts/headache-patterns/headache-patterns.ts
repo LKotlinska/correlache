@@ -76,7 +76,7 @@ export class HeadachePatterns {
       labels: patterns.map(p => p.name),
       datasets: [{
         data: patterns.map(p => p.count),
-        backgroundColor: patterns.map(p => (p.name === MIXED || p.name === UNCLEAR ? CHART_COLOR : CHART_COLOR_SECONDARY)),
+        backgroundColor: patterns.map(p => (p.name === MIXED || p.name === UNCLEAR ? CHART_COLOR_SECONDARY : CHART_COLOR)),
         borderRadius: 4,
       }],
     };

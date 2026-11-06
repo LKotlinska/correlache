@@ -54,7 +54,12 @@
                 <span class="label">Resembles</span>
                 <span>{{ patternLabel(p.patterns) }}</span>
               </div>
-              <p>Matched: {{ p.patterns[0].matched.join(', ') }}.</p>
+              @for (match of p.patterns; track match.key) {
+                <p>
+                  {{ p.patterns.length > 1 ? patternNames[match.key] : 'Matched' }}:
+                  {{ match.matched.join(', ') }}.
+                </p>
+              }
             }
             @case ('unclear') {
               <div class="row">

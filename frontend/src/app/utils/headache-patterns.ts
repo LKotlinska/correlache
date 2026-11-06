@@ -28,6 +28,7 @@ const LEFT = ['Left side', 'Behind left eye'];
 const RIGHT = ['Right side', 'Behind right eye'];
 const BOTH_SIDES = ['Forehead band', 'Whole head', 'Scattered, top of head'];
 const NECK_AREA = ['Back of head', 'Scattered, scalp and neck', 'Neck to temple'];
+const TENSION_TRIGGERS = ['Stress', 'Tense muscles', 'Lack of sleep', 'Loud sounds', 'Bright lights', 'Hunger'];
 
 /** What a headache needs for matching. The list response has all of it; relief measures aren't used. */
 export interface PatternInput {
@@ -85,6 +86,8 @@ const PATTERNS: Record<PatternKey, Pattern> = {
     ],
   },
   tension: {
+    // Most of tension's weight is for features being absent, so a location alone would otherwise be enough.
+    requires: f => f.symptoms.has('Pressing or tightening') || any(f.triggers, TENSION_TRIGGERS),
     rules: [
       { weight: 2, label: 'pain on both sides', test: f => any(f.locations, BOTH_SIDES) && !oneSide(f) },
       { weight: 1.5, label: 'pressing or tightening', test: f => f.symptoms.has('Pressing or tightening') },
@@ -94,7 +97,7 @@ const PATTERNS: Record<PatternKey, Pattern> = {
       {
         weight: 1,
         label: 'stress, tension or tiredness',
-        test: f => any(f.triggers, ['Stress', 'Tense muscles', 'Lack of sleep', 'Loud sounds', 'Bright lights', 'Hunger']),
+        test: f => any(f.triggers, TENSION_TRIGGERS),
       },
       {
         weight: 0.5,
@@ -197,7 +200,8 @@ export function matchPattern(headache: PatternInput): PatternMatch {
 
   const scores = scorePatterns(headache);
   if (scores[0].score < MIN_SCORE) return { kind: 'unclear', scores };
-  return { kind: 'match', patterns: scores.filter(s => scores[0].score - s.score < MIXED_GAP), scores };
+  const patterns = scores.filter(s => s.score >= MIN_SCORE && scores[0].score - s.score < MIXED_GAP);
+  return { kind: 'match', patterns, scores };
 }
 
 /** "Migraine-like" or "Neck-related and tension-type-like" for a match. */

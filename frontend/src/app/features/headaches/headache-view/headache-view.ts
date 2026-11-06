@@ -10,7 +10,7 @@ import { DetailHeader } from '../../../components/detail-header/detail-header';
 import { ChipList } from '../../../components/chip-list/chip-list';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
 import { HeadacheService } from '../../../services/headache.service';
-import { matchPattern, patternLabel } from '../../../utils/headache-patterns';
+import { matchPattern, PATTERN_NAMES, patternLabel } from '../../../utils/headache-patterns';
 
 @Component({
   imports: [DatePipe, MatCardModule, MatExpansionModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
@@ -30,6 +30,7 @@ export class HeadacheView {
   pattern = computed(() => (this.headache.hasValue() ? matchPattern(this.headache.value()) : null));
 
   readonly patternLabel = patternLabel;
+  readonly patternNames = PATTERN_NAMES;
 
   deleteFn = () => this.headacheService.delete(this.id);
 }

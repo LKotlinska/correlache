@@ -57,13 +57,23 @@ describe('matchPattern', () => {
   });
 
   it('shows patterns scoring close together as a mix', () => {
-    const h = headache(null, 4, ['Forehead band', 'Back of head'], ['Neck pain']);
+    const h = headache(null, 4, ['Forehead band', 'Back of head'], ['Neck pain'], ['Tense muscles']);
     const m = matchPattern(h);
     expect(m.kind).toBe('match');
     if (m.kind === 'match') {
       expect(m.patterns.map(p => p.key)).toEqual(['tension', 'neck']);
       expect(patternLabel(m.patterns)).toBe('Tension-type-like and neck-related');
     }
+  });
+
+  it('leaves patterns under the threshold out of a mix', () => {
+    // Exercise scores about 0.57 and neck 0.50: within the mix gap, but under the threshold.
+    expect(keys(headache(null, 3, ['Whole head'], ['Neck pain'], ['Physical strain']))).toEqual(['exercise']);
+  });
+
+  it('needs a tension feature, not just a location, for tension-type-like', () => {
+    expect(keys(headache(null, 4, ['Forehead band'], []))).not.toContain('tension');
+    expect(keys(headache(null, 4, ['Forehead band'], [], ['Stress']))).toEqual(['tension']);
   });
 
   it('warns instead of matching for symptoms that can need a doctor', () => {
