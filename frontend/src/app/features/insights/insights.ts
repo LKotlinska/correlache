@@ -5,6 +5,7 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { HeadachesPerMonth } from './charts/headaches-per-month/headaches-per-month';
 import { TopTriggers } from './charts/top-triggers/top-triggers';
 import { TopSymptoms } from './charts/top-symptoms/top-symptoms';
+import { TopLocations } from './charts/top-locations/top-locations';
 import { PainOverTime } from './charts/pain-over-time/pain-over-time';
 import { HeadachesByWeekday } from './charts/headaches-by-weekday/headaches-by-weekday';
 import { WorkoutsPerWeek } from './charts/workouts-per-week/workouts-per-week';
@@ -14,6 +15,11 @@ import { WorkoutsVsHeadaches } from './charts/workouts-vs-headaches/workouts-vs-
 import { WorkoutDayHeadaches } from './charts/workout-day-headaches/workout-day-headaches';
 import { TimeSinceWorkout } from './charts/time-since-workout/time-since-workout';
 import { MuscleGroupHeadaches } from './charts/muscle-group-headaches/muscle-group-headaches';
+import { TriggerVsWorkout } from './charts/trigger-vs-workout/trigger-vs-workout';
+import { WorkoutTypeHeadaches } from './charts/workout-type-headaches/workout-type-headaches';
+import { TrainingLevelHeadaches } from './charts/training-level-headaches/training-level-headaches';
+import { HeadacheSuspects } from './charts/headache-suspects/headache-suspects';
+import { HeadachePatterns } from './charts/headache-patterns/headache-patterns';
 import { DataNotice } from './data-notice/data-notice';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
@@ -54,6 +60,8 @@ function loadDismissed(): InsightsCategory[] {
     HeadachesPerMonth,
     TopTriggers,
     TopSymptoms,
+    TopLocations,
+    HeadachePatterns,
     PainOverTime,
     HeadachesByWeekday,
     WorkoutsPerWeek,
@@ -61,6 +69,9 @@ function loadDismissed(): InsightsCategory[] {
     WorkoutDayHeadaches,
     TimeSinceWorkout,
     MuscleGroupHeadaches,
+    TriggerVsWorkout,
+    WorkoutTypeHeadaches,
+    HeadacheSuspects,
     ExerciseProgress,
     MuscleBalance,
   ],

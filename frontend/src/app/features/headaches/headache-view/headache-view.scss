@@ -34,6 +34,20 @@ mat-accordion {
   font-weight: 500;
 }
 
+.pattern p {
+  margin: 0 0.5em p.$card-padding;
+  color: p.$text-strong;
+}
+
+.pattern .disclaimer {
+  font-size: 0.875rem;
+  color: p.$outline;
+}
+
+.pattern.warning {
+  background-color: var(--mat-sys-error-container, #f9dedc);
+}
+
 .tile-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

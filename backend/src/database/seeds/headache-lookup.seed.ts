@@ -131,6 +131,24 @@ export const SymptomSeed = [
     {
         name: 'Fatigue'
     },
+    {
+        name: 'Pressing or tightening'
+    },
+    {
+        name: 'Worse with movement'
+    },
+    {
+        name: 'Worse when moving neck'
+    },
+    {
+        name: 'Watery or red eye'
+    },
+    {
+        name: 'Restlessness'
+    },
+    {
+        name: 'Sudden, severe onset'
+    },
 ]
 
 export const TriggerSeed = [

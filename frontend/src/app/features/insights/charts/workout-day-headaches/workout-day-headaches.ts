@@ -13,6 +13,8 @@ const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 const MIN_DAYS = 5;
 /** Difference in percentage points below which the rates count as about the same. */
 const SAME_THRESHOLD = 10;
+/** How long after a day's first workout a headache still counts as following it. */
+const WINDOW_MS = 24 * 60 * 60 * 1000;
 
 @Component({
   imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
@@ -51,10 +53,10 @@ export class WorkoutDayHeadaches {
   });
 
   /**
-   * Workout days and rest days, each with how many were followed by a headache.
-   * A day is followed by one when a headache started that day or the next. On workout days,
-   * only headaches starting after the day's first workout count. On rest days, the window ends
-   * at the next day's first workout, so its headaches are not counted for both groups.
+   * Workout days and rest days, each with how many had a headache attributed to them.
+   * Every headache is attributed to one day only. A headache that starts within 24 hours after a
+   * workout day's first workout belongs to the most recent such workout day. Any other headache
+   * belongs to the rest day it started on, so both groups are compared over 24 hours.
    */
   groups = computed(() => {
     // Earliest workout start of each day.
@@ -66,18 +68,28 @@ export class WorkoutDayHeadaches {
       if (!earliest || start < earliest) firstWorkout.set(key, start);
     }
 
-    const headacheStarts = this.headacheList().map(h => new Date(h.startedAt));
+    const afterWorkout = new Set<string>();
+    const onRestDay = new Set<string>();
+    for (const h of this.headacheList()) {
+      const started = new Date(h.startedAt);
+      const sameDay = dayKey(started);
+      const previousDay = dayKey(addDays(started, -1));
+      const workoutStart = firstWorkout.get(sameDay);
+      const previousStart = firstWorkout.get(previousDay);
+      if (workoutStart && workoutStart <= started) afterWorkout.add(sameDay);
+      else if (previousStart && started.getTime() - previousStart.getTime() < WINDOW_MS) afterWorkout.add(previousDay);
+      else onRestDay.add(sameDay);
+    }
 
     const workoutDays = { days: 0, withHeadache: 0 };
     const restDays = { days: 0, withHeadache: 0 };
     for (const day of this.days()) {
-      const workoutStart = firstWorkout.get(dayKey(day));
-      const from = workoutStart ?? day;
-      const until = workoutStart ? addDays(day, 2) : (firstWorkout.get(dayKey(addDays(day, 1))) ?? addDays(day, 2));
-      const group = workoutStart ? workoutDays : restDays;
+      const key = dayKey(day);
+      const isWorkoutDay = firstWorkout.has(key);
+      const group = isWorkoutDay ? workoutDays : restDays;
 
       group.days++;
-      if (headacheStarts.some(h => h >= from && h < until)) group.withHeadache++;
+      if ((isWorkoutDay ? afterWorkout : onRestDay).has(key)) group.withHeadache++;
     }
     return { workoutDays, restDays };
   });

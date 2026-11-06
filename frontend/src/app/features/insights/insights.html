@@ -24,10 +24,13 @@
       />
     } @else {
       <p class="disclaimer">Charts show correlation, not causation.</p>
+      <app-headache-suspects />
       <app-workouts-vs-headaches />
       <app-workout-day-headaches />
       <app-time-since-workout />
       <app-muscle-group-headaches />
+      <app-workout-type-headaches />
+      <app-trigger-vs-workout />
     }
   }
   @if (shows('headaches')) {
@@ -38,9 +41,11 @@
         (show)="dismiss('headaches')"
       />
     } @else {
+      <app-headache-patterns />
       <app-headaches-per-month />
       <app-top-triggers />
       <app-top-symptoms />
+      <app-top-locations />
       <app-pain-over-time />
       <app-headaches-by-weekday />
     }

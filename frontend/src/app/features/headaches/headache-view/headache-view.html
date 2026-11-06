@@ -34,6 +34,55 @@
       </mat-card-content>
     </mat-card>
 
+    @if (pattern(); as p) {
+      <mat-card class="card pattern" [class.warning]="p.kind === 'warning'">
+        <mat-card-content>
+          @switch (p.kind) {
+            @case ('warning') {
+              <div class="row">
+                <mat-icon>warning</mat-icon>
+                <span class="label">Worth checking with a doctor</span>
+              </div>
+              <p>
+                You logged {{ p.symptoms.join(', ').toLowerCase() }}. If this is new, severe or getting worse,
+                contact a doctor or emergency services.
+              </p>
+            }
+            @case ('match') {
+              <div class="row">
+                <mat-icon>psychology</mat-icon>
+                <span class="label">Resembles</span>
+                <span>{{ patternLabel(p.patterns) }}</span>
+              </div>
+              @for (match of p.patterns; track match.key) {
+                <p>
+                  {{ p.patterns.length > 1 ? patternNames[match.key] : 'Matched' }}:
+                  {{ match.matched.join(', ') }}.
+                </p>
+              }
+            }
+            @case ('unclear') {
+              <div class="row">
+                <mat-icon>psychology</mat-icon>
+                <span class="label">Resembles</span>
+                <span>No clear pattern</span>
+              </div>
+            }
+            @case ('too-little') {
+              <div class="row">
+                <mat-icon>psychology</mat-icon>
+                <span class="label">Resembles</span>
+              </div>
+              <p>Log where it hurt and your symptoms to see which headache pattern this resembles.</p>
+            }
+          }
+          @if (p.kind !== 'warning') {
+            <p class="disclaimer">Based only on what you logged, compared with common headache patterns. Not a diagnosis.</p>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
     <mat-accordion multi>
       @if (h.locations.length) {
         <mat-expansion-panel>

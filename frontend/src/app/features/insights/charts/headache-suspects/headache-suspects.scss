@@ -1,0 +1,59 @@
+@use '../../summary';
+
+.summary {
+  @include summary.summary;
+  margin-bottom: 1rem;
+}
+
+.suspects {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.name {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-transform: capitalize;
+}
+
+.chance {
+  font-variant-numeric: tabular-nums;
+}
+
+.detail,
+.note {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}
+
+.together {
+  display: block;
+  font-style: italic;
+}
+
+.experiment {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--mat-sys-primary, #6d74d1);
+  border-radius: 4px;
+  background: var(--mat-sys-surface-container, #f0ebeb);
+
+  p {
+    margin: 0;
+  }
+}
+
+.note {
+  margin-top: 1rem;
+}

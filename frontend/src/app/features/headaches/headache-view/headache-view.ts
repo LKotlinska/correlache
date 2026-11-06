@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -10,6 +10,7 @@ import { DetailHeader } from '../../../components/detail-header/detail-header';
 import { ChipList } from '../../../components/chip-list/chip-list';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
 import { HeadacheService } from '../../../services/headache.service';
+import { matchPattern, PATTERN_NAMES, patternLabel } from '../../../utils/headache-patterns';
 
 @Component({
   imports: [DatePipe, MatCardModule, MatExpansionModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
@@ -24,6 +25,12 @@ export class HeadacheView {
   headache = rxResource({
     stream: () => this.headacheService.getHeadacheById(this.id),
   });
+
+  /** Which headache pattern this one resembles, from what was logged. */
+  pattern = computed(() => (this.headache.hasValue() ? matchPattern(this.headache.value()) : null));
+
+  readonly patternLabel = patternLabel;
+  readonly patternNames = PATTERN_NAMES;
 
   deleteFn = () => this.headacheService.delete(this.id);
 }
