@@ -17,6 +17,7 @@ import { TimeSinceWorkout } from './charts/time-since-workout/time-since-workout
 import { MuscleGroupHeadaches } from './charts/muscle-group-headaches/muscle-group-headaches';
 import { TriggerVsWorkout } from './charts/trigger-vs-workout/trigger-vs-workout';
 import { WorkoutTypeHeadaches } from './charts/workout-type-headaches/workout-type-headaches';
+import { TrainingLevelHeadaches } from './charts/training-level-headaches/training-level-headaches';
 import { DataNotice } from './data-notice/data-notice';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
