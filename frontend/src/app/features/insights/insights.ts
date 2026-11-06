@@ -5,6 +5,7 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { HeadachesPerMonth } from './charts/headaches-per-month/headaches-per-month';
 import { TopTriggers } from './charts/top-triggers/top-triggers';
 import { TopSymptoms } from './charts/top-symptoms/top-symptoms';
+import { TopLocations } from './charts/top-locations/top-locations';
 import { PainOverTime } from './charts/pain-over-time/pain-over-time';
 import { HeadachesByWeekday } from './charts/headaches-by-weekday/headaches-by-weekday';
 import { WorkoutsPerWeek } from './charts/workouts-per-week/workouts-per-week';
@@ -56,6 +57,7 @@ function loadDismissed(): InsightsCategory[] {
     HeadachesPerMonth,
     TopTriggers,
     TopSymptoms,
+    TopLocations,
     PainOverTime,
     HeadachesByWeekday,
     WorkoutsPerWeek,
