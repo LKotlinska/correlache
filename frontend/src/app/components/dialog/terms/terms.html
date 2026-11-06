@@ -1,0 +1,99 @@
+<app-dialog heading="Terms of Service">
+  <h2>Correlache</h2>
+  <p>Last updated: 2026-11-06</p>
+  <h2>1. About the App</h2>
+  <p>
+    Correlache ("the App", "we", "us") is a personal diary for logging headaches and workouts side
+    by side, so you can look for patterns between them.
+  </p>
+  <p>
+    Correlache is a <span class="strong">student project</span> made as part of an examination at
+    YRGO. It is not a commercial service.
+  </p>
+  <p><span class="strong">Contact:</span> laura.devhub@gmail.com</p>
+  <h2>2. Not medical advice</h2>
+  <div class="disclaimer">
+    <p>
+      <span class="strong">Correlache is a diary, not a medical device.</span> It does not diagnose,
+      treat, prevent or give advice about any medical condition.
+    </p>
+    <ul>
+      <li>
+        Patterns and insights shown in the App are simple comparisons of what you logged. They do
+        not show that one thing causes another.
+      </li>
+      <li>
+        Do not use the App to make decisions about your health, medication or treatment. Talk to a
+        doctor or other qualified healthcare professional.
+      </li>
+      <li>
+        If you have severe, sudden or unusual headaches, or any symptoms that worry you, seek
+        medical care right away. In an emergency, call your local emergency number (112 in the EU).
+      </li>
+      <li>
+        Never ignore or delay medical advice because of something you saw, or did not see, in the
+        App.
+      </li>
+    </ul>
+  </div>
+  <h2>3. Your account</h2>
+  <ul>
+    <li>You must give a valid email address and keep your password secret.</li>
+    <li>You are responsible for what happens under your account.</li>
+    <li>You must be at least 13 years old to use the App.</li>
+    <li>You can delete your account and all your data at any time from within the App.</li>
+  </ul>
+  <h2>4. Acceptable use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>try to access other users' accounts or data</li>
+    <li>attack, overload or try to break the App or its servers</li>
+    <li>use the App for anything unlawful</li>
+    <li>use automated tools to create accounts or scrape data</li>
+  </ul>
+  <p>We may suspend or delete accounts that break these rules.</p>
+  <h2>5. Your data</h2>
+  <p>
+    You own the data you enter. You give us permission to store and process it only to run the App
+    for you. How we handle your data is described in the
+    <a href="#" (click)="$event.preventDefault(); switchDialog('privacy')">Privacy Policy</a>.
+  </p>
+  <h2>6. No guarantees</h2>
+  <p>The App is provided <span class="strong">"as is" and "as available"</span>.</p>
+  <ul>
+    <li>There is no support team and no uptime guarantee.</li>
+    <li>
+      The App may contain bugs, change, or be shut down at any time, for example when the project
+      ends.
+    </li>
+    <li>
+      Do not rely on the App as your only record of your health. Keep your own copy of anything
+      important.
+    </li>
+  </ul>
+  <h2>7. Limitation of liability</h2>
+  <p>
+    To the extent allowed by law, we are not liable for any loss or damage from using the App,
+    including lost data, or health decisions made with help of the App. Nothing in these terms
+    limits liability that cannot be limited by law, or your rights as a consumer or under data
+    protection law.
+  </p>
+  <h2>8. Changes to these terms</h2>
+  <p>
+    We may update these terms as the App develops. If the changes are significant we will tell you
+    in the App. The "Last updated" date above always shows the current version. If you keep using
+    the App after a change, you accept the new terms.
+  </p>
+  <h2>9. Governing law</h2>
+  <p>
+    These terms are governed by Swedish law. This does not take away any mandatory consumer rights
+    you have in the country where you live.
+  </p>
+  <h2>10. Contact</h2>
+  <p>Questions about these terms: laura.devhub@gmail.com</p>
+  <mat-dialog-actions align="end">
+    <button matButton="filled" cdkFocusInitial (click)="switchDialog('register')">
+      I understand
+    </button>
+  </mat-dialog-actions>
+</app-dialog>

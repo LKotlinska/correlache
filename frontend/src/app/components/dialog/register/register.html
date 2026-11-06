@@ -26,7 +26,8 @@
         [formControl]="addUserForm.controls.termsFormControl"
         [attr.aria-describedby]="termsInvalid ? 'terms-error' : null"
       >
-        I agree to the Terms of Service and
+        I agree to the
+        <span class="link" (click)="switchDialog('terms')">Terms of Service</span> and
         <span class="link" (click)="switchDialog('privacy')">Privacy Policy</span>
       </mat-checkbox>
       @if (termsInvalid) {
