@@ -71,7 +71,7 @@ Headache records are health data, which GDPR treats as a special category. We re
 ## 6. How long we keep your data
 
 - Your data is kept while your account exists.
-- You can delete your account at any time in **Settings → Delete account**. This immediately and permanently deletes your account, headaches and workouts. Backups held by JawsDB/Heroku may take up to [X days, check your JawsDB plan] to expire.
+- You can delete your account at any time in **Settings → Delete account**. This immediately and permanently deletes your account, headaches and workouts.
 
 ## 7. Your rights
 

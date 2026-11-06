@@ -1,6 +1,6 @@
 import { inject, Service, Type } from "@angular/core";
-import { SignupForm } from "./signup/signup-form";
-import { SigninForm } from "./signin-form/signin-form";
+import { SignupForm } from "./register/register";
+import { SigninForm } from "./login/login";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { OptionPicker } from "../chip-list/option-picker/option-picker";
 

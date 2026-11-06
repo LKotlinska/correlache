@@ -8,17 +8,16 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserService } from '../../../services/user.service';
-import { email } from '@angular/forms/signals';
 
 @Component({
   imports: [Dialog, OutlinedField, ReactiveFormsModule, Button],
-  selector: 'app-signin-form',
-  styleUrl: './signin-form.scss',
-  templateUrl: './signin-form.html',
+  selector: 'app-login',
+  styleUrl: './login.scss',
+  templateUrl: './login.html',
 })
-export class SigninForm {
+export class Login {
   private dialogService = inject(DialogService);
-  private dialogRef = inject(MatDialogRef<SigninForm>);
+  private dialogRef = inject(MatDialogRef<Login>);
   private userService = inject(UserService);
   private router = inject(Router);
   isSubmitting = signal(false);

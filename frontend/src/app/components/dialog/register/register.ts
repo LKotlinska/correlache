@@ -13,9 +13,9 @@ import { getErrorMessage } from '../../../utils/error-message';
 
 
 @Component({
-  selector: 'app-signup-form',
-  styleUrl: './signup-form.scss',
-  templateUrl: './signup-form.html',
+  selector: 'app-register',
+  styleUrl: './register.scss',
+  templateUrl: './register.html',
   imports: [
     ReactiveFormsModule,
     OutlinedField,
@@ -24,10 +24,10 @@ import { getErrorMessage } from '../../../utils/error-message';
     Button,
 ],
 })
-export class SignupForm {
+export class Register {
   private userService = inject(UserService);
   private dialogService = inject(DialogService);
-  private dialogRef = inject(MatDialogRef<SignupForm>);
+  private dialogRef = inject(MatDialogRef<Register>);
   private snackBar = inject(MatSnackBar);
 
   isSubmitting = signal(false);

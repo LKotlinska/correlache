@@ -3,11 +3,11 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { UserService } from '../../../services/user.service';
-import { SigninForm } from './signin-form';
+import { Login } from './login';
 
-describe('SigninForm', () => {
-  let component: SigninForm;
-  let fixture: ComponentFixture<SigninForm>;
+describe('Login', () => {
+  let component: Login;
+  let fixture: ComponentFixture<Login>;
 
   const userService = { authUser: vi.fn() };
   const dialogRef = { close: vi.fn() };
@@ -23,7 +23,7 @@ describe('SigninForm', () => {
     vi.resetAllMocks();
 
     await TestBed.configureTestingModule({
-      imports: [SigninForm],
+      imports: [Login],
       providers: [
         { provide: UserService, useValue: userService },
         { provide: MatDialogRef, useValue: dialogRef },
@@ -31,7 +31,7 @@ describe('SigninForm', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SigninForm);
+    fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
