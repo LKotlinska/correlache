@@ -44,6 +44,14 @@ npm run seed
 
 Fills the lookup tables (locations, symptoms, triggers, relief measures, muscle groups and muscles, as well as exercises). Seeders upsert on their unique key, so running them again is safe.
 
+5. (Optional) Add an example account with data
+
+```
+npm run seed:example
+```
+
+Creates `data@example.com` (password `example123`) with a year of workouts and headaches ending yesterday, handy for trying out the insights. Running it again resets that account's password and replaces its data. It doesn't run when in production.
+
 ## Running the app
 
 Start the backend and the frontend in separate terminals:
