@@ -8,7 +8,7 @@
         @let s = summary();
         <div class="summary">
           <p>
-            You had a headache that day or the next after <strong>{{ s.workout }}%</strong> of your workout days,
+            You had a headache within 24 hours after <strong>{{ s.workout }}%</strong> of your workout days,
             compared with <strong>{{ s.rest }}%</strong> of rest days.
             @switch (s.trend) {
               @case ('higher') { Headaches were <strong>more common</strong> after working out. }
