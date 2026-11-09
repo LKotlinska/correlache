@@ -11,7 +11,7 @@ import { DialogKey, DialogService } from '../../components/dialog/dialog.service
 import { ConfirmDialog, ConfirmDialogData } from '../../components/dialog/confirm-dialog/confirm-dialog';
 
 @Component({
-  imports: [Button],
+  imports: [],
   selector: 'app-settings',
   styleUrl: './settings.scss',
   templateUrl: './settings.html',
