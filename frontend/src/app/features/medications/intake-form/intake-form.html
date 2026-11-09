@@ -1,10 +1,4 @@
-<app-page-header [title]="isEdit ? 'Edit medication' : 'Medication'">
-  @if (isEdit) {
-    <button matIconButton type="button" aria-label="Delete dose" (click)="confirmDelete()">
-      <mat-icon>delete_outline</mat-icon>
-    </button>
-  }
-</app-page-header>
+<app-page-header [title]="isEdit ? 'Edit medication' : 'New medication'" />
 <main class="page-wrapper">
   @if (loadedMedications.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
@@ -14,7 +8,7 @@
     <p class="hint">Add a medication to your list with the + button. You can manage the list in Settings.</p>
   }
 
-  <form (ngSubmit)="onSubmit()">
+  <form [formGroup]="group" (ngSubmit)="onSubmit()">
     <app-intake-fields
       [group]="group"
       [medications]="medications()"

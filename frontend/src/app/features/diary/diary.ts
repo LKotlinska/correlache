@@ -185,7 +185,7 @@ export class Diary {
       title: intakeLabel(intake),
       line: formatTime(new Date(intake.takenAt)),
       details: [intake.effect ? INTAKE_EFFECT_LABELS[intake.effect] : ''].filter(Boolean),
-      link: ['/user/medication', intake.id, 'edit'],
+      link: ['/user/medication', intake.id],
       startedAt: new Date(intake.takenAt),
     })),
   );

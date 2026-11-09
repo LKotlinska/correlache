@@ -153,7 +153,7 @@
           <ul class="intake-list">
             @for (intake of h.intakes; track intake.id) {
               <li>
-                <a class="intake" [routerLink]="['/user/medication', intake.id, 'edit']">
+                <a class="intake" [routerLink]="['/user/medication', intake.id]">
                   <mat-icon>medication</mat-icon>
                   <span class="intake-text">
                     <span class="label">{{ intakeLabel(intake) }}</span>

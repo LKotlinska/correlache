@@ -3,17 +3,13 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIcon } from '@angular/material/icon';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, map, merge, startWith } from 'rxjs';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { Button } from '../../../components/button/button';
 import { IntakeFields } from '../../../components/form-fields/intake-fields/intake-fields';
-import { ConfirmDialog, ConfirmDialogData } from '../../../components/dialog/confirm-dialog/confirm-dialog';
-import { DialogService } from '../../../components/dialog/dialog.service';
 import { Headache } from '../../../models/headache.model';
 import { Medication } from '../../../models/medication.model';
 import { HeadacheService } from '../../../services/headache.service';
@@ -35,9 +31,7 @@ const LOOKBACK_MS = 72 * 60 * 60 * 1000;
 @Component({
   imports: [
     ReactiveFormsModule,
-    MatButtonModule,
     MatCheckboxModule,
-    MatIcon,
     MatProgressBar,
     PageHeader,
     Button,
@@ -50,7 +44,6 @@ const LOOKBACK_MS = 72 * 60 * 60 * 1000;
 export class IntakeForm {
   private medicationService = inject(MedicationService);
   private headacheService = inject(HeadacheService);
-  private dialogService = inject(DialogService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   /** Set on the edit route (`:id/edit`); null when adding a new dose. */
@@ -131,25 +124,11 @@ export class IntakeForm {
       ? this.medicationService.updateIntake(this.intakeId, payload)
       : this.medicationService.createIntake(payload);
     request.subscribe({
-      next: () => this.router.navigate(['/user/diary'], { replaceUrl: true }),
+      next: (saved) => this.router.navigate(['/user/medication', this.intakeId ?? saved.id], { replaceUrl: true }),
       error: (err: HttpErrorResponse) => {
         this.isSubmitting.set(false);
         this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
       },
     });
-  }
-
-  confirmDelete() {
-    const data: ConfirmDialogData = { heading: 'Delete dose?', message: "This can't be undone.", confirmLabel: 'Delete' };
-    this.dialogService
-      .open(ConfirmDialog, data)
-      .afterClosed()
-      .subscribe((confirmed) => {
-        if (!confirmed || !this.intakeId) return;
-        this.medicationService.deleteIntake(this.intakeId).subscribe({
-          next: () => this.router.navigate(['/user/diary'], { replaceUrl: true }),
-          error: () => this.snackBar.open("Couldn't delete this dose", 'Close', { panelClass: 'snackbar-error' }),
-        });
-      });
   }
 }

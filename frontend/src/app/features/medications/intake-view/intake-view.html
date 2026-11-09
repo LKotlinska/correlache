@@ -1,0 +1,87 @@
+<app-detail-header
+  title="Medication"
+  entityName="dose"
+  [editLink]="['/user/medication', id, 'edit']"
+  [deleteFn]="deleteFn"
+/>
+<main class="page-wrapper">
+  @if (intake.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (intake.error()) {
+    <p>Couldn't load this dose.</p>
+  } @else if (intake.value(); as i) {
+    <mat-card class="card">
+      <mat-card-content>
+        <div class="row">
+          <mat-icon>medication</mat-icon>
+          <span class="label">{{ i.medication.name }}</span>
+          @if (i.dose) {
+            <span>{{ i.dose }}</span>
+          }
+        </div>
+
+        <div class="row">
+          <mat-icon>schedule</mat-icon>
+          <span class="label">Taken</span>
+          <span>{{ i.takenAt | date: 'd MMMM, HH:mm' }}</span>
+        </div>
+
+        @if (i.effect) {
+          <div class="row">
+            <mat-icon>healing</mat-icon>
+            <span class="label">Did it help?</span>
+            <span>{{ effectLabels[i.effect] }}</span>
+          </div>
+        }
+
+        @if (i.effectAt) {
+          <div class="row">
+            <mat-icon>timer</mat-icon>
+            <span class="label">Relief from</span>
+            <span>{{ i.effectAt | date: 'd MMMM, HH:mm' }}</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="card section">
+      <mat-card-header>
+        <h2 class="card-heading">About this medication</h2>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row">
+          <mat-icon>category</mat-icon>
+          <span class="label">Type</span>
+          <span>{{ classLabels[i.medication.medicationClass] }}</span>
+        </div>
+        <div class="row">
+          <mat-icon>event_repeat</mat-icon>
+          <span class="label">Taken</span>
+          <span>{{ useLabels[i.medication.use] }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @if (headache.value(); as h) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Taken for</h2>
+        </mat-card-header>
+        <mat-card-content>
+          <a class="headache-link" [routerLink]="['/user/headache', h.id]">
+            <mat-icon>bolt</mat-icon>
+            <span class="headache-text">
+              <span class="label">Headache · {{ h.painLevel }}/10</span>
+              <span class="headache-detail">
+                {{ h.startedAt | date: 'd MMMM, HH:mm' }}
+                @if (h.endedAt) {
+                  – {{ h.endedAt | date: 'HH:mm' }}
+                }
+              </span>
+            </span>
+          </a>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+</main>
