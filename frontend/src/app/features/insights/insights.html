@@ -27,7 +27,6 @@
       <p class="disclaimer">These look for patterns in your data. They show correlation, not causation.</p>
       <app-headache-suspects />
       <app-hard-session-headaches />
-      <app-headache-patterns />
     }
   }
   @if (shows('correlations')) {
@@ -56,6 +55,7 @@
         (show)="dismiss('headaches')"
       />
     } @else {
+      <app-headache-patterns />
       <app-headaches-per-month />
       <app-top-triggers />
       <app-top-symptoms />

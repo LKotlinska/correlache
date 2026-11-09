@@ -3,13 +3,14 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, map, merge, startWith } from 'rxjs';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { Button } from '../../../components/button/button';
 import { IntakeFields } from '../../../components/form-fields/intake-fields/intake-fields';
+import { FormErrorSummary, FormProblem } from '../../../components/form-error-summary/form-error-summary';
 import { Headache } from '../../../models/headache.model';
 import { Medication } from '../../../models/medication.model';
 import { HeadacheService } from '../../../services/headache.service';
@@ -19,20 +20,23 @@ import { dayLabel, formatTime } from '../../../utils/date';
 import { getErrorMessage } from '../../../utils/error-message';
 import {
   createIntakeGroup,
-  findOverlappingHeadache,
+  findOverlappingHeadaches,
   intakeGroupToPayload,
+  intakeProblems,
   intakeToGroupValue,
   isPreventive,
+  OPEN_HEADACHE_WINDOW_MS,
 } from '../../../utils/medication';
 
-/** How far back to look for a headache the dose may belong to; matches the open-headache window. */
-const LOOKBACK_MS = 72 * 60 * 60 * 1000;
+/** The radio option for a dose that wasn't taken for any of the listed headaches. */
+export const NO_HEADACHE = 'none';
 
-/** Logs a dose on its own (no headache, or a preventive), suggesting a link when a headache overlaps it. */
+/** Logs a dose on its own (no headache, or a preventive), offering the headaches that overlap it to link to. */
 @Component({
   imports: [
     ReactiveFormsModule,
-    MatCheckboxModule,
+    MatRadioModule,
+    FormErrorSummary,
     MatProgressBar,
     PageHeader,
     Button,
@@ -53,7 +57,11 @@ export class IntakeForm {
   isSubmitting = signal(false);
 
   group = createIntakeGroup();
-  linkToHeadache = new FormControl(true, { nonNullable: true });
+  /** The headache the dose was taken for, `NO_HEADACHE`, or null while nothing is chosen. */
+  headacheChoice = new FormControl<string | null>(null);
+  readonly noHeadache = NO_HEADACHE;
+  /** Set by a save with problems; the error summary then shows until they are fixed. */
+  showErrors = signal(false);
 
   /** Archived medications are included so an old dose still shows its medication. */
   loadedMedications = rxResource({ stream: () => this.medicationService.getMedications(true) });
@@ -80,8 +88,11 @@ export class IntakeForm {
     params: () => this.takenAt(),
     stream: ({ params: takenAt }) =>
       this.headacheService
-        .getHeadaches({ from: new Date(takenAt.getTime() - LOOKBACK_MS), to: new Date(takenAt.getTime() + 1) })
-        .pipe(map((headaches) => findOverlappingHeadache(headaches, takenAt))),
+        .getHeadaches({
+          from: new Date(takenAt.getTime() - OPEN_HEADACHE_WINDOW_MS),
+          to: new Date(takenAt.getTime() + 1),
+        })
+        .pipe(map((headaches) => findOverlappingHeadaches(headaches, takenAt))),
   });
 
   private medicationId = toSignal(this.group.controls.medicationId.valueChanges, { initialValue: null });
@@ -89,10 +100,13 @@ export class IntakeForm {
   /** Preventives are taken regularly, not for a headache, so they aren't offered a link. */
   private preventive = computed(() => isPreventive(this.medications().find((m) => m.id === this.medicationId())));
 
-  /** The headache offered for linking: the one already linked, else one that overlaps the dose. */
-  suggestedHeadache = computed(() =>
-    this.preventive() ? null : (this.linkedHeadache() ?? this.overlapping.value() ?? null),
-  );
+  /** Headaches to choose from: the one already linked, then those that overlap the dose. None for a preventive. */
+  headacheOptions = computed<Headache[]>(() => {
+    if (this.preventive()) return [];
+    const linked = this.linkedHeadache();
+    const overlapping = (this.overlapping.value() ?? []).filter((h) => h.id !== linked?.id);
+    return linked ? [linked, ...overlapping] : overlapping;
+  });
 
   constructor() {
     if (this.intakeId) {
@@ -100,6 +114,7 @@ export class IntakeForm {
         next: (intake) => {
           this.group.patchValue(intakeToGroupValue(intake));
           if (intake.headacheId) {
+            this.headacheChoice.setValue(intake.headacheId);
             this.headacheService.getHeadacheById(intake.headacheId).subscribe((h) => this.linkedHeadache.set(h));
           }
         },
@@ -114,18 +129,26 @@ export class IntakeForm {
 
   headacheLabel(h: Headache): string {
     const start = new Date(h.startedAt);
-    return `Headache from ${dayLabel(start).toLowerCase()}, ${formatTime(start)} · pain ${h.painLevel}/10`;
+    const end = h.endedAt ? ` – ${formatTime(new Date(h.endedAt))}` : '';
+    return `${dayLabel(start)}, ${formatTime(start)}${end} · pain ${h.painLevel}/10`;
+  }
+
+  problems(): FormProblem[] {
+    return intakeProblems(this.group, 'dose');
   }
 
   onSubmit() {
     if (this.isSubmitting()) return;
     if (this.group.invalid) {
       this.group.markAllAsTouched();
+      this.showErrors.set(true);
       return;
     }
     const { id: _, ...fields } = intakeGroupToPayload(this.group);
-    const headache = this.suggestedHeadache();
-    const payload = { ...fields, headacheId: headache && this.linkToHeadache.value ? headache.id : null };
+    // Only a headache still on offer counts: changing the time or picking a preventive can take the chosen one away
+    const choice = this.headacheChoice.value;
+    const headacheId = this.headacheOptions().some((h) => h.id === choice) ? choice : null;
+    const payload = { ...fields, headacheId };
 
     this.isSubmitting.set(true);
     const request = this.intakeId

@@ -3,9 +3,8 @@ import { IsNotBefore } from '../../common/validators/is-not-before.js';
 import { IsNotInFuture } from '../../common/validators/is-not-in-future.js';
 import { INTAKE_EFFECTS, MAX_DOSE_LENGTH } from '../medication-kinds.js';
 import type { IntakeEffect } from '../medication-kinds.js';
+import { HAS_TIMEZONE } from '../../common/validators/has-timezone.js';
 
-// Requires an explicit timezone (Z or ±hh:mm) so Date.parse never falls back to server-local time.
-const HAS_TIMEZONE = /(Z|[+-]\d{2}:?\d{2})$/;
 
 /** Fields shared by a dose logged on its own and one logged inside the headache form. */
 export class IntakeFieldsDto {

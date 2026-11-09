@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { Dialog } from '../../../components/dialog/dialog';
+import { FormErrorSummary, FormProblem } from '../../../components/form-error-summary/form-error-summary';
 import { OutlinedField } from '../../../components/form-fields/outlined-field/outlined-field';
 import { Medication, MedicationClass, MedicationUse } from '../../../models/medication.model';
 import { MedicationService } from '../../../services/medication.service';
@@ -34,6 +35,7 @@ export interface MedicationDialogData {
     MatRadioModule,
     ReactiveFormsModule,
     OutlinedField,
+    FormErrorSummary,
   ],
   selector: 'app-medication-dialog',
   styleUrl: './medication-dialog.scss',
@@ -47,6 +49,8 @@ export class MedicationDialog {
   isEdit = !!this.existing;
   isSubmitting = signal(false);
   error = signal<string | null>(null);
+  /** Set by a save with problems; the error summary then shows until they are fixed. */
+  showErrors = signal(false);
 
   readonly classOptions = MEDICATION_CLASS_OPTIONS;
   readonly useOptions = Object.entries(MEDICATION_USE_LABELS) as [MedicationUse, string][];
@@ -73,10 +77,21 @@ export class MedicationDialog {
     });
   }
 
+  problems(): FormProblem[] {
+    const { name, medicationClass, defaultDose } = this.form.controls;
+    const problems: FormProblem[] = [];
+    if (name.hasError('required')) problems.push({ message: 'Name is required', target: 'medication-name' });
+    if (name.hasError('maxlength')) problems.push({ message: 'The name is too long', target: 'medication-name' });
+    if (medicationClass.invalid) problems.push({ message: 'Choose a type', target: 'medication-class' });
+    if (defaultDose.invalid) problems.push({ message: 'The usual dose is too long', target: 'medication-dose' });
+    return problems;
+  }
+
   save() {
     if (this.isSubmitting()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.showErrors.set(true);
       return;
     }
     const { name, medicationClass, defaultDose, use } = this.form.getRawValue();

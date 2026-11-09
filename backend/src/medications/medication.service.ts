@@ -90,7 +90,8 @@ export class MedicationService {
   }
 
   async createIntake(userId: string, dto: CreateIntakeDto): Promise<MedicationIntake> {
-    await this.assertOwnMedications(this.medicationRepo, userId, [dto.medicationId]);
+    const medications = await this.findOwnMedications(this.medicationRepo, userId, [dto.medicationId]);
+    this.assertDoseAllowed(medications.get(dto.medicationId)!, dto, !!dto.headacheId);
     await this.assertOwnHeadache(userId, dto.headacheId);
     const saved = await this.intakeRepo.save(
       this.intakeRepo.create({ ...this.intakeFields(dto), headacheId: dto.headacheId ?? null, userId }),
@@ -102,7 +103,8 @@ export class MedicationService {
   async updateIntake(userId: string, id: string, dto: CreateIntakeDto): Promise<MedicationIntake> {
     const intake = await this.intakeRepo.findOne({ where: { id, userId } });
     if (!intake) throw new NotFoundException(`Dose ${id} not found`);
-    await this.assertOwnMedications(this.medicationRepo, userId, [dto.medicationId]);
+    const medications = await this.findOwnMedications(this.medicationRepo, userId, [dto.medicationId]);
+    this.assertDoseAllowed(medications.get(dto.medicationId)!, dto, !!dto.headacheId, intake.medicationId);
     await this.assertOwnHeadache(userId, dto.headacheId);
     Object.assign(intake, { ...this.intakeFields(dto), headacheId: dto.headacheId ?? null });
     await this.intakeRepo.save(intake);
@@ -115,23 +117,32 @@ export class MedicationService {
   }
 
   /**
-   * Makes the headache's doses match `intakes`, inside the headache's transaction:
-   * doses with an `id` are updated, those without are added, and linked doses left out are deleted.
+   * Applies the headache form's dose changes inside the headache's transaction: doses with an `id` are updated,
+   * those without are added, and those in `removedIds` are deleted. Other doses of the headache are left alone.
    */
-  async syncHeadacheIntakes(em: EntityManager, userId: string, headacheId: string, intakes: HeadacheIntakeDto[]): Promise<void> {
+  async syncHeadacheIntakes(
+    em: EntityManager,
+    userId: string,
+    headacheId: string,
+    intakes: HeadacheIntakeDto[],
+    removedIds: string[],
+  ): Promise<void> {
     const intakeRepo = em.getRepository(MedicationIntake);
-    await this.assertOwnMedications(em.getRepository(Medication), userId, intakes.map((i) => i.medicationId));
+    const medications = await this.findOwnMedications(em.getRepository(Medication), userId, intakes.map((i) => i.medicationId));
 
     const existing = await intakeRepo.find({ where: { userId, headacheId } });
     const existingById = new Map(existing.map((i) => [i.id, i]));
-    const unknown = intakes.filter((i) => i.id && !existingById.has(i.id));
+    const unknown = [...intakes.map((i) => i.id), ...removedIds].filter((id) => id && !existingById.has(id));
     if (unknown.length) {
-      throw new BadRequestException(`Unknown dose id(s) for this headache: ${unknown.map((i) => i.id).join(', ')}`);
+      throw new BadRequestException(`Unknown dose id(s) for this headache: ${unknown.join(', ')}`);
     }
 
-    const keptIds = new Set(intakes.map((i) => i.id).filter(Boolean));
-    const removed = existing.filter((i) => !keptIds.has(i.id)).map((i) => i.id);
-    if (removed.length) await intakeRepo.delete({ id: In(removed), userId });
+    for (const dto of intakes) {
+      const previous = dto.id ? existingById.get(dto.id)!.medicationId : undefined;
+      this.assertDoseAllowed(medications.get(dto.medicationId)!, dto, true, previous);
+    }
+
+    if (removedIds.length) await intakeRepo.delete({ id: In(removedIds), userId, headacheId });
 
     const rows = intakes.map((dto) =>
       dto.id
@@ -153,12 +164,28 @@ export class MedicationService {
     };
   }
 
-  /** Throws a 400 unless every id is one of the user's medications (archived ones included, for editing old doses). */
-  private async assertOwnMedications(repo: Repository<Medication>, userId: string, ids: string[]): Promise<void> {
+  /**
+   * Throws a 400 when the dose isn't allowed for its medication:
+   * - a removed (archived) medication only keeps the doses it already has, so `previousMedicationId` must be it;
+   * - a preventive is taken regularly rather than for a headache, so its doses aren't rated or linked.
+   */
+  private assertDoseAllowed(medication: Medication, dto: IntakeFieldsDto, linked: boolean, previousMedicationId?: string): void {
+    if (medication.archivedAt && medication.id !== previousMedicationId) {
+      throw new BadRequestException(`${medication.name} was removed from your medications`);
+    }
+    if (medication.use === 'preventive') {
+      if (dto.effect != null) throw new BadRequestException("Doses of a preventive aren't rated for relief");
+      if (linked) throw new BadRequestException("Doses of a preventive can't be linked to a headache");
+    }
+  }
+
+  /** The user's medications with these ids (archived ones included), throwing a 400 when any isn't theirs. */
+  private async findOwnMedications(repo: Repository<Medication>, userId: string, ids: string[]): Promise<Map<string, Medication>> {
     const unique = [...new Set(ids)];
-    if (unique.length === 0) return;
-    const found = await repo.count({ where: { id: In(unique), userId } });
-    if (found !== unique.length) throw new BadRequestException('Unknown medication');
+    if (unique.length === 0) return new Map();
+    const found = await repo.find({ where: { id: In(unique), userId } });
+    if (found.length !== unique.length) throw new BadRequestException('Unknown medication');
+    return new Map(found.map((m) => [m.id, m]));
   }
 
   private async assertOwnHeadache(userId: string, headacheId?: string | null): Promise<void> {

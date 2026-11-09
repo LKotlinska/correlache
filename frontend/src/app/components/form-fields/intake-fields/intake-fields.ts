@@ -37,12 +37,16 @@ export class IntakeFields {
   medications = input.required<Medication[]>();
   /** A medication the user added from here, for the parent to add to its list. */
   medicationAdded = output<Medication>();
+  /** Starts the ids of the fields, so a form's error summary can point at them. */
+  idPrefix = input('intake');
+  /** Whether preventives can be picked; the headache form leaves them out, as they aren't taken for a headache. */
+  allowPreventive = input(true);
 
   readonly effectOptions = INTAKE_EFFECT_OPTIONS;
   readonly today = new Date();
 
   options(): Medication[] {
-    return selectableMedications(this.medications(), this.group().controls.medicationId.value);
+    return selectableMedications(this.medications(), this.group().controls.medicationId.value, this.allowPreventive());
   }
 
   /** Fills in the medication's usual dose, unless a dose was already typed, and drops a relief rating for a preventive. */

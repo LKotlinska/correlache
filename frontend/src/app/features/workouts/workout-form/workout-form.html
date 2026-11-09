@@ -1,17 +1,22 @@
 <app-page-header [title]="isEdit ? 'Edit workout' : 'New workout'" />
 <main class="page-wrapper">
   <form [formGroup]="workoutForm" (ngSubmit)="onSubmit()">
+    @if (showErrors() && problems().length) {
+      <app-form-error-summary [problems]="problems()" />
+    }
     <section>
       <h2>When did you train?</h2>
       <div class="workout-container">
         <h3 class="field-heading">Title</h3>
         <app-outlined-field
+          id="workout-title"
           label="Workout title"
           type="text"
           [myControl]="workoutForm.controls.title"
         />
         <h3 class="field-heading">Start</h3>
         <app-date-time-picker
+          id="workout-start"
           [dateControl]="workoutForm.controls.startDate"
           [timeControl]="workoutForm.controls.startTime"
           [maxDate]="today"
@@ -21,7 +26,7 @@
           <p class="form-error" role="alert">Workouts can't be logged in the future.</p>
         }
         <h3 class="field-heading">Duration</h3>
-        <div class="duration-grid">
+        <div class="duration-grid" id="workout-duration">
           <app-outlined-field
             label="Hours"
             type="number"
@@ -40,7 +45,7 @@
       <h2>Exercises and sets</h2>
       <mat-accordion class="exercise-container">
         @for (exercise of exercises(); track exercise.id) {
-          <div class="exercise-row">
+          <div class="exercise-row" [id]="'exercise-' + exercise.id">
             <mat-expansion-panel>
               <mat-expansion-panel-header class="panel-header">
                 <div class="header-text">
@@ -154,6 +159,7 @@
 
       <div class="btn-add">
         <button
+          id="add-exercise"
           matButton="outlined"
           type="button"
           aria-label="Add"

@@ -1,6 +1,9 @@
 <app-page-header [title]="isEdit ? 'Edit headache' : 'New headache'" />
 <main>
   <form [formGroup]="headacheForm" (ngSubmit)="onSubmit()">
+    @if (showErrors() && problems().length) {
+      <app-form-error-summary [problems]="problems()" />
+    }
     <mat-stepper class="stepper" aria-label="Vertical stepper" orientation="vertical" #stepper>
       <mat-step>
         <ng-template matStepLabel>
@@ -9,6 +12,7 @@
         <div>
           <h3 class="field-heading">Start *</h3>
           <app-date-time-picker
+            id="headache-start"
             [dateControl]="headacheForm.controls.startDate"
             [timeControl]="headacheForm.controls.startTime"
             [maxDate]="today"
@@ -18,6 +22,7 @@
         <div>
           <h3 class="field-heading">End</h3>
           <app-date-time-picker
+            id="headache-end"
             [dateControl]="headacheForm.controls.endDate"
             [timeControl]="headacheForm.controls.endTime"
             [maxDate]="today"
@@ -138,6 +143,8 @@
                 </button>
               </mat-expansion-panel-header>
               <app-intake-fields
+                [idPrefix]="'intake-' + i"
+                [allowPreventive]="false"
                 [group]="intake"
                 [medications]="medications()"
                 (medicationAdded)="onMedicationAdded($event)"

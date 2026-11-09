@@ -9,6 +9,7 @@ import {
   MedicationUse,
 } from '../models/medication.model';
 import { combineDateTime } from './combine-date-time';
+import { FormProblem } from '../components/form-error-summary/form-error-summary';
 
 // Same caps as the backend
 export const MAX_DOSE_LENGTH = 50;
@@ -41,29 +42,28 @@ export const MEDICATION_CLASS_OPTIONS = Object.entries(MEDICATION_CLASS_LABELS).
   label,
 }));
 
-/** Answers to "Did it help?" in the form; the diary and detail views use the longer labels above. */
-export const INTAKE_EFFECT_OPTIONS: { value: IntakeEffect; label: string }[] = [
-  { value: 'none', label: 'No' },
-  { value: 'some', label: 'Some relief' },
-  { value: 'full', label: 'Yes' },
-];
+export const INTAKE_EFFECT_OPTIONS = Object.entries(INTAKE_EFFECT_LABELS).map(([value, label]) => ({
+  value: value as IntakeEffect,
+  label,
+}));
 
 /** A headache with no end only counts as ongoing for this long after it started. */
-const OPEN_HEADACHE_WINDOW_MS = 72 * 60 * 60 * 1000;
+export const OPEN_HEADACHE_WINDOW_MS = 72 * 60 * 60 * 1000;
 
 /**
- * The headache a dose taken at `takenAt` most likely belongs to: the latest one that started by then
- * and had not ended, or that has no end and started within the last 72 hours.
+ * The headaches a dose taken at `takenAt` may belong to, latest-started first: those that started by then
+ * and had not ended, or that have no end and started within the last 72 hours.
  */
-export function findOverlappingHeadache(headaches: Headache[], takenAt: Date): Headache | null {
+export function findOverlappingHeadaches(headaches: Headache[], takenAt: Date): Headache[] {
   const time = takenAt.getTime();
-  const overlapping = headaches.filter((h) => {
-    const start = new Date(h.startedAt).getTime();
-    if (start > time) return false;
-    if (h.endedAt) return new Date(h.endedAt).getTime() >= time;
-    return time - start <= OPEN_HEADACHE_WINDOW_MS;
-  });
-  return overlapping.sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0] ?? null;
+  return headaches
+    .filter((h) => {
+      const start = new Date(h.startedAt).getTime();
+      if (start > time) return false;
+      if (h.endedAt) return new Date(h.endedAt).getTime() >= time;
+      return time - start <= OPEN_HEADACHE_WINDOW_MS;
+    })
+    .sort((a, b) => b.startedAt.localeCompare(a.startedAt));
 }
 
 /** When a dose added in the headache form was likely taken: now while the headache is ongoing, else its start. */
@@ -85,9 +85,36 @@ export function isPreventive(medication: Medication | undefined): boolean {
   return medication?.use === 'preventive';
 }
 
-/** Medications to offer in a picker: active ones, plus the one already chosen even if it was archived since. */
-export function selectableMedications(all: Medication[], selectedId: string | null): Medication[] {
-  return all.filter((m) => !m.archivedAt || m.id === selectedId);
+/**
+ * Medications to offer in a picker: active ones, plus the one already chosen even if it was archived since.
+ * Preventives are left out where `allowPreventive` is false, as in the headache form.
+ */
+export function selectableMedications(all: Medication[], selectedId: string | null, allowPreventive = true): Medication[] {
+  return all.filter(
+    (m) => m.id === selectedId || (!m.archivedAt && (allowPreventive || !isPreventive(m))),
+  );
+}
+
+/**
+ * What's wrong with a dose, for a form's error summary. `label` starts each message where a form has several doses,
+ * e.g. "Medication 2", and `idPrefix` is the one given to its app-intake-fields, so each problem points at its field.
+ */
+export function intakeProblems(group: IntakeGroup, idPrefix: string, label?: string): FormProblem[] {
+  const { medicationId, dose, takenDate, takenTime } = group.controls;
+  const message = (text: string) => (label ? `${label}: ${text[0].toLowerCase()}${text.slice(1)}` : text);
+  const problems: FormProblem[] = [];
+  if (medicationId.invalid) problems.push({ message: message('Choose a medication'), target: `${idPrefix}-medication` });
+  if (dose.invalid) problems.push({ message: message('The dose is too long'), target: `${idPrefix}-dose` });
+  if (takenDate.invalid || takenTime.invalid) {
+    problems.push({ message: message('Pick when it was taken'), target: `${idPrefix}-taken` });
+  }
+  if (group.hasError('futureDate')) {
+    problems.push({ message: message("Doses can't be logged in the future"), target: `${idPrefix}-taken` });
+  }
+  if (group.hasError('effectBeforeDose')) {
+    problems.push({ message: message("Relief can't start before the dose"), target: `${idPrefix}-effect` });
+  }
+  return problems;
 }
 
 /** Group validator: the dose can't be in the future, and the effect can't come before the dose. */

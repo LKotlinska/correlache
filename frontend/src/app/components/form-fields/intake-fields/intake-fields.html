@@ -1,6 +1,6 @@
 <div class="intake-fields">
   <h4 class="field-heading">Medication</h4>
-  <div class="medication-row">
+  <div class="medication-row" [id]="idPrefix() + '-medication'">
     <mat-form-field appearance="outline" class="medication-select">
       <mat-label>Medication</mat-label>
       <mat-select
@@ -26,10 +26,16 @@
     </button>
   </div>
 
-  <app-outlined-field label="Dose" placeholder="e.g. 400 mg" [myControl]="group().controls.dose" />
+  <app-outlined-field
+    [id]="idPrefix() + '-dose'"
+    label="Dose"
+    placeholder="e.g. 400 mg"
+    [myControl]="group().controls.dose"
+  />
 
   <h4 class="field-heading">Taken</h4>
   <app-date-time-picker
+    [id]="idPrefix() + '-taken'"
     [dateControl]="group().controls.takenDate"
     [timeControl]="group().controls.takenTime"
     [maxDate]="today"
@@ -38,7 +44,8 @@
 
   @if (!isPreventive()) {
     <h4 class="field-heading">Did it help?</h4>
-    <mat-chip-listbox aria-label="Did it help?" [formControl]="group().controls.effect">
+    <mat-chip-listbox
+      [id]="idPrefix() + '-effect'" aria-label="Did it help?" [formControl]="group().controls.effect">
       @for (option of effectOptions; track option.value) {
         <mat-chip-option [value]="option.value">{{ option.label }}</mat-chip-option>
       }

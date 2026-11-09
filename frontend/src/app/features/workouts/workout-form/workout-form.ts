@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, viewChildren } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, merge, Subject } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -11,7 +11,8 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { OutlinedField } from '../../../components/form-fields/outlined-field/outlined-field';
 import { DateTimePicker } from '../../../components/form-fields/date-time-picker/date-time-picker';
 import { ExerciseDraftService, SetDraft } from '../../../services/exercise-draft';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
+import { FormErrorSummary, FormProblem } from '../../../components/form-error-summary/form-error-summary';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -44,7 +45,7 @@ type SetGroup = ReturnType<typeof createSetGroup>;
 
 
 @Component({
-  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule, MatFormFieldModule, MatSelectModule],
+  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule, MatFormFieldModule, MatSelectModule, FormErrorSummary],
   selector: 'app-workout-form',
   styleUrl: './workout-form.scss',
   templateUrl: './workout-form.html',
@@ -59,6 +60,9 @@ export class WorkoutForm {
   isEdit = this.workoutId !== null;
   isSubmitting = signal(false);
   private submitted = false;
+  /** Set by a save with problems; the error summary then shows until they are fixed. */
+  showErrors = signal(false);
+  private exercisePanels = viewChildren(MatExpansionPanel);
   exercises = this.exerciseDraftService.exercises;
 
   today = new Date();
@@ -217,19 +221,43 @@ export class WorkoutForm {
     this.setsChanged.next();
   }
 
+  /** What stops the workout from saving, each pointing at its field. */
+  problems(): FormProblem[] {
+    const { title, startDate, startTime, durationHours, durationMinutes } = this.workoutForm.controls;
+    const problems: FormProblem[] = [];
+    if (title.invalid) problems.push({ message: 'Workout title is required', target: 'workout-title' });
+    if (startDate.invalid || startTime.invalid) {
+      problems.push({ message: 'Start: pick a date and time', target: 'workout-start' });
+    }
+    if (this.workoutForm.hasError('futureDate')) {
+      problems.push({ message: "Workouts can't be logged in the future", target: 'workout-start' });
+    }
+    if (durationHours.invalid || durationMinutes.invalid) {
+      problems.push({ message: 'Duration: use whole hours (0–23) and minutes (0–59)', target: 'workout-duration' });
+    }
+    const exercises = this.exercises();
+    if (exercises.length === 0) problems.push({ message: 'Add at least one exercise', target: 'add-exercise' });
+    exercises.forEach((exercise, i) => {
+      if (this.getSets(exercise.id).invalid) {
+        problems.push({
+          message: `${exercise.name}: check the set values`,
+          target: `exercise-${exercise.id}`,
+          reveal: () => this.exercisePanels()[i]?.open(),
+        });
+      }
+    });
+    return problems;
+  }
+
   onSubmit() {
     if (this.isSubmitting()) {
       return;
     }
     const exercises = this.exercises();
-    const setsInvalid = exercises.some((e) => this.getSets(e.id).invalid);
-    if (this.workoutForm.invalid || setsInvalid) {
+    if (this.problems().length) {
       this.workoutForm.markAllAsTouched();
       exercises.forEach((e) => this.getSets(e.id).markAllAsTouched());
-      return;
-    }
-    if (exercises.length === 0) {
-      this.snackBar.open('Add at least one exercise', 'Close', { panelClass: 'snackbar-error' });
+      this.showErrors.set(true);
       return;
     }
 

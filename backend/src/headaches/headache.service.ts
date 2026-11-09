@@ -32,7 +32,7 @@ export class HeadacheService {
   private readonly medicationService: MedicationService
 
   async create(userId: string, dto: CreateHeadacheDto): Promise<Headache> {
-    const { triggerIds, symptomIds, locationIds, reliefIds, notes, intakes, ...fields } = dto;
+    const { triggerIds, symptomIds, locationIds, reliefIds, notes, intakes, removedIntakeIds, ...fields } = dto;
     const lookups = await this.findLookups(dto);
 
     // One transaction, so a rejected dose doesn't leave the headache saved without it
@@ -44,15 +44,15 @@ export class HeadacheService {
         userId,
         ...lookups,
       }));
-      if (intakes) await this.medicationService.syncHeadacheIntakes(em, userId, saved.id, intakes);
+      await this.medicationService.syncHeadacheIntakes(em, userId, saved.id, intakes ?? [], []);
       return saved.id;
     });
     return this.findOwnColumns(id);
   }
 
-  /** Replaces all of a headache's fields and lookups (and its doses, when given) with `dto`, throwing a 404 if it isn't the user's. */
+  /** Replaces all of a headache's fields and lookups with `dto` and applies its dose changes, throwing a 404 if it isn't the user's. */
   async update(userId: string, id: string, dto: CreateHeadacheDto): Promise<Headache> {
-    const { triggerIds, symptomIds, locationIds, reliefIds, notes, endedAt, intakes, ...fields } = dto;
+    const { triggerIds, symptomIds, locationIds, reliefIds, notes, endedAt, intakes, removedIntakeIds, ...fields } = dto;
     const headache = await this.headacheRepo.findOne({ where: { id, userId } });
     if (!headache) throw new NotFoundException(`Headache ${id} not found`);
 
@@ -66,7 +66,7 @@ export class HeadacheService {
     });
     await this.headacheRepo.manager.transaction(async (em) => {
       await em.getRepository(Headache).save(headache);
-      if (intakes) await this.medicationService.syncHeadacheIntakes(em, userId, id, intakes);
+      await this.medicationService.syncHeadacheIntakes(em, userId, id, intakes ?? [], removedIntakeIds ?? []);
     });
     return this.findOwnColumns(id);
   }

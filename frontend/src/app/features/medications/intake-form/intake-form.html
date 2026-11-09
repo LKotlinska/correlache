@@ -9,18 +9,29 @@
   }
 
   <form [formGroup]="group" (ngSubmit)="onSubmit()">
+    @if (showErrors() && problems().length) {
+      <app-form-error-summary [problems]="problems()" />
+    }
     <app-intake-fields
+      idPrefix="dose"
       [group]="group"
       [medications]="medications()"
       (medicationAdded)="onMedicationAdded($event)"
     />
 
-    @if (suggestedHeadache(); as headache) {
+    @if (headacheOptions().length) {
       <div class="link-card">
-        <mat-checkbox [formControl]="linkToHeadache">
-          Taken for this headache
-          <span class="link-detail">{{ headacheLabel(headache) }}</span>
-        </mat-checkbox>
+        <h4 id="headache-choice-label" class="link-heading">Taken for a headache?</h4>
+        <mat-radio-group
+          class="headache-choices"
+          aria-labelledby="headache-choice-label"
+          [formControl]="headacheChoice"
+        >
+          @for (headache of headacheOptions(); track headache.id) {
+            <mat-radio-button [value]="headache.id">{{ headacheLabel(headache) }}</mat-radio-button>
+          }
+          <mat-radio-button [value]="noHeadache">Not for a headache</mat-radio-button>
+        </mat-radio-group>
       </div>
     }
 

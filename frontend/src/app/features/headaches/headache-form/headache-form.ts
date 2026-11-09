@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime } from 'rxjs';
 import { DraftStorage, HEADACHE_DRAFT_KEY } from '../../../services/draft-storage';
@@ -10,7 +10,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { FormErrorSummary, FormProblem } from '../../../components/form-error-summary/form-error-summary';
 import { HeadacheService } from '../../../services/headache.service';
 import { AsyncPipe } from '@angular/common';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
@@ -30,8 +31,12 @@ import { HeadacheDetail } from '../../../models/headache.model';
 import { Medication } from '../../../models/medication.model';
 import { MedicationService } from '../../../services/medication.service';
 import { IntakeFields } from '../../../components/form-fields/intake-fields/intake-fields';
-import { createIntakeGroup, defaultTakenAt, IntakeGroup, IntakeGroupValue, intakeGroupToPayload, intakeToGroupValue } from '../../../utils/medication';
+import { createIntakeGroup, defaultTakenAt, IntakeGroup, IntakeGroupValue, intakeGroupToPayload, intakeProblems, intakeToGroupValue, isPreventive } from '../../../utils/medication';
 import { combineDateTime } from '../../../utils/combine-date-time';
+
+/** Indexes of the steps that hold fields that can be invalid. */
+const STEP_WHEN = 0;
+const STEP_MEDICATIONS = 3;
 
 @Component({
   imports: [
@@ -50,6 +55,7 @@ import { combineDateTime } from '../../../utils/combine-date-time';
     IntakeFields,
     MatIcon,
     MatExpansionModule,
+    FormErrorSummary,
 ],
   selector: 'app-headache-form',
   styleUrl: './headache-form.scss',
@@ -89,6 +95,12 @@ export class HeadacheForm {
   medications = computed(() => [...(this.loadedMedications.value() ?? []), ...this.addedMedications()]);
   /** Index of the expanded dose panel; a newly added dose opens so it can be filled in. */
   openIntake = signal<number | null>(null);
+  /** Saved doses the form loaded, so the ones removed here can be told apart from ones linked elsewhere meanwhile. */
+  private loadedIntakeIds: string[] = [];
+
+  private stepper = viewChild.required<MatStepper>('stepper');
+  /** Set by a save with problems; the error summary then shows until they are fixed. */
+  showErrors = signal(false);
 
   constructor() {
     if (this.headacheId) {
@@ -134,7 +146,11 @@ export class HeadacheForm {
       symptomIds: h.symptoms.map((o) => o.id),
       reliefIds: h.reliefMeasures.map((o) => o.id),
     });
-    this.setIntakes(h.intakes.map(intakeToGroupValue));
+    // Doses of a medication since marked preventive can't be edited here, as preventives aren't linked to headaches;
+    // left out of the form, they are kept as they are
+    const intakes = h.intakes.filter((i) => !isPreventive(i.medication));
+    this.loadedIntakeIds = intakes.map((i) => i.id);
+    this.setIntakes(intakes.map(intakeToGroupValue));
   }
 
   private setIntakes(values: Partial<IntakeGroupValue>[]) {
@@ -215,21 +231,55 @@ export class HeadacheForm {
     return !start || isOnOrAfterDay(d, start);
   };
 
+  /** What stops the headache from saving, each pointing at its step and field. */
+  problems(): FormProblem[] {
+    const { startDate, startTime } = this.headacheForm.controls;
+    const whenStep = () => this.openStep(STEP_WHEN);
+    const problems: FormProblem[] = [];
+    if (startDate.invalid || startTime.invalid) {
+      problems.push({ message: 'Start: pick a date and time', target: 'headache-start', reveal: whenStep });
+    }
+    if (this.headacheForm.hasError('endBeforeStart')) {
+      problems.push({ message: "The end can't be before the start", target: 'headache-end', reveal: whenStep });
+    }
+    if (this.headacheForm.hasError('futureDate')) {
+      problems.push({ message: "Headaches can't be logged in the future", target: 'headache-start', reveal: whenStep });
+    }
+    this.headacheForm.controls.intakes.controls.forEach((intake, i) => {
+      const reveal = () => {
+        this.openStep(STEP_MEDICATIONS);
+        this.openIntake.set(i);
+      };
+      for (const problem of intakeProblems(intake, `intake-${i}`, this.intakeTitle(intake, i))) {
+        problems.push({ ...problem, reveal });
+      }
+    });
+    return problems;
+  }
+
+  private openStep(index: number) {
+    this.stepper().selectedIndex = index;
+  }
+
   onSubmit() {
     if (this.isSubmitting()) {
       return;
     }
-    if (this.headacheForm.invalid) { 
-      this.headacheForm.markAllAsTouched(); 
-      return; 
+    if (this.headacheForm.invalid) {
+      this.headacheForm.markAllAsTouched();
+      this.showErrors.set(true);
+      // Open where the first problem is, so something visible changes even before the summary is read
+      this.problems()[0]?.reveal?.();
+      return;
     }
     const { startDate, startTime, endDate, endTime, intakes: _, ...fields} = this.headacheForm.getRawValue();
 
+    const intakes = this.headacheForm.controls.intakes.controls.map(intakeGroupToPayload);
     const payload: CreateHeadachePayload = {
       ...fields,
       ...buildTimestamps(startDate!, startTime, endDate, endTime),
-      // Always sent, so removing every dose here deletes them
-      intakes: this.headacheForm.controls.intakes.controls.map(intakeGroupToPayload),
+      intakes,
+      removedIntakeIds: this.loadedIntakeIds.filter((id) => !intakes.some((i) => i.id === id)),
     };
 
     this.isSubmitting.set(true);

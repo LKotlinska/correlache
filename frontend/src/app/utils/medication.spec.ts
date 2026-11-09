@@ -1,5 +1,5 @@
 import { Headache } from '../models/headache.model';
-import { createIntakeGroup, defaultTakenAt, findOverlappingHeadache, intakeGroupToPayload, selectableMedications } from './medication';
+import { createIntakeGroup, defaultTakenAt, findOverlappingHeadaches, intakeGroupToPayload, selectableMedications } from './medication';
 import { Medication } from '../models/medication.model';
 
 const headache = (id: string, startedAt: string, endedAt: string | null): Headache => ({
@@ -10,31 +10,31 @@ const headache = (id: string, startedAt: string, endedAt: string | null): Headac
   notes: null,
 });
 
-describe('findOverlappingHeadache', () => {
+describe('findOverlappingHeadaches', () => {
   const at = new Date('2026-03-10T12:00:00Z');
 
   it('finds a headache that spans the dose', () => {
     const h = headache('a', '2026-03-10T10:00:00Z', '2026-03-10T14:00:00Z');
-    expect(findOverlappingHeadache([h], at)).toBe(h);
+    expect(findOverlappingHeadaches([h], at)).toEqual([h]);
   });
 
   it('ignores headaches that ended before or started after the dose', () => {
     const ended = headache('a', '2026-03-10T08:00:00Z', '2026-03-10T09:00:00Z');
     const later = headache('b', '2026-03-10T13:00:00Z', null);
-    expect(findOverlappingHeadache([ended, later], at)).toBeNull();
+    expect(findOverlappingHeadaches([ended, later], at)).toEqual([]);
   });
 
   it('treats a headache with no end as ongoing for 72 hours only', () => {
     const recent = headache('a', '2026-03-09T12:00:00Z', null);
     const stale = headache('b', '2026-03-01T12:00:00Z', null);
-    expect(findOverlappingHeadache([recent], at)).toBe(recent);
-    expect(findOverlappingHeadache([stale], at)).toBeNull();
+    expect(findOverlappingHeadaches([recent], at)).toEqual([recent]);
+    expect(findOverlappingHeadaches([stale], at)).toEqual([]);
   });
 
-  it('prefers the latest-started headache', () => {
+  it('lists every overlapping headache, latest-started first', () => {
     const older = headache('a', '2026-03-10T06:00:00Z', null);
-    const newer = headache('b', '2026-03-10T11:00:00Z', null);
-    expect(findOverlappingHeadache([older, newer], at)?.id).toBe('b');
+    const newer = headache('b', '2026-03-10T11:00:00Z', '2026-03-10T13:00:00Z');
+    expect(findOverlappingHeadaches([older, newer], at).map((h) => h.id)).toEqual(['b', 'a']);
   });
 });
 
@@ -89,5 +89,11 @@ describe('selectableMedications', () => {
     const list = [med('a', null), med('b', '2026-01-01T00:00:00Z')];
     expect(selectableMedications(list, null).map((m) => m.id)).toEqual(['a']);
     expect(selectableMedications(list, 'b').map((m) => m.id)).toEqual(['a', 'b']);
+  });
+
+  it('hides preventives when they are not allowed, unless already chosen', () => {
+    const list = [med('a', null), { ...med('p', null), use: 'preventive' as const }];
+    expect(selectableMedications(list, null, false).map((m) => m.id)).toEqual(['a']);
+    expect(selectableMedications(list, 'p', false).map((m) => m.id)).toEqual(['a', 'p']);
   });
 });

@@ -61,14 +61,14 @@ describe('HeadacheService', () => {
     expect(headacheRepo.save).not.toHaveBeenCalled();
   });
 
-  it('leaves doses alone when the payload has no intakes', async () => {
+  it('passes no dose changes when the payload has no intakes', async () => {
     await service.create('u1', dto);
-    expect(medicationService.syncHeadacheIntakes).not.toHaveBeenCalled();
+    expect(medicationService.syncHeadacheIntakes).toHaveBeenCalledWith(em, 'u1', 'h1', [], []);
   });
 
   it('saves the doses in the same transaction as the headache', async () => {
     const intakes = [{ medicationId: '00000000-0000-4000-8000-000000000001', takenAt: dto.startedAt }];
     await service.create('u1', { ...dto, intakes });
-    expect(medicationService.syncHeadacheIntakes).toHaveBeenCalledWith(em, 'u1', 'h1', intakes);
+    expect(medicationService.syncHeadacheIntakes).toHaveBeenCalledWith(em, 'u1', 'h1', intakes, []);
   });
 });

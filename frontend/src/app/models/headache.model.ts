@@ -27,8 +27,10 @@ export interface CreateHeadachePayload {
     triggerIds: number[],
     symptomIds: number[],
     reliefIds: number[],
-    /** Replaces the headache's doses; left out, they are kept as they are. */
-    intakes?: HeadacheIntakePayload[]
+    /** Doses to add (no `id`) or update (with `id`); doses not listed are kept as they are. */
+    intakes?: HeadacheIntakePayload[],
+    /** Doses the form loaded and the user removed; only these are deleted. */
+    removedIntakeIds?: string[]
 }
 
 export interface Headache {
