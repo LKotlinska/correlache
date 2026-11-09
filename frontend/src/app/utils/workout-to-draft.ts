@@ -31,6 +31,7 @@ export function workoutToDraft(workout: WorkoutDetail): WorkoutDraft {
         distance,
         durationHours: minutes === null ? null : Math.floor(minutes / 60),
         durationMinutes: minutes === null ? null : minutes % 60,
+        durationSecs: durationSeconds === null ? null : durationSeconds % 60,
       };
     });
   }

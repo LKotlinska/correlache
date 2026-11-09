@@ -13,6 +13,8 @@ export interface SetDraft {
   distance: number | null;
   durationHours: number | null;
   durationMinutes: number | null;
+  /** Seconds part of the set duration (0-59); optional because drafts stored before it was added lack it. */
+  durationSecs?: number | null;
 }
 
 /** Everything of an unfinished workout that has to outlive the workout form component. */

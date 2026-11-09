@@ -65,7 +65,10 @@
                   </div>
                 </mat-expansion-panel-header>
                 @if (ex.muscles.length) {
-                  <p class="exercise-muscles">{{ muscleNames(ex) }}</p>
+                  <p class="exercise-muscles">
+                    <mat-icon aria-hidden="true">accessibility_new</mat-icon>
+                    {{ muscleNames(ex) }}
+                  </p>
                 }
                 <table class="sets">
                   <thead>

@@ -11,8 +11,10 @@
   padding-block: p.$card-padding;
 }
 
+// The chip set adds its own space under the chips; this gives the accordion the same gap above the card edge
 .details mat-accordion {
   display: block;
+  margin-bottom: 0.75em;
 }
 
 .sets {
@@ -82,4 +84,13 @@
     margin: 0 0 1em;
     font-size: 0.85em;
     text-transform: capitalize;
+    display:flex;
+    align-items: center;
+    gap: 0.35em;
+    mat-icon {
+      font-size: 2em;
+      width: 1.1em;
+      height: 1.1em;
+      opacity: 0.8;
+    }
 }

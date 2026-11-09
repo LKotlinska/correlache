@@ -36,6 +36,7 @@ function createSetGroup() {
     distance: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(MAX_DISTANCE_KM)] }),
     durationHours: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(23), WHOLE_NUMBER] }),
     durationMinutes: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(59), WHOLE_NUMBER] }),
+    durationSecs: new FormControl<number | null>(null, { validators: [Validators.min(0), Validators.max(59), WHOLE_NUMBER] }),
   });
 }
 
@@ -175,6 +176,7 @@ export class WorkoutForm {
       if (!tracked.duration) {
         set.controls.durationHours.reset();
         set.controls.durationMinutes.reset();
+        set.controls.durationSecs.reset();
       }
     }
     this.setsChanged.next();
@@ -273,14 +275,17 @@ export class WorkoutForm {
     };
   }
 
-  /** Keeps the fields the mode measures and turns the hours and minutes into seconds. */
+  /** Keeps the fields the mode measures and turns the hours, minutes and seconds into seconds. */
   private toSetPayload(set: SetDraft, tracked: TrackedFields): CreateWorkoutSetPayload {
-    const hasDuration = tracked.duration && (set.durationHours !== null || set.durationMinutes !== null);
+    const hasDuration =
+      tracked.duration && (set.durationHours != null || set.durationMinutes != null || set.durationSecs != null);
     return {
       weight: tracked.weight ? set.weight : null,
       reps: tracked.reps ? set.reps : null,
       distance: tracked.distance ? set.distance : null,
-      durationSeconds: hasDuration ? ((set.durationHours ?? 0) * 60 + (set.durationMinutes ?? 0)) * 60 : null,
+      durationSeconds: hasDuration
+        ? ((set.durationHours ?? 0) * 60 + (set.durationMinutes ?? 0)) * 60 + (set.durationSecs ?? 0)
+        : null,
     };
   }
 

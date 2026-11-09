@@ -58,7 +58,10 @@
                   <mat-icon>delete_outline</mat-icon>
                 </button>
               </mat-expansion-panel-header>
-              <p class="exercise-muscles">{{ muscleNames(exercise) }}</p>
+              <p class="exercise-muscles">
+                <mat-icon aria-hidden="true">accessibility_new</mat-icon>
+                {{ muscleNames(exercise) }}
+              </p>
               <mat-form-field class="mode-select" appearance="outline" subscriptSizing="dynamic">
                 <mat-label>Track</mat-label>
                 <mat-select
@@ -105,6 +108,13 @@
                       type="number"
                       [compact]="true"
                       [myControl]="set.controls.durationMinutes"
+                    />
+                    <app-outlined-field
+                      class="set-item"
+                      label="Sec"
+                      type="number"
+                      [compact]="true"
+                      [myControl]="set.controls.durationSecs"
                     />
                   }
                   @if (tracked(exercise).distance) {
