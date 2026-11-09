@@ -1,3 +1,5 @@
+@use '../../../variables' as *;
+
 mat-chip-listbox {
   display: block;
   margin-bottom: 0.5rem;
@@ -22,7 +24,29 @@ mat-chip-listbox {
   gap: 1rem;
 }
 
-.disclaimer {
-  margin: 0;
-  font-style: italic;
+.disclaimer-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  border: 1px solid #f6d3c8;
+  border-radius: 0.35em;
+  padding: 0.5em 0.75em;
+  margin: 0 1em;
+  background-color: #fff1ec;
+  .disclaimer-icon {
+    flex: none;
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.8;
+    font-size: 1.3em;
+    // mat-icon has a fixed 24px box; sizing the box to the glyph (1em of its own font-size) lets align-items centre it
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+  }
+  
+  .disclaimer {
+    margin: 0;
+    font-style: italic;
+  }
 }
+

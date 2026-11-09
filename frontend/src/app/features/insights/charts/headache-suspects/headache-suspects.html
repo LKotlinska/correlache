@@ -8,9 +8,9 @@
         <div class="summary">
           @if (top(); as t) {
             <p>
-              <strong>{{ name(t) }}</strong> is most closely linked to your headaches: they followed
-              <strong>{{ rate(t.exposed) | percent }}</strong> of workouts with it, against
-              <strong>{{ rate(t.unexposed) | percent }}</strong> without it.
+              <strong>{{ name(t) }}</strong> is most closely linked to your headaches:
+              <strong>{{ rate(t.exposed) | percent }}</strong> of workouts with it were followed by
+              one, against <strong>{{ rate(t.unexposed) | percent }}</strong> without.
             </p>
           } @else {
             <p>No exercise or muscle group clearly stands out in {{ periodLabel() }}.</p>
@@ -26,15 +26,19 @@
                   <span class="chance">{{ s.probability | percent }}</span>
                 </div>
                 <mat-progress-bar mode="determinate" [value]="s.probability * 100" />
-                <p class="detail">
-                  Headache after {{ s.exposed.withHeadache }} of {{ s.exposed.workouts }} workouts
-                  with it, {{ s.unexposed.withHeadache }} of {{ s.unexposed.workouts }} without it.
-                  @if (s.features.length > 1) {
-                    <span class="together"
-                      >Always done together, so these can't be told apart.</span
-                    >
-                  }
+                <p class="counts">
+                  <span
+                    ><strong>{{ s.exposed.withHeadache }} of {{ s.exposed.workouts }}</strong> with
+                    it</span
+                  >
+                  <span
+                    ><strong>{{ s.unexposed.withHeadache }} of {{ s.unexposed.workouts }}</strong>
+                    without</span
+                  >
                 </p>
+                @if (s.features.length > 1) {
+                  <p class="together">Always done together, so these can't be told apart.</p>
+                }
               </li>
             }
           </ol>
@@ -42,8 +46,9 @@
 
         @if (experiment(); as e) {
           <div class="experiment">
+            <span class="label">Try this</span>
             <p>
-              <strong>Try this:</strong> leave out <strong>{{ e.skip }}</strong> for your next few
+              Leave out <strong>{{ e.skip }}</strong> for your next few
               workouts but keep doing {{ e.keep.join(', ') }}. If the headaches carry on,
               {{ e.skip }} is less likely to be linked to them.
             </p>
@@ -51,11 +56,12 @@
         }
 
         <p class="note">
-          The percentage is how likely it is that headaches follow workouts with it more often than
-          workouts without it, given how many workouts you've logged. Each needs at least
-          {{ minWorkouts }} workouts with and without it.
+          The percentage is the chance that headaches follow workouts with it more often than without,
+          given how much you've logged. Each needs {{ minWorkouts }}+ workouts with and without it.
           @if (alwaysDone().length) {
-            {{ alwaysDone().join(', ') }} can't be compared because it's in nearly every workout.
+            @let one = alwaysDone().length === 1;
+            You do {{ alwaysDone().join(', ') }} in nearly every workout, so there's nothing to
+            compare {{ one ? 'it' : 'them' }} with and {{ one ? "it isn't" : "they aren't" }} listed.
           }
         </p>
       } @else if (hasPending()) {

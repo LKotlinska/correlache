@@ -1,3 +1,4 @@
+import { MatIcon } from '@angular/material/icon';
 import { Component, inject, signal } from '@angular/core';
 import { MatChipListbox, MatChipListboxChange, MatChipOption } from '@angular/material/chips';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
@@ -51,6 +52,7 @@ function loadDismissed(): InsightsCategory[] {
 
 @Component({
   imports: [
+    MatIcon,
     MatChipListbox,
     MatChipOption,
     MatFormField,

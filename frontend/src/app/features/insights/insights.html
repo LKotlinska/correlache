@@ -24,7 +24,12 @@
         (show)="dismiss('analysis')"
       />
     } @else {
-      <p class="disclaimer">These look for patterns in your data. They show correlation, not causation.</p>
+      <div class="disclaimer-container">
+        <mat-icon class="disclaimer-icon" aria-hidden="true">warning</mat-icon>
+        <p class="disclaimer">
+          These look for patterns in your data. They show correlation, not causation.
+        </p>
+      </div>
       <app-headache-suspects />
       <app-hard-session-headaches />
     }
@@ -41,7 +46,10 @@
         (show)="dismiss('correlations')"
       />
     } @else {
-      <p class="disclaimer">Charts show correlation, not causation.</p>
+      <div class="disclaimer-container">
+        <mat-icon class="disclaimer-icon" aria-hidden="true">warning</mat-icon>
+        <p class="disclaimer">Charts show correlation, not causation.</p>
+      </div>
       <app-workouts-vs-headaches />
       <app-workout-day-headaches />
       <app-time-since-workout />
