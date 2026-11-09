@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { WorkoutService } from '../../../services/workout.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIcon } from '@angular/material/icon';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -14,7 +14,7 @@ import { ChipList } from '../../../components/chip-list/chip-list';
 import { DurationPipe } from '../../../pipes/duration.pipe';
 
 @Component({
-  imports: [DecimalPipe, DatePipe, DurationPipe, DetailHeader, ChipList, MatProgressBar, MatCard, MatCardContent, MatExpansionModule, MatIcon],
+  imports: [DecimalPipe, DatePipe, DurationPipe, DetailHeader, ChipList, MatProgressBar, MatCard, MatCardContent, MatExpansionModule, MatIcon, MatCardHeader],
   selector: 'app-workout-view',
   styleUrl: './workout-view.scss',
   templateUrl: './workout-view.html',

@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { ActivatedRoute } from '@angular/router';
@@ -13,7 +12,7 @@ import { HeadacheService } from '../../../services/headache.service';
 import { matchPattern, PATTERN_NAMES, patternLabel } from '../../../utils/headache-patterns';
 
 @Component({
-  imports: [DatePipe, MatCardModule, MatExpansionModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
+  imports: [DatePipe, MatCardModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
   selector: 'app-headache-view',
   styleUrl: './headache-view.scss',
   templateUrl: './headache-view.html',

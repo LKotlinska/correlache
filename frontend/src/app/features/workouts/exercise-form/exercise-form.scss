@@ -1,5 +1,16 @@
 @use '../../../../variables' as p;
 
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.5em;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
 cdk-virtual-scroll-viewport {
   // the viewport needs a fixed height, otherwise it renders no rows
   // dvh excludes the mobile browser toolbar, which 100vh does not
@@ -29,5 +40,18 @@ cdk-virtual-scroll-viewport {
   .media-tile {
     min-width: 0;
     overflow: hidden;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  padding: 2em 0;
+  color: p.$text-strong;
+
+  p {
+    margin: 0;
   }
 }
