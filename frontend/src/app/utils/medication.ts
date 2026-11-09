@@ -77,6 +77,14 @@ export function intakeLabel(intake: Pick<MedicationIntake, 'medication' | 'dose'
   return [intake.medication.name, intake.dose].filter(Boolean).join(' ');
 }
 
+/**
+ * Whether doses of this medication are taken regularly rather than for a headache.
+ * Such doses aren't rated for relief or linked to a headache: a preventive's effect shows over weeks, not per dose.
+ */
+export function isPreventive(medication: Medication | undefined): boolean {
+  return medication?.use === 'preventive';
+}
+
 /** Medications to offer in a picker: active ones, plus the one already chosen even if it was archived since. */
 export function selectableMedications(all: Medication[], selectedId: string | null): Medication[] {
   return all.filter((m) => !m.archivedAt || m.id === selectedId);

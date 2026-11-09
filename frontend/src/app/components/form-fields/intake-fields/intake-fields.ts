@@ -11,7 +11,7 @@ import { OutlinedField } from '../outlined-field/outlined-field';
 import { DialogService } from '../../dialog/dialog.service';
 import { MedicationDialog } from '../../../features/medications/medication-dialog/medication-dialog';
 import { maxTimeFor } from '../../../utils/date';
-import { INTAKE_EFFECT_OPTIONS, IntakeGroup, selectableMedications } from '../../../utils/medication';
+import { INTAKE_EFFECT_OPTIONS, IntakeGroup, isPreventive, selectableMedications } from '../../../utils/medication';
 
 /** The fields of one dose: which medication, how much, when, and whether it helped. */
 @Component({
@@ -45,11 +45,18 @@ export class IntakeFields {
     return selectableMedications(this.medications(), this.group().controls.medicationId.value);
   }
 
-  /** Fills in the medication's usual dose, unless a dose was already typed. */
+  /** Fills in the medication's usual dose, unless a dose was already typed, and drops a relief rating for a preventive. */
   onMedicationChange(id: string) {
-    const dose = this.group().controls.dose;
+    const group = this.group();
     const medication = this.medications().find((m) => m.id === id);
-    if (!dose.value.trim() && medication?.defaultDose) dose.setValue(medication.defaultDose);
+    if (!group.controls.dose.value.trim() && medication?.defaultDose) group.controls.dose.setValue(medication.defaultDose);
+    if (isPreventive(medication)) group.patchValue({ effect: null, effectDate: null, effectTime: null });
+  }
+
+  /** Preventives are taken regularly, so a single dose isn't rated for relief. */
+  isPreventive(): boolean {
+    const id = this.group().controls.medicationId.value;
+    return isPreventive(this.medications().find((m) => m.id === id));
   }
 
   addMedication() {

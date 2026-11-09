@@ -36,21 +36,23 @@
     [timeMax]="takenTimeMax()"
   />
 
-  <h4 class="field-heading">Did it help?</h4>
-  <mat-chip-listbox aria-label="Did it help?" [formControl]="group().controls.effect">
-    @for (option of effectOptions; track option.value) {
-      <mat-chip-option [value]="option.value">{{ option.label }}</mat-chip-option>
-    }
-  </mat-chip-listbox>
+  @if (!isPreventive()) {
+    <h4 class="field-heading">Did it help?</h4>
+    <mat-chip-listbox aria-label="Did it help?" [formControl]="group().controls.effect">
+      @for (option of effectOptions; track option.value) {
+        <mat-chip-option [value]="option.value">{{ option.label }}</mat-chip-option>
+      }
+    </mat-chip-listbox>
 
-  @if (showsEffectTime()) {
-    <h4 class="field-heading">Relief from</h4>
-    <app-date-time-picker
-      [dateControl]="group().controls.effectDate"
-      [timeControl]="group().controls.effectTime"
-      [maxDate]="today"
-      [timeMax]="effectTimeMax()"
-    />
+    @if (showsEffectTime()) {
+      <h4 class="field-heading">Relief from</h4>
+      <app-date-time-picker
+        [dateControl]="group().controls.effectDate"
+        [timeControl]="group().controls.effectTime"
+        [maxDate]="today"
+        [timeMax]="effectTimeMax()"
+      />
+    }
   }
 
   @if (group().hasError('effectBeforeDose')) {

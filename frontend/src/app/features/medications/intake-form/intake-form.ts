@@ -22,6 +22,7 @@ import {
   findOverlappingHeadache,
   intakeGroupToPayload,
   intakeToGroupValue,
+  isPreventive,
 } from '../../../utils/medication';
 
 /** How far back to look for a headache the dose may belong to; matches the open-headache window. */
@@ -83,8 +84,15 @@ export class IntakeForm {
         .pipe(map((headaches) => findOverlappingHeadache(headaches, takenAt))),
   });
 
+  private medicationId = toSignal(this.group.controls.medicationId.valueChanges, { initialValue: null });
+
+  /** Preventives are taken regularly, not for a headache, so they aren't offered a link. */
+  private preventive = computed(() => isPreventive(this.medications().find((m) => m.id === this.medicationId())));
+
   /** The headache offered for linking: the one already linked, else one that overlaps the dose. */
-  suggestedHeadache = computed(() => this.linkedHeadache() ?? this.overlapping.value() ?? null);
+  suggestedHeadache = computed(() =>
+    this.preventive() ? null : (this.linkedHeadache() ?? this.overlapping.value() ?? null),
+  );
 
   constructor() {
     if (this.intakeId) {
