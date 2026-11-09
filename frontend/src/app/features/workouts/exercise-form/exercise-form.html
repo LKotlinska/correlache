@@ -1,29 +1,21 @@
-<app-page-header title="Add exercises"></app-page-header>
+<!-- ".." goes to the workout form this picker belongs to (add, or :id/edit) -->
+<app-page-header title="Add exercises" fallback=".." />
 <main class="page-wrapper">
   @if (exercises.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (exercises.error()) {
     <p>Couldn't load exercises.</p>
   } @else if (exercises.value()) {
-    <mat-form-field appearance="outline">
-      <mat-label>Search</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput type="search" [formControl]="searchControl" />
-    </mat-form-field>
-
-    <h2>Filter by body part</h2>
-    <mat-chip-listbox aria-label="Filter by body part" [formControl]="bodyPartControl">
-      @for (bodyPart of bodyParts(); track bodyPart.id) {
-        <mat-chip-option [value]="bodyPart.id">{{ bodyPart.name }}</mat-chip-option>
-      }
-    </mat-chip-listbox>
-
-    <h2>Filter by equipment</h2>
-    <mat-chip-listbox aria-label="Filter by equipment" [formControl]="equipmentControl">
-      @for (equipment of equipmentOptions(); track equipment.id) {
-        <mat-chip-option [value]="equipment.id">{{ equipment.name }}</mat-chip-option>
-      }
-    </mat-chip-listbox>
+    <div class="search-row">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput type="search" [formControl]="searchControl" />
+      </mat-form-field>
+      <button matIconButton type="button" aria-label="Filter exercises" (click)="openFilters()">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+    </div>
 
     <cdk-virtual-scroll-viewport [itemSize]="rowHeight">
       <div class="exercise-wrapper" *cdkVirtualFor="let row of rows()">

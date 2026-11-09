@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Exercise } from '../../../models/workout.model';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { WorkoutService } from '../../../services/workout.service';
@@ -7,14 +7,15 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MediaTile } from '../../../components/form-fields/media-tile/media-tile';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatAnchor } from '@angular/material/button';
+import { MatAnchor, MatIconButton } from '@angular/material/button';
 import { ExerciseDraftService } from '../../../services/exercise-draft';
 import { Location } from '@angular/common';
 import { toggleId } from '../../../utils/toggle-id';
 import { MatFormField, MatLabel, MatPrefix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
-import { MatChipListbox, MatChipOption } from '@angular/material/chips';
+import { DialogService } from '../../../components/dialog/dialog.service';
+import { ExerciseFilters, ExerciseFilterSelection, ExerciseFiltersData } from './exercise-filters/exercise-filters';
 
 @Component({
   imports: [
@@ -23,13 +24,12 @@ import { MatChipListbox, MatChipOption } from '@angular/material/chips';
     MatProgressBar,
     MediaTile,
     MatAnchor,
+    MatIconButton,
     MatLabel,
     MatFormField,
     MatPrefix,
     MatInput,
     MatIcon,
-    MatChipListbox,
-    MatChipOption,
     ReactiveFormsModule,
   ],
   selector: 'app-exercise-form',
@@ -40,16 +40,15 @@ export class ExerciseForm {
   private workoutService = inject(WorkoutService);
   private exerciseDraft = inject(ExerciseDraftService)
   private location = inject(Location);
+  private dialogService = inject(DialogService);
 
   // must match the row height and columns set in exercise-form.scss
   readonly columns = 2;
   readonly rowHeight = 245;
   searchControl = new FormControl('', { nonNullable: true });
   searchQuery = toSignal(this.searchControl.valueChanges, { initialValue: '' });
-  bodyPartControl = new FormControl<number | null>(null);
-  bodyPartId = toSignal(this.bodyPartControl.valueChanges, { initialValue: null });
-  equipmentControl = new FormControl<number | null>(null);
-  equipmentId = toSignal(this.equipmentControl.valueChanges, { initialValue: null });
+  // an empty list means no filter for that group
+  filters = signal<ExerciseFilterSelection>({ bodyPartIds: [], equipmentIds: [] });
 
   exercises = rxResource({
     stream: () => this.workoutService.getExercises(),
@@ -61,13 +60,13 @@ export class ExerciseForm {
     this.exerciseForm.setValue(this.exerciseDraft.exercises().map(e => e.id)); // keep earlier picks when re-opening  
   }
 
-  // distinct body parts present in the library, for the filter chips
+  // distinct body parts present in the library, for the filter dialog
   bodyParts = computed(() => {
     const byId = new Map((this.exercises.value() ?? []).map((e) => [e.bodyPart.id, e.bodyPart]));
     return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  // distinct equipment present in the library, for the filter chips
+  // distinct equipment present in the library, for the filter dialog
   equipmentOptions = computed(() => {
     const byId = new Map((this.exercises.value() ?? []).map((e) => [e.equipment.id, e.equipment]));
     return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
@@ -75,14 +74,12 @@ export class ExerciseForm {
 
   items = computed(() => {
     const sq = this.searchQuery().trim().toLowerCase();
-    const bodyPartId = this.bodyPartId();
-    const equipmentId = this.equipmentId();
+    const { bodyPartIds, equipmentIds } = this.filters();
     return (this.exercises.value() ?? []).filter(
       (x) =>
         x.name.toLowerCase().includes(sq) &&
-        // a deselected chip emits undefined, so == null covers "no filter"
-        (bodyPartId == null || x.bodyPart.id === bodyPartId) &&
-        (equipmentId == null || x.equipment.id === equipmentId),
+        (bodyPartIds.length === 0 || bodyPartIds.includes(x.bodyPart.id)) &&
+        (equipmentIds.length === 0 || equipmentIds.includes(x.equipment.id)),
     );
   });
 
@@ -95,6 +92,21 @@ export class ExerciseForm {
     }
     return rows;
   });
+
+  openFilters() {
+    const data: ExerciseFiltersData = {
+      bodyParts: this.bodyParts(),
+      equipment: this.equipmentOptions(),
+      selected: this.filters(),
+    };
+    this.dialogService
+      .open(ExerciseFilters, data)
+      .afterClosed()
+      .subscribe((result?: ExerciseFilterSelection) => {
+        // closing with the X returns undefined, which keeps the current filters
+        if (result) this.filters.set(result);
+      });
+  }
 
   isSelected(id: number) {
     return this.exerciseForm.value.includes(id);

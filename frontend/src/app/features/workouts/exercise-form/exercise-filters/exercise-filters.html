@@ -1,0 +1,29 @@
+<app-dialog heading="Filters">
+  <h3>Body part</h3>
+  <mat-chip-listbox multiple aria-label="Filter by body part">
+    @for (option of data.bodyParts; track option.id) {
+      <mat-chip-option
+        [selected]="bodyPartIds().includes(option.id)"
+        (selectionChange)="toggle(bodyPartIds, option.id, $event.selected)"
+      >
+        {{ option.name }}
+      </mat-chip-option>
+    }
+  </mat-chip-listbox>
+
+  <h3>Equipment</h3>
+  <mat-chip-listbox multiple aria-label="Filter by equipment">
+    @for (option of data.equipment; track option.id) {
+      <mat-chip-option
+        [selected]="equipmentIds().includes(option.id)"
+        (selectionChange)="toggle(equipmentIds, option.id, $event.selected)"
+      >
+        {{ option.name }}
+      </mat-chip-option>
+    }
+  </mat-chip-listbox>
+  <mat-dialog-actions align="end">
+    <button matButton type="button" (click)="clear()">Clear</button>
+    <button matButton="filled" type="button" [mat-dialog-close]="result()">Done</button>
+  </mat-dialog-actions>
+</app-dialog>
