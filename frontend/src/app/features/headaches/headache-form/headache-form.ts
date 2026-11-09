@@ -120,7 +120,8 @@ export class HeadacheForm {
   }
 
   toggleLocation(id: number, checked: boolean) {
-    toggleId(this.headacheForm.controls.locationIds, id, checked);
+    const control = this.headacheForm.controls.locationIds;
+    control.setValue(toggleId(control.value, id, checked));
   }
 
   /** Earliest selectable end time: the start time, but only when both fall on the same day. */

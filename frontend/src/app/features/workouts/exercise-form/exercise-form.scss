@@ -42,3 +42,16 @@ cdk-virtual-scroll-viewport {
     overflow: hidden;
   }
 }
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  padding: 2em 0;
+  color: p.$text-strong;
+
+  p {
+    margin: 0;
+  }
+}

@@ -4,6 +4,8 @@ import { DraftStorage } from './draft-storage';
 import { DraftController } from './draft-controller';
 
 const KEY = 'workout-draft';
+/** Ids ticked in the exercise picker but not added yet, so a refresh of the picker keeps them. */
+const PICKS_KEY = 'workout-draft-picks';
 
 export interface SetDraft {
   weight: number | null;
@@ -24,7 +26,8 @@ export interface WorkoutDraft {
 
 @Service()
 export class ExerciseDraftService {
-  private draft = new DraftController(inject(DraftStorage), KEY);
+  private storage = inject(DraftStorage);
+  private draft = new DraftController(this.storage, KEY);
   private saved = this.draft.restore<WorkoutDraft>();
 
   readonly exercises = signal<Exercise[]>(this.saved?.exercises ?? []);
@@ -93,6 +96,21 @@ export class ExerciseDraftService {
     this.modes = {};
     this.exercises.set([]);
     this.draft.discard();
+    this.clearPicks();
+  }
+
+  /** Ids ticked in the picker before a refresh, or the picked exercises when there are none. */
+  restorePicks(): number[] {
+    return this.storage.load<number[]>(PICKS_KEY) ?? this.exercises().map((e) => e.id);
+  }
+
+  savePicks(ids: number[]) {
+    this.storage.save(PICKS_KEY, ids);
+  }
+
+  /** Call when the picker closes, so its unsaved ticks don't come back next time it opens. */
+  clearPicks() {
+    this.storage.clear(PICKS_KEY);
   }
 
   private persist() {

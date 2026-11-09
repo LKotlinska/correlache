@@ -12,26 +12,46 @@
         <mat-icon matPrefix>search</mat-icon>
         <input matInput type="search" [formControl]="searchControl" />
       </mat-form-field>
-      <button matIconButton type="button" aria-label="Filter exercises" (click)="openFilters()">
-        <mat-icon>filter_list</mat-icon>
+      <button
+        matIconButton
+        type="button"
+        [attr.aria-label]="
+          activeFilterCount() ? `Filter exercises, ${activeFilterCount()} active` : 'Filter exercises'
+        "
+        (click)="openFilters()"
+      >
+        <mat-icon
+          [matBadge]="activeFilterCount()"
+          [matBadgeHidden]="activeFilterCount() === 0"
+          >filter_list</mat-icon
+        >
       </button>
     </div>
 
-    <cdk-virtual-scroll-viewport [itemSize]="rowHeight">
-      <div class="exercise-wrapper" *cdkVirtualFor="let row of rows()">
-        @for (exercise of row; track exercise.id) {
-          <app-media-tile
-            class="media-tile"
-            [image]="exercise.imageName ? '/images/exercises/stills/' + exercise.imageName : null"
-            [altText]="exercise.name"
-            [title]="exercise.name"
-            [subtitle]="exercise.bodyPart.name"
-            [checked]="isSelected(exercise.id)"
-            (checkedChange)="toggleExercise(exercise.id, $event)"
-          />
+    @if (items().length === 0) {
+      <div class="empty-state">
+        <p>No exercises match.</p>
+        @if (activeFilterCount()) {
+          <button matButton type="button" (click)="clearFilters()">Clear filters</button>
         }
       </div>
-    </cdk-virtual-scroll-viewport>
+    } @else {
+      <cdk-virtual-scroll-viewport [itemSize]="rowHeight">
+        <div class="exercise-wrapper" *cdkVirtualFor="let row of rows()">
+          @for (exercise of row; track exercise.id) {
+            <app-media-tile
+              class="media-tile"
+              [image]="exercise.imageName ? '/images/exercises/stills/' + exercise.imageName : null"
+              [altText]="exercise.name"
+              [title]="exercise.name"
+              [subtitle]="exercise.bodyPart.name"
+              [checked]="isSelected(exercise.id)"
+              (checkedChange)="toggleExercise(exercise.id, $event)"
+            />
+          }
+        </div>
+      </cdk-virtual-scroll-viewport>
+    }
   }
   <div class="btn-container">
     <button

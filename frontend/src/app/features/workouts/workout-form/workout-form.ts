@@ -90,6 +90,8 @@ export class WorkoutForm {
 
   private initForm() {
     const draft = this.exerciseDraftService;
+    // picker ticks are only kept across a refresh of the picker itself, never into a later visit
+    draft.clearPicks();
     if (!this.workoutId) {
       draft.endEdit();
       this.restoreFromDraft();

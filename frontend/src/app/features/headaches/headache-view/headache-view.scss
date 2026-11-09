@@ -1,38 +1,14 @@
 @use '../../../../variables' as p;
+@use '../../../../detail-card';
 
-.row {
-  display: flex;
-  align-items: center;
-  gap: 1em;
-  padding: p.$card-padding
-}
+@include detail-card.detail-card;
 
 .label {
-  flex: 1;
-  color: p.$text-strong;
   font-size: 1.1em;
-}
-
-// All cards share the same width, surface and radius
-.card {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.card {
-  background-color: p.$white;
-  border-radius: p.$card-border;
-  margin-bottom: 1em;
-}
-
-.row {
-  padding: p.$card-padding 0.5em;
 }
 
 .row span:last-child {
   font-size: 1.1em;
-  font-weight: 500;
 }
 
 .pattern p {
@@ -51,10 +27,6 @@
 .card mat-card-content {
   padding-top: 0.95em;
   padding-bottom: 0.95em;
-}
-
-.card-heading {
-  margin: 0.25em 0;
 }
 
 .tile-grid {

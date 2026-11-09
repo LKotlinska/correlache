@@ -1,24 +1,28 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ExerciseFilters, ExerciseFiltersData } from './exercise-filters';
+import { ExerciseFilters, ExerciseFilterSelection, ExerciseFiltersData } from './exercise-filters';
 
 describe('ExerciseFilters', () => {
   let component: ExerciseFilters;
   let fixture: ComponentFixture<ExerciseFilters>;
 
-  const data: ExerciseFiltersData = {
-    bodyParts: [
-      { id: 1, name: 'Back' },
-      { id: 2, name: 'Chest' },
-    ],
-    equipment: [
-      { id: 1, name: 'Barbell' },
-      { id: 2, name: 'Dumbbell' },
-    ],
-    selected: { bodyPartIds: [2], equipmentIds: [] },
-  };
+  let filters: ReturnType<typeof signal<ExerciseFilterSelection>>;
 
   beforeEach(async () => {
+    filters = signal<ExerciseFilterSelection>({ bodyPartIds: [2], equipmentIds: [] });
+    const data: ExerciseFiltersData = {
+      bodyParts: [
+        { id: 1, name: 'Back' },
+        { id: 2, name: 'Chest' },
+      ],
+      equipment: [
+        { id: 1, name: 'Barbell' },
+        { id: 2, name: 'Dumbbell' },
+      ],
+      filters,
+    };
+
     await TestBed.configureTestingModule({
       imports: [ExerciseFilters],
       providers: [
@@ -32,20 +36,20 @@ describe('ExerciseFilters', () => {
     await fixture.whenStable();
   });
 
-  it('should initialise the selection from dialog data', () => {
-    expect(component.result()).toEqual({ bodyPartIds: [2], equipmentIds: [] });
+  it('should keep the existing selection after the first render', () => {
+    expect(filters()).toEqual({ bodyPartIds: [2], equipmentIds: [] });
   });
 
-  it('should keep body part and equipment selections separate', () => {
-    component.toggle(component.equipmentIds, 1, true);
-    component.toggle(component.bodyPartIds, 2, false);
-    expect(component.result()).toEqual({ bodyPartIds: [], equipmentIds: [1] });
+  it('should write changes straight to the page filters', () => {
+    component.toggle('equipmentIds', 1, true);
+    component.toggle('bodyPartIds', 2, false);
+    expect(filters()).toEqual({ bodyPartIds: [], equipmentIds: [1] });
   });
 
   it('should clear both sections', () => {
-    component.toggle(component.equipmentIds, 2, true);
+    component.toggle('equipmentIds', 2, true);
     component.clear();
-    expect(component.result()).toEqual({ bodyPartIds: [], equipmentIds: [] });
+    expect(filters()).toEqual({ bodyPartIds: [], equipmentIds: [] });
   });
 
   it('should render a chip per option', () => {
