@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
 import { HeadacheOptionsDto } from './dto/headache-options.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { Symptom } from './lookups/symptom.entity.js';
 import { ReliefMeasure } from './lookups/relief-measure.entity.js';
 import { HeadacheLocation } from './lookups/headache-location.entity.js';
 import { startedWithin } from '../common/date-range.js';
+import { MedicationService } from '../medications/medication.service.js';
 
 @Injectable()
 export class HeadacheService {
@@ -27,23 +28,31 @@ export class HeadacheService {
   @InjectRepository(HeadacheLocation)
   private readonly locationRepo: Repository<HeadacheLocation>
 
+  @Inject(MedicationService)
+  private readonly medicationService: MedicationService
+
   async create(userId: string, dto: CreateHeadacheDto): Promise<Headache> {
-    const { triggerIds, symptomIds, locationIds, reliefIds, notes, ...fields } = dto;
+    const { triggerIds, symptomIds, locationIds, reliefIds, notes, intakes, ...fields } = dto;
     const lookups = await this.findLookups(dto);
 
-    const headache = this.headacheRepo.create({
-      ...fields,
-      notes: notes?.trim() || null,
-      userId,
-      ...lookups,
-    })
-    const saved = await this.headacheRepo.save(headache);
-    return this.findOwnColumns(saved.id);
+    // One transaction, so a rejected dose doesn't leave the headache saved without it
+    const id = await this.headacheRepo.manager.transaction(async (em) => {
+      const repo = em.getRepository(Headache);
+      const saved = await repo.save(repo.create({
+        ...fields,
+        notes: notes?.trim() || null,
+        userId,
+        ...lookups,
+      }));
+      if (intakes) await this.medicationService.syncHeadacheIntakes(em, userId, saved.id, intakes);
+      return saved.id;
+    });
+    return this.findOwnColumns(id);
   }
 
-  /** Replaces all of a headache's fields and lookups with `dto`, throwing a 404 if it isn't the user's. */
+  /** Replaces all of a headache's fields and lookups (and its doses, when given) with `dto`, throwing a 404 if it isn't the user's. */
   async update(userId: string, id: string, dto: CreateHeadacheDto): Promise<Headache> {
-    const { triggerIds, symptomIds, locationIds, reliefIds, notes, endedAt, ...fields } = dto;
+    const { triggerIds, symptomIds, locationIds, reliefIds, notes, endedAt, intakes, ...fields } = dto;
     const headache = await this.headacheRepo.findOne({ where: { id, userId } });
     if (!headache) throw new NotFoundException(`Headache ${id} not found`);
 
@@ -55,7 +64,10 @@ export class HeadacheService {
       notes: notes?.trim() || null,
       ...lookups,
     });
-    await this.headacheRepo.save(headache);
+    await this.headacheRepo.manager.transaction(async (em) => {
+      await em.getRepository(Headache).save(headache);
+      if (intakes) await this.medicationService.syncHeadacheIntakes(em, userId, id, intakes);
+    });
     return this.findOwnColumns(id);
   }
 
@@ -119,7 +131,8 @@ export class HeadacheService {
   async getHeadacheById(userId: string, id: string): Promise<Headache> {
     const headache = await this.headacheRepo.findOne({
       where: { id, userId },
-      relations: { triggers: true, symptoms: true, reliefMeasures: true, locations: true },
+      relations: { triggers: true, symptoms: true, reliefMeasures: true, locations: true, intakes: { medication: true } },
+      order: { intakes: { takenAt: 'ASC' } },
     });
     if (!headache) throw new NotFoundException(`Headache ${id} not found`);
 

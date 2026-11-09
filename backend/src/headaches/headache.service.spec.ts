@@ -7,6 +7,7 @@ import { Trigger } from './lookups/trigger.entity.js';
 import { Symptom } from './lookups/symptom.entity.js';
 import { ReliefMeasure } from './lookups/relief-measure.entity.js';
 import { HeadacheLocation } from './lookups/headache-location.entity.js';
+import { MedicationService } from '../medications/medication.service.js';
 
 describe('HeadacheService', () => {
   let service: HeadacheService;
@@ -14,7 +15,11 @@ describe('HeadacheService', () => {
     create: vi.fn((x) => x),
     save: vi.fn(async (x) => ({ ...x, id: 'h1' })),
     findOneOrFail: vi.fn(async () => ({ id: 'h1' })),
+    // The transaction hands its callback a manager whose repository is this same mock
+    manager: { transaction: vi.fn(async (fn: (em: unknown) => unknown) => fn(em)) },
   };
+  const em = { getRepository: () => headacheRepo };
+  const medicationService = { syncHeadacheIntakes: vi.fn(async () => undefined) };
   const lookupRepo = () => ({ find: vi.fn(async () => [{ id: 1 }]) });
   const triggerRepo = lookupRepo();
 
@@ -28,6 +33,7 @@ describe('HeadacheService', () => {
         { provide: getRepositoryToken(Symptom), useValue: lookupRepo() },
         { provide: getRepositoryToken(ReliefMeasure), useValue: lookupRepo() },
         { provide: getRepositoryToken(HeadacheLocation), useValue: lookupRepo() },
+        { provide: MedicationService, useValue: medicationService },
       ],
     }).compile();
 
@@ -53,5 +59,16 @@ describe('HeadacheService', () => {
   it('throws 400 when a lookup id does not exist', async () => {
     await expect(service.create('u1', { ...dto, triggerIds: [1, 999] })).rejects.toThrow(BadRequestException);
     expect(headacheRepo.save).not.toHaveBeenCalled();
+  });
+
+  it('leaves doses alone when the payload has no intakes', async () => {
+    await service.create('u1', dto);
+    expect(medicationService.syncHeadacheIntakes).not.toHaveBeenCalled();
+  });
+
+  it('saves the doses in the same transaction as the headache', async () => {
+    const intakes = [{ medicationId: '00000000-0000-4000-8000-000000000001', takenAt: dto.startedAt }];
+    await service.create('u1', { ...dto, intakes });
+    expect(medicationService.syncHeadacheIntakes).toHaveBeenCalledWith(em, 'u1', 'h1', intakes);
   });
 });

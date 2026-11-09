@@ -1,9 +1,12 @@
-import { ArrayMaxSize, ArrayUnique, IsArray, IsInt, IsISO8601, IsOptional, IsPositive, IsString, Matches, Max, MaxLength, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayMaxSize, ArrayUnique, IsArray, IsInt, IsISO8601, IsOptional, IsPositive, IsString, Matches, Max, MaxLength, Min, ValidateNested } from 'class-validator';
+import { HeadacheIntakeDto } from '../../medications/dto/create-intake.dto.js';
 import { IsNotBefore } from '../../common/validators/is-not-before.js';
 import { IsNotInFuture } from '../../common/validators/is-not-in-future.js';
 
 // Cap prevents wasteful requests as lookup tables only have a handful of options
 const MAX_LOOKUP_IDS = 50;
+const MAX_INTAKES = 20;
 // Requires an explicit timezone (Z or ±hh:mm) so Date.parse never falls back to server-local time.
 const HAS_TIMEZONE = /(Z|[+-]\d{2}:?\d{2})$/;
 
@@ -57,4 +60,12 @@ export class CreateHeadacheDto {
   @IsInt({ each: true })
   @IsPositive({ each: true })
   reliefIds: number[];
+
+  /** The headache's doses. Left out, they are not touched; given, they replace the headache's doses. */
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(MAX_INTAKES)
+  @ValidateNested({ each: true })
+  @Type(() => HeadacheIntakeDto)
+  intakes?: HeadacheIntakeDto[];
 }
