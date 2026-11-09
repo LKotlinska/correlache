@@ -28,6 +28,10 @@
       <app-headache-suspects />
       <app-hard-session-headaches />
     }
+    <!-- Needs only headaches, so it follows the Headaches threshold rather than Analysis's -->
+    @if (!gated('headaches')) {
+      <app-headache-patterns />
+    }
   }
   @if (shows('correlations')) {
     @if (gated('correlations')) {
@@ -55,7 +59,6 @@
         (show)="dismiss('headaches')"
       />
     } @else {
-      <app-headache-patterns />
       <app-headaches-per-month />
       <app-top-triggers />
       <app-top-symptoms />
