@@ -39,6 +39,16 @@ mat-accordion {
   color: p.$text-strong;
 }
 
+.details mat-card-content {
+  padding-block: p.$card-padding;
+}
+
+// Matches the bottom margin the chip list leaves in the muscles card
+.details mat-accordion {
+  display: block;
+  margin-bottom: 1em;
+}
+
 .sets {
   width: 100%;
   border-collapse: collapse;
