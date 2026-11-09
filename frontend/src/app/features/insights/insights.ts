@@ -25,7 +25,7 @@ import { DataNotice } from './data-notice/data-notice';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
 
-export type InsightsCategory = 'headaches' | 'workouts' | 'correlations';
+export type InsightsCategory = 'headaches' | 'workouts' | 'correlations' | 'analysis';
 export type InsightsFilter = 'all' | InsightsCategory;
 
 /** Time ranges that can be picked. 'default' leaves each chart on its own period. */
@@ -73,6 +73,7 @@ function loadDismissed(): InsightsCategory[] {
     TriggerVsWorkout,
     WorkoutTypeHeadaches,
     HardSessionHeadaches,
+    TrainingLevelHeadaches,
     HeadacheSuspects,
     ExerciseProgress,
     MuscleBalance,

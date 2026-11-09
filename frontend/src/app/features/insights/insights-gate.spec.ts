@@ -14,6 +14,6 @@ describe('Insights gate', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(fixture.componentInstance.readiness()?.correlations.ready).toBe(false);
-    expect(fixture.nativeElement.querySelectorAll('app-data-notice').length).toBe(3);
+    expect(fixture.nativeElement.querySelectorAll('app-data-notice').length).toBe(4);
   });
 });
