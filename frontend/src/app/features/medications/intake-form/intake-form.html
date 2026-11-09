@@ -1,0 +1,37 @@
+<app-page-header [title]="isEdit ? 'Edit medication' : 'Medication'">
+  @if (isEdit) {
+    <button matIconButton type="button" aria-label="Delete dose" (click)="confirmDelete()">
+      <mat-icon>delete_outline</mat-icon>
+    </button>
+  }
+</app-page-header>
+<main class="page-wrapper">
+  @if (loadedMedications.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (loadedMedications.error()) {
+    <p class="hint">Couldn't load your medications.</p>
+  } @else if (hasNoMedications()) {
+    <p class="hint">Add a medication to your list with the + button. You can manage the list in Settings.</p>
+  }
+
+  <form (ngSubmit)="onSubmit()">
+    <app-intake-fields
+      [group]="group"
+      [medications]="medications()"
+      (medicationAdded)="onMedicationAdded($event)"
+    />
+
+    @if (suggestedHeadache(); as headache) {
+      <div class="link-card">
+        <mat-checkbox [formControl]="linkToHeadache">
+          Taken for this headache
+          <span class="link-detail">{{ headacheLabel(headache) }}</span>
+        </mat-checkbox>
+      </div>
+    }
+
+    <div class="btn-container">
+      <app-button type="submit" [disabled]="isSubmitting()">Save</app-button>
+    </div>
+  </form>
+</main>

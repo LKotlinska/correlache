@@ -1,4 +1,32 @@
 <section class="settings-section">
+  <h2>Your medications</h2>
+  @if (medications.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (medications.error()) {
+    <p>Couldn't load your medications.</p>
+  }
+  <ul class="settings-list">
+    @for (medication of medications.value() ?? []; track medication.id) {
+      <li class="medication-item">
+        <button type="button" (click)="openMedication(medication)">
+          <span class="medication-name">{{ medication.name }}</span>
+          <span class="medication-details">{{ medicationDetails(medication) }}</span>
+        </button>
+        <button
+          matIconButton
+          type="button"
+          class="remove-medication"
+          [attr.aria-label]="'Remove ' + medication.name"
+          (click)="confirmRemoveMedication(medication)"
+        >
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </li>
+    }
+    <li><button type="button" (click)="openMedication()">Add medication</button></li>
+  </ul>
+</section>
+<section class="settings-section">
   <h2>Your account</h2>
   <ul class="settings-list">
     <li><button class="destructive" type="button" (click)="signOut()">Sign out</button></li>

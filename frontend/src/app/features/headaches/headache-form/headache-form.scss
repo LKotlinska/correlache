@@ -39,10 +39,56 @@
     justify-content: end;
 }
 
+.btn-center {
+    display: flex;
+    justify-content: center;
+}
+
 .mat-vertical-content {
     padding: 0 24px 24px 0px;
 }
 .form-error {
     color: var(--mat-sys-error, #b3261e);
     margin: 0.5em 0 0;
+}
+
+.intake-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-bottom: 0.75em;
+
+    .panel-header.mat-expansion-panel-header {
+        // let the header grow to fit the name + detail lines
+        --mat-expansion-header-collapsed-state-height: auto;
+        --mat-expansion-header-expanded-state-height: auto;
+        height: auto;
+    }
+    .header-text {
+        // padding here, not on the header: global styles override the header's own padding
+        padding-block: 0.75em;
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    .intake-name {
+        // mat-panel-title defaults to flex-basis:0, which collapses it to zero height in the column layout
+        display: block;
+        flex: none;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .intake-detail {
+        font-size: 0.85em;
+        opacity: 0.8;
+    }
+    .header-delete {
+        flex: none;
+        align-self: center;
+        margin-right: 0.75em;
+        color: #d32f2f;
+    }
 }

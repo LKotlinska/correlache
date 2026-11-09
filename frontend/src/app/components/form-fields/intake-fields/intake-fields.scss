@@ -1,0 +1,33 @@
+.intake-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.medication-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25em;
+}
+
+.medication-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-medication {
+  margin-top: 0.25em;
+}
+
+.field-heading {
+  margin: 0.25em 0 0.5em;
+}
+
+mat-chip-listbox {
+  display: block;
+  margin-bottom: 0.75em;
+}
+
+.form-error {
+  color: var(--mat-sys-error, #b3261e);
+  margin: 0.5em 0 0;
+}

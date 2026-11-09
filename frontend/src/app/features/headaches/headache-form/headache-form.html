@@ -112,6 +112,50 @@
 
       <mat-step>
         <ng-template matStepLabel>
+          <h2>Medications</h2>
+        </ng-template>
+        <mat-accordion class="intake-container">
+          @for (intake of headacheForm.controls.intakes.controls; track intake; let i = $index) {
+            <mat-expansion-panel [expanded]="openIntake() === i" (opened)="openIntake.set(i)">
+              <mat-expansion-panel-header class="panel-header">
+                <div class="header-text">
+                  <mat-panel-title class="intake-name">{{
+                    intakeTitle(intake, i)
+                  }}</mat-panel-title>
+                  @if (intakeSubtitle(intake); as subtitle) {
+                    <span class="intake-detail">{{ subtitle }}</span>
+                  }
+                </div>
+                <button
+                  matIconButton
+                  type="button"
+                  class="header-delete"
+                  [attr.aria-label]="'Remove ' + intakeTitle(intake, i)"
+                  (click)="$event.stopPropagation(); removeIntake(i)"
+                  (keydown)="$event.stopPropagation()"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </mat-expansion-panel-header>
+              <app-intake-fields
+                [group]="intake"
+                [medications]="medications()"
+                (medicationAdded)="onMedicationAdded($event)"
+              />
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+        <div class="btn-center">
+          <button matButton="outlined" type="button" (click)="addIntake()">Add medication</button>
+        </div>
+        <div class="btn-container">
+          <button matButton="filled" type="button" matStepperPrevious>Back</button>
+          <button matButton="filled" type="button" matStepperNext>Next</button>
+        </div>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>
           <h2>Save</h2>
         </ng-template>
         <div class="btn-container">

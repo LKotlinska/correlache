@@ -1,9 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, signal } from '@angular/core';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime } from 'rxjs';
 import { DraftStorage, HEADACHE_DRAFT_KEY } from '../../../services/draft-storage';
 import { DraftController } from '../../../services/draft-controller';
-import { FormGroup, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { FormArray, FormGroup, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { MatIcon } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -17,7 +19,7 @@ import { DateTimePicker } from '../../../components/form-fields/date-time-picker
 import { PageHeader } from '../../../components/page-header/page-header';
 import { Button } from '../../../components/button/button';
 import { buildTimestamps, endNotBeforeStart, notInFuture } from '../../../utils/date-time-validators';
-import { isOnOrAfterDay, isSameDay, maxTimeFor } from '../../../utils/date';
+import { dayLabel, formatTime, isOnOrAfterDay, isSameDay, maxTimeFor } from '../../../utils/date';
 import { toggleId } from '../../../utils/toggle-id';
 import { getErrorMessage } from '../../../utils/error-message';
 import { CreateHeadachePayload } from '../../../models/headache.model';
@@ -25,6 +27,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeadacheDetail } from '../../../models/headache.model';
+import { Medication } from '../../../models/medication.model';
+import { MedicationService } from '../../../services/medication.service';
+import { IntakeFields } from '../../../components/form-fields/intake-fields/intake-fields';
+import { createIntakeGroup, defaultTakenAt, IntakeGroup, IntakeGroupValue, intakeGroupToPayload, intakeToGroupValue } from '../../../utils/medication';
+import { combineDateTime } from '../../../utils/combine-date-time';
 
 @Component({
   imports: [
@@ -39,7 +46,10 @@ import { HeadacheDetail } from '../../../models/headache.model';
     ChipList,
     Button,
     PageHeader,
-    DateTimePicker
+    DateTimePicker,
+    IntakeFields,
+    MatIcon,
+    MatExpansionModule,
 ],
   selector: 'app-headache-form',
   styleUrl: './headache-form.scss',
@@ -47,6 +57,7 @@ import { HeadacheDetail } from '../../../models/headache.model';
 })
 export class HeadacheForm {
   private headacheService = inject(HeadacheService);
+  private medicationService = inject(MedicationService);
   private snackBar = inject(MatSnackBar); // temporary snackbar
   private router = inject(Router);
   private draft = new DraftController(inject(DraftStorage), HEADACHE_DRAFT_KEY);
@@ -68,8 +79,16 @@ export class HeadacheForm {
     triggerIds: new FormControl<number[]>([], { nonNullable: true }),
     symptomIds: new FormControl<number[]>([], { nonNullable: true }),
     reliefIds: new FormControl<number[]>([], { nonNullable: true }),
-    notes: new FormControl<string>('', { nonNullable: true })
+    notes: new FormControl<string>('', { nonNullable: true }),
+    intakes: new FormArray<IntakeGroup>([]),
   }, { validators: [endNotBeforeStart, notInFuture] })
+
+  /** Archived medications are included so a saved dose still shows its medication. */
+  private loadedMedications = rxResource({ stream: () => this.medicationService.getMedications(true) });
+  private addedMedications = signal<Medication[]>([]);
+  medications = computed(() => [...(this.loadedMedications.value() ?? []), ...this.addedMedications()]);
+  /** Index of the expanded dose panel; a newly added dose opens so it can be filled in. */
+  openIntake = signal<number | null>(null);
 
   constructor() {
     if (this.headacheId) {
@@ -80,8 +99,10 @@ export class HeadacheForm {
       return;
     }
     // New headaches keep a draft in sessionStorage; editing is prefilled from the server instead
-    const draft = this.draft.restore<Record<string, unknown>>();
+    const draft = this.draft.restore<Record<string, unknown> & { intakes?: IntakeGroupValue[] }>();
     if (draft) {
+      // patchValue only fills doses that already have a group
+      this.setIntakes(draft.intakes ?? []);
       this.headacheForm.patchValue(draft);
     }
     this.headacheForm.valueChanges
@@ -113,6 +134,48 @@ export class HeadacheForm {
       symptomIds: h.symptoms.map((o) => o.id),
       reliefIds: h.reliefMeasures.map((o) => o.id),
     });
+    this.setIntakes(h.intakes.map(intakeToGroupValue));
+  }
+
+  private setIntakes(values: Partial<IntakeGroupValue>[]) {
+    const intakes = this.headacheForm.controls.intakes;
+    intakes.clear({ emitEvent: false });
+    for (const value of values) intakes.push(createIntakeGroup(value), { emitEvent: false });
+  }
+
+  /** Adds a dose, taken now while the headache is ongoing and at its start otherwise. */
+  addIntake() {
+    const { startDate, startTime, endDate } = this.headacheForm.getRawValue();
+    const start = startDate ? new Date(combineDateTime(startDate, startTime)) : null;
+    const takenAt = defaultTakenAt(start, endDate);
+    const intakes = this.headacheForm.controls.intakes;
+    intakes.push(createIntakeGroup({ takenDate: takenAt, takenTime: takenAt }));
+    this.openIntake.set(intakes.length - 1);
+  }
+
+  removeIntake(index: number) {
+    this.headacheForm.controls.intakes.removeAt(index);
+    const open = this.openIntake();
+    // Keep the same panel open as the ones after the removed dose shift up
+    if (open === index) this.openIntake.set(null);
+    else if (open !== null && open > index) this.openIntake.set(open - 1);
+  }
+
+  /** The chosen medication's name, or "Medication 2" until one is picked. */
+  intakeTitle(group: IntakeGroup, index: number): string {
+    const id = group.controls.medicationId.value;
+    return this.medications().find((m) => m.id === id)?.name ?? `Medication ${index + 1}`;
+  }
+
+  /** "400 mg · Today, 14:05". */
+  intakeSubtitle(group: IntakeGroup): string {
+    const { dose, takenDate, takenTime } = group.getRawValue();
+    const taken = takenDate ? new Date(combineDateTime(takenDate, takenTime)) : null;
+    return [dose.trim(), taken && `${dayLabel(taken)}, ${formatTime(taken)}`].filter(Boolean).join(' · ');
+  }
+
+  onMedicationAdded(medication: Medication) {
+    this.addedMedications.update((list) => [...list, medication]);
   }
 
   isSelected(id: number) {
@@ -160,11 +223,13 @@ export class HeadacheForm {
       this.headacheForm.markAllAsTouched(); 
       return; 
     }
-    const { startDate, startTime, endDate, endTime, ...fields} = this.headacheForm.getRawValue();
+    const { startDate, startTime, endDate, endTime, intakes: _, ...fields} = this.headacheForm.getRawValue();
 
     const payload: CreateHeadachePayload = {
       ...fields,
       ...buildTimestamps(startDate!, startTime, endDate, endTime),
+      // Always sent, so removing every dose here deletes them
+      intakes: this.headacheForm.controls.intakes.controls.map(intakeGroupToPayload),
     };
 
     this.isSubmitting.set(true);

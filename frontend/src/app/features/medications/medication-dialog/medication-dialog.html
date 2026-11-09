@@ -1,0 +1,38 @@
+<app-dialog [heading]="isEdit ? 'Edit medication' : 'Add medication'">
+  <form class="medication-form" [formGroup]="form" (ngSubmit)="save()">
+    <app-outlined-field label="Name" placeholder="e.g. Ibuprofen" [myControl]="form.controls.name" />
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type</mat-label>
+      <mat-select [formControl]="form.controls.medicationClass">
+        @for (option of classOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.medicationClass.hasError('required')) {
+        <mat-error>Choose a type</mat-error>
+      }
+    </mat-form-field>
+
+    <app-outlined-field
+      label="Usual dose"
+      placeholder="e.g. 400 mg"
+      [myControl]="form.controls.defaultDose"
+    />
+
+    <mat-radio-group class="use-group" aria-label="How you take it" [formControl]="form.controls.use">
+      @for (option of useOptions; track option[0]) {
+        <mat-radio-button [value]="option[0]">{{ option[1] }}</mat-radio-button>
+      }
+    </mat-radio-group>
+
+    @if (error(); as message) {
+      <p class="form-error" role="alert">{{ message }}</p>
+    }
+
+    <div class="btn-container">
+      <button matButton type="button" mat-dialog-close>Cancel</button>
+      <button matButton="filled" type="submit" [disabled]="isSubmitting()">Save</button>
+    </div>
+  </form>
+</app-dialog>

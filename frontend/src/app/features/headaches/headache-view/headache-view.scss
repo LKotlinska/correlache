@@ -41,3 +41,29 @@
   white-space: pre-wrap;
   color: p.$text-strong;
 }
+
+.intake-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5em;
+}
+
+.intake {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  color: p.$text-strong;
+  text-decoration: none;
+}
+
+.intake-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.intake-detail {
+  font-size: 0.875em;
+  opacity: 0.8;
+}

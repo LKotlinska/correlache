@@ -34,3 +34,33 @@
     }
   }
 }
+
+.medication-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+
+  // The row's own buttons: the wide edit button and the remove icon
+  > button:first-child {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .remove-medication {
+    width: auto;
+    padding: 0.5em;
+    background: transparent;
+    flex: none;
+  }
+}
+
+.medication-name {
+  font-weight: 500;
+}
+
+.medication-details {
+  font-size: 0.875em;
+  opacity: 0.8;
+}
