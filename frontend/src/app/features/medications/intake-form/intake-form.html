@@ -1,0 +1,42 @@
+<app-page-header [title]="isEdit ? 'Edit medication' : 'New medication'" />
+<main class="page-wrapper">
+  @if (loadedMedications.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  } @else if (loadedMedications.error()) {
+    <p class="hint">Couldn't load your medications.</p>
+  } @else if (hasNoMedications()) {
+    <p class="hint">Add a medication to your list with the + button. You can manage the list in Settings.</p>
+  }
+
+  <form [formGroup]="group" (ngSubmit)="onSubmit()">
+    @if (showErrors() && problems().length) {
+      <app-form-error-summary [problems]="problems()" />
+    }
+    <app-intake-fields
+      idPrefix="dose"
+      [group]="group"
+      [medications]="medications()"
+      (medicationAdded)="onMedicationAdded($event)"
+    />
+
+    @if (headacheOptions().length) {
+      <div class="link-card">
+        <h4 id="headache-choice-label" class="link-heading">Taken for a headache?</h4>
+        <mat-radio-group
+          class="headache-choices"
+          aria-labelledby="headache-choice-label"
+          [formControl]="headacheChoice"
+        >
+          @for (headache of headacheOptions(); track headache.id) {
+            <mat-radio-button [value]="headache.id">{{ headacheLabel(headache) }}</mat-radio-button>
+          }
+          <mat-radio-button [value]="noHeadache">Not for a headache</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    }
+
+    <div class="btn-container">
+      <app-button type="submit" [disabled]="isSubmitting()">Save</app-button>
+    </div>
+  </form>
+</main>

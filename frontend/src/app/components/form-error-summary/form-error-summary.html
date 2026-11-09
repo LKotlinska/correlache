@@ -1,0 +1,12 @@
+<div class="error-summary" role="alert" tabindex="-1">
+  <h2 class="heading">
+    {{ problems().length === 1 ? 'Fix this before saving' : 'Fix these before saving' }}
+  </h2>
+  <ul>
+    @for (problem of problems(); track problem.message) {
+      <li>
+        <button type="button" (click)="goTo(problem)">{{ problem.message }}</button>
+      </li>
+    }
+  </ul>
+</div>

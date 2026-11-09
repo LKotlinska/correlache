@@ -47,6 +47,14 @@ export const routes: Routes = [
                     { path: ':id/edit/exercises', loadComponent: () => import('./features/workouts/exercise-form/exercise-form').then(m => m.ExerciseForm)},
                     { path: ':id', loadComponent: () => import('./features/workouts/workout-view/workout-view').then(m => m.WorkoutView)},
                 ]
+            },
+            {
+                path: 'medication',
+                children: [
+                    { path: 'add', loadComponent: () => import('./features/medications/intake-form/intake-form').then(m => m.IntakeForm)},
+                    { path: ':id/edit', loadComponent: () => import('./features/medications/intake-form/intake-form').then(m => m.IntakeForm)},
+                    { path: ':id', loadComponent: () => import('./features/medications/intake-view/intake-view').then(m => m.IntakeView)},
+                ]
             }
         ]
     },

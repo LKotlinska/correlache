@@ -9,11 +9,12 @@ export interface Threshold {
   weeks: number;
 }
 
-/** Rough rules of thumb, not a statistical guarantee. Correlations need both sources and a longer history. */
+/** Rough rules of thumb, not a statistical guarantee. Correlations and analysis need both sources and a longer history. */
 export const THRESHOLDS: Record<InsightsCategory, Threshold> = {
   headaches: { headaches: 5, workouts: 0, weeks: 2 },
   workouts: { headaches: 0, workouts: 5, weeks: 2 },
   correlations: { headaches: 10, workouts: 10, weeks: 4 },
+  analysis: { headaches: 10, workouts: 10, weeks: 4 },
 };
 
 /** What a user has logged so far, and whether it reaches a category's threshold. */

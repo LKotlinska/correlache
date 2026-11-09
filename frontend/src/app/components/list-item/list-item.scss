@@ -51,6 +51,15 @@
     }
   }
 
+  &.medication {
+    background: #eef6f1;
+    border-color: #c9e3d3;
+
+    .icon-container {
+      background: #cfe8d9;
+    }
+  }
+
   &.activity {
     background: #f1f0fa;
     border-color: #cfcff5;

@@ -21,6 +21,13 @@
 mat-chip-listbox {
   display: block;
   margin-bottom: 0.5rem;
+
+  // The chips sit in Material's inner wrapper, which component styles can't reach without ::ng-deep
+  ::ng-deep .mdc-evolution-chip-set__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5em;
+  }
 }
 
 app-button {

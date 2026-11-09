@@ -67,6 +67,7 @@ export class InsightsData {
       headaches: readiness('headaches', headaches, workouts),
       workouts: readiness('workouts', headaches, workouts),
       correlations: readiness('correlations', headaches, workouts),
+      analysis: readiness('analysis', headaches, workouts),
     };
   });
 

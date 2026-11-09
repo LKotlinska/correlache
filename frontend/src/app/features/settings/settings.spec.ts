@@ -7,6 +7,7 @@ import { vi } from 'vitest';
 import { Settings } from './settings';
 import { DialogService } from '../../components/dialog/dialog.service';
 import { UserService } from '../../services/user.service';
+import { MedicationService } from '../../services/medication.service';
 
 describe('Settings', () => {
   let component: Settings;
@@ -16,6 +17,7 @@ describe('Settings', () => {
   const open = vi.fn();
   const deleteAccount = vi.fn();
   const dialogOpen = vi.fn();
+  const deleteMedication = vi.fn();
 
   beforeEach(async () => {
     logoutUser.mockReset();
@@ -23,10 +25,12 @@ describe('Settings', () => {
     open.mockReset();
     deleteAccount.mockReset();
     dialogOpen.mockReset();
+    deleteMedication.mockReset();
     await TestBed.configureTestingModule({
       imports: [Settings],
       providers: [
         { provide: UserService, useValue: { logoutUser, deleteAccount } },
+        { provide: MedicationService, useValue: { getMedications: () => of([]), deleteMedication } },
         { provide: DialogService, useValue: { open: dialogOpen } },
         { provide: Router, useValue: { navigate } },
         { provide: MatSnackBar, useValue: { open } },
@@ -86,5 +90,17 @@ describe('Settings', () => {
     component.confirmDeleteAccount();
     expect(navigate).not.toHaveBeenCalled();
     expect(open).toHaveBeenCalled();
+  });
+
+  it('removes a medication only once confirmed', () => {
+    const medication = { id: 'm1', name: 'Ibuprofen', medicationClass: 'nsaid', defaultDose: null, use: 'as_needed', archivedAt: null } as const;
+    dialogOpen.mockReturnValue({ afterClosed: () => of(undefined) });
+    component.confirmRemoveMedication(medication);
+    expect(deleteMedication).not.toHaveBeenCalled();
+
+    dialogOpen.mockReturnValue({ afterClosed: () => of(true) });
+    deleteMedication.mockReturnValue(of(undefined));
+    component.confirmRemoveMedication(medication);
+    expect(deleteMedication).toHaveBeenCalledWith('m1');
   });
 });

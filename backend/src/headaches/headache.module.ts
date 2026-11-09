@@ -7,9 +7,10 @@ import { Symptom } from './lookups/symptom.entity.js';
 import { ReliefMeasure } from './lookups/relief-measure.entity.js';
 import { Headache } from './entities/headache.entity.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MedicationModule } from '../medications/medication.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Headache, HeadacheLocation, Trigger, Symptom, ReliefMeasure])],
+  imports: [TypeOrmModule.forFeature([Headache, HeadacheLocation, Trigger, Symptom, ReliefMeasure]), MedicationModule],
   controllers: [HeadacheController],
   providers: [HeadacheService],
 })

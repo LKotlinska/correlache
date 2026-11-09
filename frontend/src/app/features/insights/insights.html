@@ -3,6 +3,7 @@
   <mat-chip-option value="headaches">Headaches</mat-chip-option>
   <mat-chip-option value="workouts">Workouts</mat-chip-option>
   <mat-chip-option value="correlations">Correlations</mat-chip-option>
+  <mat-chip-option value="analysis">Analysis</mat-chip-option>
 </mat-chip-listbox>
 
 <mat-form-field class="range-select" appearance="outline" subscriptSizing="dynamic">
@@ -15,6 +16,23 @@
 </mat-form-field>
 
 <div class="charts">
+  @if (shows('analysis')) {
+    @if (gated('analysis')) {
+      <app-data-notice
+        title="Analysis"
+        [readiness]="readiness()!.analysis"
+        (show)="dismiss('analysis')"
+      />
+    } @else {
+      <p class="disclaimer">These look for patterns in your data. They show correlation, not causation.</p>
+      <app-headache-suspects />
+      <app-hard-session-headaches />
+    }
+    <!-- Needs only headaches, so it follows the Headaches threshold rather than Analysis's -->
+    @if (!gated('headaches')) {
+      <app-headache-patterns />
+    }
+  }
   @if (shows('correlations')) {
     @if (gated('correlations')) {
       <app-data-notice
@@ -24,14 +42,13 @@
       />
     } @else {
       <p class="disclaimer">Charts show correlation, not causation.</p>
-      <app-headache-suspects />
       <app-workouts-vs-headaches />
       <app-workout-day-headaches />
       <app-time-since-workout />
       <app-muscle-group-headaches />
       <app-workout-type-headaches />
-      <app-hard-session-headaches />
       <app-trigger-vs-workout />
+      <app-training-level-headaches />
     }
   }
   @if (shows('headaches')) {
@@ -42,7 +59,6 @@
         (show)="dismiss('headaches')"
       />
     } @else {
-      <app-headache-patterns />
       <app-headaches-per-month />
       <app-top-triggers />
       <app-top-symptoms />

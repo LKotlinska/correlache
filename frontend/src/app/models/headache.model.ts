@@ -1,3 +1,5 @@
+import { HeadacheIntakePayload, MedicationIntake } from './medication.model';
+
 export interface LookupOption {
     id: number;
     name: string;
@@ -24,7 +26,11 @@ export interface CreateHeadachePayload {
     locationIds: number[],
     triggerIds: number[],
     symptomIds: number[],
-    reliefIds: number[]
+    reliefIds: number[],
+    /** Doses to add (no `id`) or update (with `id`); doses not listed are kept as they are. */
+    intakes?: HeadacheIntakePayload[],
+    /** Doses the form loaded and the user removed; only these are deleted. */
+    removedIntakeIds?: string[]
 }
 
 export interface Headache {
@@ -43,5 +49,7 @@ export interface HeadacheDetail extends Headache {
     locations: LocationLookupOption[];
     triggers: LookupOption[];
     symptoms: LookupOption[];
-    reliefMeasures: LookupOption[];    
+    reliefMeasures: LookupOption[];
+    /** Doses taken for this headache, earliest first. */
+    intakes: MedicationIntake[];
 }

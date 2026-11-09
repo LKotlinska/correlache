@@ -97,6 +97,15 @@
     margin: 0 0 1em;
     font-size: 0.85em;
     text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    mat-icon {
+        font-size: 2em;
+        width: 1.1em;
+        height: 1.1em;
+        opacity: 0.8;
+    }
 }
 
 .sets-grid {

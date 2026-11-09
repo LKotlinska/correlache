@@ -1,0 +1,37 @@
+@use '../../../variables' as p;
+
+.error-summary {
+  margin: 0 0 1em;
+  padding: 0.75em 1em;
+  border-radius: p.$card-border;
+  border: 1px solid var(--mat-sys-error, #b3261e);
+  background: var(--mat-sys-error-container, #f9dedc);
+  color: var(--mat-sys-on-error-container, #410e0b);
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-error, #b3261e);
+    outline-offset: 2px;
+  }
+}
+
+.heading {
+  margin: 0 0 0.25em;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.25em;
+}
+
+button {
+  padding: 0.2em 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}

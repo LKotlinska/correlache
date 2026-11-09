@@ -1,0 +1,35 @@
+@use '../../../../variables' as p;
+@use '../../../../detail-card';
+
+@include detail-card.detail-card;
+
+.label {
+  font-size: 1.1em;
+}
+
+.row span:last-child {
+  font-size: 1.1em;
+}
+
+.card mat-card-content {
+  padding-top: 0.95em;
+  padding-bottom: 0.95em;
+}
+
+.headache-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  color: p.$text-strong;
+  text-decoration: none;
+}
+
+.headache-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.headache-detail {
+  font-size: 0.875em;
+  opacity: 0.8;
+}

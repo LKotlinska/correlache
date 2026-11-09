@@ -144,6 +144,37 @@
       </mat-card>
     }
 
+    @if (h.intakes.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Medications</h2>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="intake-list">
+            @for (intake of h.intakes; track intake.id) {
+              <li>
+                <a class="intake" [routerLink]="['/user/medication', intake.id]">
+                  <mat-icon>medication</mat-icon>
+                  <span class="intake-text">
+                    <span class="label">{{ intakeLabel(intake) }}</span>
+                    <span class="intake-detail">
+                      {{ intake.takenAt | date: 'd MMMM, HH:mm' }}
+                      @if (intake.effect) {
+                        · {{ effectLabels[intake.effect] }}
+                        @if (intake.effectAt) {
+                          from {{ intake.effectAt | date: 'HH:mm' }}
+                        }
+                      }
+                    </span>
+                  </span>
+                </a>
+              </li>
+            }
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    }
+
     @if (h.notes) {
       <mat-card class="card section">
         <mat-card-header>

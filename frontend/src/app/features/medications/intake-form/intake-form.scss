@@ -1,0 +1,28 @@
+@use '../../../../variables' as p;
+
+.hint {
+  color: p.$text-strong;
+}
+
+.link-card {
+  margin-top: 1em;
+  padding: 0.5em;
+  border-radius: p.$card-border;
+  background: #fff1ec;
+  border: 1px solid #f6d3c8;
+}
+
+.link-heading {
+  margin: 0.25em 0.5em;
+}
+
+.headache-choices {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: end;
+  margin-top: 1em;
+}
