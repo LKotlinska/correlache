@@ -36,7 +36,10 @@
 
     @if (pattern(); as p) {
       <mat-card class="card pattern" [class.warning]="p.kind === 'warning'">
-        <mat-card-content>
+        <mat-card-header>
+          <h2 class="card-heading">Pattern</h2>
+        </mat-card-header>
+        <mat-card-content class="pattern-content">
           @switch (p.kind) {
             @case ('warning') {
               <div class="row">
@@ -44,8 +47,8 @@
                 <span class="label">Worth checking with a doctor</span>
               </div>
               <p>
-                You logged {{ p.symptoms.join(', ').toLowerCase() }}. If this is new, severe or getting worse,
-                contact a doctor or emergency services.
+                You logged {{ p.symptoms.join(', ').toLowerCase() }}. If this is new, severe or
+                getting worse, contact a doctor or emergency services.
               </p>
             }
             @case ('match') {
@@ -73,22 +76,27 @@
                 <mat-icon>psychology</mat-icon>
                 <span class="label">Resembles</span>
               </div>
-              <p>Log where it hurt and your symptoms to see which headache pattern this resembles.</p>
+              <p>
+                Log where it hurt and your symptoms to see which headache pattern this resembles.
+              </p>
             }
           }
           @if (p.kind !== 'warning') {
-            <p class="disclaimer">Based only on what you logged, compared with common headache patterns. Not a diagnosis.</p>
+            <p class="disclaimer">
+              Based only on what you logged, compared with common headache patterns. Not a
+              diagnosis.
+            </p>
           }
         </mat-card-content>
       </mat-card>
     }
 
-    <mat-accordion multi>
-      @if (h.locations.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Location</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.locations.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Location</h2>
+        </mat-card-header>
+        <mat-card-content>
           <div class="tile-grid">
             @for (loc of h.locations; track loc.id) {
               <app-media-tile
@@ -99,44 +107,52 @@
               />
             }
           </div>
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.triggers.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Triggers</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.triggers.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Triggers</h2>
+        </mat-card-header>
+        <mat-card-content>
           <app-chip-list heading="Triggers" [options]="h.triggers" [readonly]="true" />
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.symptoms.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Symptoms</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.symptoms.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Symptoms</h2>
+        </mat-card-header>
+        <mat-card-content>
           <app-chip-list heading="Symptoms" [options]="h.symptoms" [readonly]="true" />
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.reliefMeasures.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Relief measures</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.reliefMeasures.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Relief measures</h2>
+        </mat-card-header>
+        <mat-card-content>
           <app-chip-list heading="Relief measures" [options]="h.reliefMeasures" [readonly]="true" />
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.notes) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Additional notes</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.notes) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Additional notes</h2>
+        </mat-card-header>
+        <mat-card-content>
           <p class="notes">{{ h.notes }}</p>
-        </mat-expansion-panel>
-      }
-    </mat-accordion>
+        </mat-card-content>
+      </mat-card>
+    }
   }
 </main>

@@ -10,11 +10,11 @@
 .label {
   flex: 1;
   color: p.$text-strong;
+  font-size: 1.1em;
 }
 
-// The summary card and the accordion share the same width, surface and radius
-.card,
-mat-accordion {
+// All cards share the same width, surface and radius
+.card {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -31,6 +31,7 @@ mat-accordion {
 }
 
 .row span:last-child {
+  font-size: 1.1em;
   font-weight: 500;
 }
 
@@ -47,9 +48,19 @@ mat-accordion {
   background-color: var(--mat-sys-error-container, #f9dedc);
 }
 
+.card mat-card-content {
+  padding-top: 0.95em;
+  padding-bottom: 0.95em;
+}
+
+.card-heading {
+  margin: 0.25em 0;
+}
+
 .tile-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
   gap: 1em;
 }
 
