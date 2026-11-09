@@ -11,9 +11,17 @@
       <input matInput type="search" [formControl]="searchControl" />
     </mat-form-field>
 
+    <h2>Filter by body part</h2>
     <mat-chip-listbox aria-label="Filter by body part" [formControl]="bodyPartControl">
       @for (bodyPart of bodyParts(); track bodyPart.id) {
         <mat-chip-option [value]="bodyPart.id">{{ bodyPart.name }}</mat-chip-option>
+      }
+    </mat-chip-listbox>
+
+    <h2>Filter by equipment</h2>
+    <mat-chip-listbox aria-label="Filter by equipment" [formControl]="equipmentControl">
+      @for (equipment of equipmentOptions(); track equipment.id) {
+        <mat-chip-option [value]="equipment.id">{{ equipment.name }}</mat-chip-option>
       }
     </mat-chip-listbox>
 

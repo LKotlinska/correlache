@@ -48,6 +48,8 @@ export class ExerciseForm {
   searchQuery = toSignal(this.searchControl.valueChanges, { initialValue: '' });
   bodyPartControl = new FormControl<number | null>(null);
   bodyPartId = toSignal(this.bodyPartControl.valueChanges, { initialValue: null });
+  equipmentControl = new FormControl<number | null>(null);
+  equipmentId = toSignal(this.equipmentControl.valueChanges, { initialValue: null });
 
   exercises = rxResource({
     stream: () => this.workoutService.getExercises(),
@@ -65,14 +67,22 @@ export class ExerciseForm {
     return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
   });
 
+  // distinct equipment present in the library, for the filter chips
+  equipmentOptions = computed(() => {
+    const byId = new Map((this.exercises.value() ?? []).map((e) => [e.equipment.id, e.equipment]));
+    return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+  });
+
   items = computed(() => {
     const sq = this.searchQuery().trim().toLowerCase();
     const bodyPartId = this.bodyPartId();
+    const equipmentId = this.equipmentId();
     return (this.exercises.value() ?? []).filter(
       (x) =>
         x.name.toLowerCase().includes(sq) &&
         // a deselected chip emits undefined, so == null covers "no filter"
-        (bodyPartId == null || x.bodyPart.id === bodyPartId),
+        (bodyPartId == null || x.bodyPart.id === bodyPartId) &&
+        (equipmentId == null || x.equipment.id === equipmentId),
     );
   });
 
