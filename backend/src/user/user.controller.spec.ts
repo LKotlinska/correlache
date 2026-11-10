@@ -23,7 +23,7 @@ describe('UserController', () => {
   it('records health data consent for the current user', async () => {
     userService.giveConsent.mockResolvedValue(undefined);
 
-    await controller.giveConsent({ id: 'uuid-1' } as User);
+    await controller.giveConsent({ id: 'uuid-1' } as User, { healthDataConsent: true });
 
     expect(userService.giveConsent).toHaveBeenCalledWith('uuid-1');
   });

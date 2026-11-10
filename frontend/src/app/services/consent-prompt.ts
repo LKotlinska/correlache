@@ -12,7 +12,11 @@ export class ConsentPrompt {
   /** Emits true when the user gave consent, false when they signed out or deleted their account. */
   ask(): Observable<boolean> {
     this.pending ??= this.dialog
-      .open<Consent, unknown, ConsentResult>(Consent, { disableClose: true })
+      .open<Consent, unknown, ConsentResult>(Consent, {
+        disableClose: true,
+        // Stay open on Back/forward: closing would count as declining while the user is still signed in
+        closeOnNavigation: false,
+      })
       .afterClosed()
       .pipe(
         map((result) => result === 'consented'),

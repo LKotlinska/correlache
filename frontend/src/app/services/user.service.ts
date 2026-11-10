@@ -27,6 +27,6 @@ export class UserService {
     }
 
     giveConsent() {
-        return this.http.post<void>('/api/user/consent', null);
+        return this.http.post<void>('/api/user/consent', { healthDataConsent: true });
     }
 }

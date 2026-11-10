@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EMPTY, of, throwError } from 'rxjs';
 import { UserService } from '../../../services/user.service';
 import { AccountActions } from '../../../services/account-actions';
+import { Router } from '@angular/router';
 import { DialogService } from '../dialog.service';
 import { Consent } from './consent';
 
@@ -16,6 +17,7 @@ describe('Consent', () => {
   const dialogService = { open: vi.fn() };
   const dialogRef = { close: vi.fn() };
   const snackBar = { open: vi.fn() };
+  const router = { navigate: vi.fn() };
 
   beforeEach(async () => {
     vi.resetAllMocks();
@@ -28,6 +30,7 @@ describe('Consent', () => {
         { provide: DialogService, useValue: dialogService },
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MatSnackBar, useValue: snackBar },
+        { provide: Router, useValue: router },
       ],
     }).compileComponents();
 
@@ -44,7 +47,7 @@ describe('Consent', () => {
     component.giveConsent();
 
     expect(userService.giveConsent).not.toHaveBeenCalled();
-    expect(component.consentInvalid).toBe(true);
+    expect(component.consentControl.touched).toBe(true);
   });
 
   it('records consent and closes with "consented"', () => {
@@ -68,12 +71,13 @@ describe('Consent', () => {
     expect(component.isSubmitting()).toBe(false);
   });
 
-  it('closes with "left" after signing out', () => {
+  it('closes with "left" and goes home after signing out', () => {
     accountActions.signOut.mockReturnValue(of(undefined));
 
     component.signOut();
 
     expect(dialogRef.close).toHaveBeenCalledWith('left');
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 
   it('closes with "left" once the account is deleted, and stays open when deletion is cancelled', () => {
@@ -84,12 +88,6 @@ describe('Consent', () => {
     accountActions.confirmDeleteAccount.mockReturnValue(of(undefined));
     component.deleteAccount();
     expect(dialogRef.close).toHaveBeenCalledWith('left');
-  });
-
-  it('opens the privacy policy on top instead of replacing this dialog', () => {
-    component.openPrivacyPolicy();
-
-    expect(dialogService.open).toHaveBeenCalledWith('privacy', { standalone: true });
-    expect(dialogRef.close).not.toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 });

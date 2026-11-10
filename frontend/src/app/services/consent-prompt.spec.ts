@@ -29,7 +29,7 @@ describe('ConsentPrompt', () => {
     await expect(first).resolves.toBe(true);
     await expect(second).resolves.toBe(true);
     expect(dialog.open).toHaveBeenCalledTimes(1);
-    expect(dialog.open).toHaveBeenCalledWith(expect.anything(), { disableClose: true });
+    expect(dialog.open).toHaveBeenCalledWith(expect.anything(), { disableClose: true, closeOnNavigation: false });
   });
 
   it('answers false when the user left instead of consenting', async () => {

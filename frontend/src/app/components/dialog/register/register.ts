@@ -1,6 +1,7 @@
 import {Component, inject, signal} from '@angular/core';
 import {FormControl, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
 import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
+import { HealthConsentCheckbox } from '../../form-fields/health-consent-checkbox/health-consent-checkbox';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Dialog } from '../dialog';
 import { Button } from '../../button/button';
@@ -10,7 +11,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogKey, DialogService } from '../dialog.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { getErrorMessage } from '../../../utils/error-message';
-import { MatTabLink } from '@angular/material/tabs';
 
 
 @Component({
@@ -20,6 +20,7 @@ import { MatTabLink } from '@angular/material/tabs';
   imports: [
     ReactiveFormsModule,
     OutlinedField,
+    HealthConsentCheckbox,
     MatCheckboxModule,
     Dialog,
     Button,
@@ -47,9 +48,11 @@ export class Register {
     return terms.invalid && terms.touched;
   }
 
-  get healthConsentInvalid() {
-    const consent = this.addUserForm.controls.healthConsentFormControl;
-    return consent.invalid && consent.touched;
+  /** Opens Terms or Privacy on top, so the form keeps what was filled in. */
+  openOnTop(event: Event, key: 'terms' | 'privacy') {
+    // Stops the click from also toggling the checkbox the link sits in
+    event.preventDefault();
+    this.dialogService.open(key);
   }
 
   switchDialog(key: DialogKey){

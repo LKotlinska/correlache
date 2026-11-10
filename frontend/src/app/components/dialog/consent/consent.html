@@ -4,22 +4,10 @@
     please confirm that we may process your health data.
   </p>
 
-  <div class="consent-field">
-    <!-- Keep the wording in sync with the signup checkbox in register.html -->
-    <mat-checkbox
-      [formControl]="consentControl"
-      [attr.aria-describedby]="consentInvalid ? 'consent-error' : null"
-    >
-      I explicitly consent to CorrelAche processing my health data (headaches, symptoms,
-      medications). I can withdraw consent at any time, see the
-      <span class="link" (click)="openPrivacyPolicy()">Privacy Policy</span>.
-    </mat-checkbox>
-    @if (consentInvalid) {
-      <p id="consent-error" class="consent-error" role="alert">
-        Tick the box to continue, or sign out
-      </p>
-    }
-  </div>
+  <app-health-consent-checkbox
+    [control]="consentControl"
+    errorMessage="Tick the box to continue, or sign out"
+  />
 
   <app-button [isFullWidth]="true" [disabled]="isSubmitting()" (click)="giveConsent()"
     >Continue</app-button

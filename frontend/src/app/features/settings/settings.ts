@@ -69,7 +69,7 @@ export class Settings {
   }
 
   openDialog(key: DialogKey) {
-    this.dialogService.open(key, { standalone: true });
+    this.dialogService.open(key);
   }
 
   signOut() {

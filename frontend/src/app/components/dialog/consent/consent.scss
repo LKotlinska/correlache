@@ -1,39 +1,5 @@
-@use '../../../../variables' as *;
-
-.link {
-    cursor: pointer;
-    text-decoration: underline;
-    color: $brand-primary;
-}
-
-.consent-field {
-    margin: 1em 0;
-
-    // Pin the box to the first line of the label instead of centring it
-    ::ng-deep .mat-internal-form-field {
-        align-items: flex-start;
-    }
-
-    ::ng-deep .mat-internal-form-field-label {
-        padding-top: calc((var(--mat-checkbox-state-layer-size, 40px) - 1lh) / 2);
-    }
-}
-
-.consent-error {
-    margin: 0.25em 0 0 0.75em;
-    font: var(--mat-sys-body-small);
-    color: var(--mat-sys-error);
-}
-
 .other-actions {
     display: flex;
     justify-content: space-between;
     margin: 0.75em 0 1em;
-}
-
-mat-checkbox.ng-invalid.ng-touched {
-    --mat-checkbox-unselected-icon-color: var(--mat-sys-error);
-    --mat-checkbox-unselected-hover-icon-color: var(--mat-sys-error);
-    --mat-checkbox-unselected-focus-icon-color: var(--mat-sys-error);
-    --mat-checkbox-unselected-pressed-icon-color: var(--mat-sys-error);
 }

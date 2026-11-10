@@ -3,6 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, Subject, throwError } from 'rxjs';
 import { UserService } from '../../../services/user.service';
+import { DialogService } from '../dialog.service';
 import { Register } from './register';
 
 describe('Register', () => {
@@ -12,6 +13,7 @@ describe('Register', () => {
   const userService = { createUser: vi.fn() };
   const dialogRef = { close: vi.fn() };
   const snackBar = { open: vi.fn() };
+  const dialogService = { open: vi.fn(), switch: vi.fn() };
 
   const fillValidForm = () =>
     component.addUserForm.setValue({
@@ -31,6 +33,7 @@ describe('Register', () => {
         { provide: UserService, useValue: userService },
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MatSnackBar, useValue: snackBar },
+        { provide: DialogService, useValue: dialogService },
       ],
     }).compileComponents();
 
@@ -67,8 +70,22 @@ describe('Register', () => {
     component.onSubmit();
 
     expect(userService.createUser).not.toHaveBeenCalled();
-    expect(component.healthConsentInvalid).toBe(true);
+    expect(component.addUserForm.controls.healthConsentFormControl.invalid).toBe(true);
     expect(component.termsInvalid).toBe(false);
+  });
+
+  it('opens the terms on top, keeping what was filled in and leaving the box unticked', () => {
+    component.addUserForm.controls.nameFormControl.setValue('Jane');
+    const termsLink = [...fixture.nativeElement.querySelectorAll('a.text-link')].find(
+      (a: HTMLAnchorElement) => a.textContent?.includes('Terms'),
+    ) as HTMLAnchorElement;
+
+    termsLink.click();
+
+    expect(dialogService.open).toHaveBeenCalledWith('terms');
+    expect(dialogRef.close).not.toHaveBeenCalled();
+    expect(component.addUserForm.controls.nameFormControl.value).toBe('Jane');
+    expect(component.addUserForm.controls.termsFormControl.value).toBe(false);
   });
 
   it('shows the terms error only once the checkbox has been touched', () => {

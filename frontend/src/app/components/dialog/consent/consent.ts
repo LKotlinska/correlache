@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Dialog } from '../dialog';
 import { Button } from '../../button/button';
-import { DialogService } from '../dialog.service';
+import { HealthConsentCheckbox } from '../../form-fields/health-consent-checkbox/health-consent-checkbox';
 import { UserService } from '../../../services/user.service';
 import { AccountActions } from '../../../services/account-actions';
 import { getErrorMessage } from '../../../utils/error-message';
@@ -19,26 +19,17 @@ export type ConsentResult = 'consented' | 'left';
   selector: 'app-consent',
   styleUrl: './consent.scss',
   templateUrl: './consent.html',
-  imports: [ReactiveFormsModule, MatCheckboxModule, Dialog, Button],
+  imports: [Dialog, Button, HealthConsentCheckbox],
 })
 export class Consent {
   private userService = inject(UserService);
   private accountActions = inject(AccountActions);
-  private dialogService = inject(DialogService);
+  private router = inject(Router);
   private dialogRef = inject<MatDialogRef<Consent, ConsentResult>>(MatDialogRef);
   private snackBar = inject(MatSnackBar);
 
-  consentControl = new FormControl(false, { nonNullable: true, validators: [Validators.requiredTrue] });
+  consentControl = new FormControl<boolean | null>(false, [Validators.requiredTrue]);
   isSubmitting = signal(false);
-
-  get consentInvalid() {
-    return this.consentControl.invalid && this.consentControl.touched;
-  }
-
-  openPrivacyPolicy() {
-    // Opens on top, so this dialog stays open behind it
-    this.dialogService.open('privacy', { standalone: true });
-  }
 
   giveConsent() {
     if (this.isSubmitting()) return;
@@ -57,10 +48,16 @@ export class Consent {
   }
 
   signOut() {
-    this.accountActions.signOut().subscribe(() => this.dialogRef.close('left'));
+    this.accountActions.signOut().subscribe(() => this.leave());
   }
 
   deleteAccount() {
-    this.accountActions.confirmDeleteAccount().subscribe(() => this.dialogRef.close('left'));
+    this.accountActions.confirmDeleteAccount().subscribe(() => this.leave());
+  }
+
+  /** Goes home itself: the navigation that opened this dialog may have been replaced since (e.g. by Back). */
+  private leave() {
+    this.dialogRef.close('left');
+    this.router.navigate(['/']);
   }
 }

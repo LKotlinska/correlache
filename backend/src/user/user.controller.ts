@@ -1,8 +1,9 @@
-import { Controller, Delete, HttpCode, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, Post, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { CurrentUser } from '@nestjs/authentication';
 import { UserService } from './user.service.js';
 import { User } from './entities/user.entity.js';
+import { GiveConsentDto } from './dto/user.dto.js';
 import { AUTH_COOKIE, authCookieOptions } from '../auth/auth-cookie.js';
 
 @Controller('user')
@@ -12,7 +13,8 @@ export class UserController {
     /** Records consent to processing health data, for accounts created before signup asked for it. */
     @Post('consent')
     @HttpCode(204)
-    async giveConsent(@CurrentUser() user: User): Promise<void> {
+    // The body is validated but unused: it makes the request state consent explicitly, as signup does
+    async giveConsent(@CurrentUser() user: User, @Body() _dto: GiveConsentDto): Promise<void> {
         await this.userService.giveConsent(user.id);
     }
 
