@@ -1,5 +1,14 @@
 @use '../../summary';
 
+mat-card-header {
+  align-items: center;
+}
+
+.info {
+  margin: -0.5rem -0.5rem -0.5rem auto;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .summary {
   @include summary.summary;
   margin-bottom: 1rem;
@@ -9,7 +18,6 @@
   position: relative;
 }
 
-.note,
 .warning {
   margin: 0.5rem 0 0;
   font-size: 0.875rem;

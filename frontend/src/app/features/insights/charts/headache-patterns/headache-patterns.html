@@ -1,6 +1,18 @@
 <mat-card>
   <mat-card-header>
     <mat-card-title>Headache patterns</mat-card-title>
+    @if (headaches.hasValue()) {
+      <button
+        mat-icon-button
+        class="info"
+        type="button"
+        aria-label="How to read this"
+        aria-haspopup="dialog"
+        (click)="openInfo(info)"
+      >
+        <mat-icon>info</mat-icon>
+      </button>
+    }
   </mat-card-header>
   <mat-card-content>
     @if (headaches.hasValue()) {
@@ -23,13 +35,6 @@
         <p>Log where it hurt and your symptoms to see which headache patterns yours resemble.</p>
       }
 
-      <p class="note">
-        Each headache is compared with common headache patterns, based only on what you logged. Not a diagnosis.
-        @if (counts().tooLittle) {
-          {{ counts().tooLittle }} {{ counts().tooLittle === 1 ? 'headache has' : 'headaches have' }} no location or
-          symptoms, so {{ counts().tooLittle === 1 ? "it isn't" : "they aren't" }} shown.
-        }
-      </p>
       @if (counts().warnings) {
         <p class="warning">
           {{ counts().warnings }} {{ counts().warnings === 1 ? 'headache has' : 'headaches have' }} symptoms that can
@@ -43,3 +48,20 @@
     }
   </mat-card-content>
 </mat-card>
+
+<ng-template #info>
+  <app-dialog heading="How to read this chart">
+    <p>
+      Each headache is matched with common headache patterns, based only on what you logged: where
+      it hurt, symptoms, triggers, how long it lasted and how bad it was. It shows what yours
+      resemble, not a diagnosis.
+    </p>
+    @if (counts().tooLittle) {
+      <p>
+        {{ counts().tooLittle }} {{ counts().tooLittle === 1 ? 'headache has' : 'headaches have' }}
+        no location or symptoms logged, so {{ counts().tooLittle === 1 ? "it isn't" : "they aren't" }}
+        shown.
+      </p>
+    }
+  </app-dialog>
+</ng-template>

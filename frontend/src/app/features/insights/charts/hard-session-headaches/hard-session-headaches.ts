@@ -1,8 +1,12 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, TemplateRef } from '@angular/core';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
+import { MatIconButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { Dialog } from '../../../../components/dialog/dialog';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
@@ -26,7 +30,7 @@ interface Comparison {
 }
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
+  imports: [BaseChartDirective, Dialog, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon, MatIconButton, MatProgressBar],
   selector: 'app-hard-session-headaches',
   styleUrl: './hard-session-headaches.scss',
   templateUrl: './hard-session-headaches.html',
@@ -36,6 +40,7 @@ export class HardSessionHeadaches {
   readonly spikePercent = Math.round((SPIKE_RATIO - 1) * 100);
 
   private data = inject(InsightsData);
+  private dialog = inject(MatDialog);
 
   /** Workouts and headaches shared by the insights charts. */
   workouts = this.data.workouts;
@@ -127,5 +132,10 @@ export class HardSessionHeadaches {
     if (c.hard.workouts < MIN_WORKOUTS || c.other.workouts < MIN_WORKOUTS) return { ...c, verdict: 'few' };
     const p = probabilityHigher(c.hard, c.other);
     return { ...c, verdict: p >= CLEAR ? 'more' : p <= 1 - CLEAR ? 'less' : 'same' };
+  }
+
+  /** Opens the explanation of the chart. */
+  openInfo(info: TemplateRef<unknown>): void {
+    this.dialog.open(info);
   }
 }
