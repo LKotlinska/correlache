@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Param, ParseUUIDPipe, Put, Delete, HttpCode, HttpStatus, ParseBoolPipe, ParseDatePipe, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseUUIDPipe, Put, Delete, HttpCode, HttpStatus, ParseBoolPipe, ParseDatePipe, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
+import { HealthConsentGuard } from '../user/health-consent.guard.js';
 import { User } from '../user/entities/user.entity.js';
 import { HeadacheService } from './headache.service.js';
 import { CreateHeadacheDto } from './dto/create-headache.dto.js';
@@ -8,6 +9,7 @@ import { Headache } from './entities/headache.entity.js';
 import { assertOrderedRange } from '../common/validators/ordered-range.js';
 
 @Controller('headaches')
+@UseGuards(HealthConsentGuard)
 export class HeadacheController {
   constructor(private readonly headacheService: HeadacheService) {}
 

@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity.js';
-import { QueryFailedError, Repository } from 'typeorm';
+import { IsNull, QueryFailedError, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/user.dto.js';
 import { hashPassword } from '../common/password.js';
 
@@ -71,6 +71,11 @@ export class UserService {
   /** Deletes the user; dependent rows are removed by the database's ON DELETE CASCADE. */
   async remove(id: string): Promise<void> {
     await this.userRepository.delete({ id });
+  }
+
+  /** Records consent to processing health data. Keeps the original time if consent was already given. */
+  async giveConsent(id: string): Promise<void> {
+    await this.userRepository.update({ id, health_data_consent_at: IsNull() }, { health_data_consent_at: new Date() });
   }
 
   /** Invalidates every token issued before now. */

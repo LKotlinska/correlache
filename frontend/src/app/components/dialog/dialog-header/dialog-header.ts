@@ -11,4 +11,5 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class DialogHeader {
   heading = input.required<string>();
+  closable = input(true);
 }

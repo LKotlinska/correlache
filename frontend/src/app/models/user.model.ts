@@ -5,4 +5,11 @@ export interface CreateUserPayload {
     healthDataConsent: boolean;
 }
 
+export interface MeResponse {
+    id: string;
+    username: string;
+    email: string;
+    hasHealthDataConsent: boolean;
+}
+
 export type authUserPayload = Omit<CreateUserPayload, 'name' | 'healthDataConsent'>;

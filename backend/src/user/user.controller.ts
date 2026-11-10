@@ -1,4 +1,4 @@
-import { Controller, Delete, HttpCode, Res } from '@nestjs/common';
+import { Controller, Delete, HttpCode, Post, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { CurrentUser } from '@nestjs/authentication';
 import { UserService } from './user.service.js';
@@ -8,6 +8,13 @@ import { AUTH_COOKIE, authCookieOptions } from '../auth/auth-cookie.js';
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
+
+    /** Records consent to processing health data, for accounts created before signup asked for it. */
+    @Post('consent')
+    @HttpCode(204)
+    async giveConsent(@CurrentUser() user: User): Promise<void> {
+        await this.userService.giveConsent(user.id);
+    }
 
     /** Deletes the current user; their headaches and workouts go with them (FK cascade). */
     @Delete('me')

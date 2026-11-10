@@ -1,7 +1,7 @@
 import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { QueryFailedError } from 'typeorm';
+import { IsNull, QueryFailedError } from 'typeorm';
 import { UserService } from './user.service.js';
 import { User } from './entities/user.entity.js';
 
@@ -11,6 +11,7 @@ describe('UserService', () => {
     findOneBy: vi.fn(),
     create: vi.fn(),
     save: vi.fn(),
+    update: vi.fn(),
     createQueryBuilder: vi.fn(),
   };
 
@@ -60,6 +61,15 @@ describe('UserService', () => {
     expect(consentAt).toBeInstanceOf(Date);
     expect(consentAt.getTime()).toBeGreaterThanOrEqual(before);
     expect(consentAt.getTime()).toBeLessThanOrEqual(after);
+  });
+
+  it('giveConsent only sets the consent time when none is recorded yet', async () => {
+    await service.giveConsent('uuid-1');
+
+    expect(repo.update).toHaveBeenCalledWith(
+      { id: 'uuid-1', health_data_consent_at: IsNull() },
+      { health_data_consent_at: expect.any(Date) },
+    );
   });
 
   it('throws ConflictException when the email already exists', async () => {
