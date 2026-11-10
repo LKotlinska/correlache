@@ -43,17 +43,26 @@
 
   // Colors per tone
   &.headache {
-    background: #fff1ec;
-    border-color: #f6d3c8;
+    background: p.$headache-bg;
+    border-color: p.$headache-border;
 
     .icon-container {
       background: #f2d4cc;
     }
   }
 
+  &.medication {
+    background: #eef6f1;
+    border-color: #c9e3d3;
+
+    .icon-container {
+      background: #cfe8d9;
+    }
+  }
+
   &.activity {
-    background: p.$surface-low;
-    border-color: p.$surface-high;
+    background: #f1f0fa;
+    border-color: #cfcff5;
 
     .icon-container {
       background: p.$brand-tint;

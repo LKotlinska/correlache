@@ -1,0 +1,39 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headaches after regular training</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue() && headaches.hasValue()) {
+      @if (hasEntries()) {
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              In weeks after 2 weeks with {{ s.active.phrase }}, you averaged <strong>{{ s.active.average }}</strong>
+              headache days, compared with <strong>{{ s.quiet.average }}</strong> after 2 weeks with
+              {{ s.quiet.phrase }}.
+              @switch (s.trend) {
+                @case ('fewer') { Headaches were <strong>less common</strong> after training more. }
+                @case ('more') { Headaches were <strong>more common</strong> after training more. }
+                @case ('same') { That is about the same. }
+              }
+            </p>
+          </div>
+        }
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+        <p class="note">
+          Each week is grouped by the workouts in the 2 weeks before it, so headaches that stopped you training don't
+          count against it. Faded bars have fewer than {{ minWeeks }} weeks.
+        </p>
+      } @else {
+        <p>No workouts or headaches in {{ periodLabel() }}.</p>
+      }
+    } @else if (workouts.error() || headaches.error()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

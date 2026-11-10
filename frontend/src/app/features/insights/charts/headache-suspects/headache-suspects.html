@@ -1,0 +1,116 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Possible headache suspects</mat-card-title>
+    @if (hasData() && canCompare()) {
+      <app-chart-info [content]="info" />
+    }
+  </mat-card-header>
+  <mat-card-content>
+    @if (hasData()) {
+      @if (canCompare()) {
+        <div class="summary">
+          @if (top(); as t) {
+            <p>
+              <strong>{{ name(t) }}</strong> is most closely linked to your headaches:
+              <strong>{{ rate(t.exposed) | percent }}</strong> of workouts with it were followed by
+              one, against <strong>{{ rate(t.unexposed) | percent }}</strong> without.
+            </p>
+          } @else {
+            <p>No exercise or muscle group clearly stands out in {{ periodLabel() }}.</p>
+          }
+        </div>
+
+        @if (suspects().length) {
+          <ol class="suspects">
+            @for (s of suspects(); track s.features[0].key) {
+              <li>
+                <div class="row">
+                  <span class="name">{{ name(s) }}</span>
+                  <span class="rates"
+                    >{{ rate(s.exposed) | percent }}
+                    <span class="vs">vs</span>
+                    {{ rate(s.unexposed) | percent }}</span
+                  >
+                </div>
+                <p class="counts">
+                  <span
+                    ><strong>{{ s.exposed.withHeadache }} of {{ s.exposed.workouts }}</strong> with
+                    it</span
+                  >
+                  <span
+                    ><strong>{{ s.unexposed.withHeadache }} of {{ s.unexposed.workouts }}</strong>
+                    without</span
+                  >
+                </p>
+                <div class="confidence">
+                  <mat-progress-bar
+                    mode="determinate"
+                    [value]="s.probability * 100"
+                    [attr.aria-label]="
+                      'Pattern: ' + confidence(s.probability) + ' likely'
+                    "
+                  />
+                  <span class="sure">Pattern: {{ confidence(s.probability) }} likely</span>
+                </div>
+                @if (s.features.length > 1) {
+                  <p class="together">Always done together, so these can't be told apart.</p>
+                }
+              </li>
+            }
+          </ol>
+        }
+
+        @if (experiment(); as e) {
+          <div class="experiment">
+            <span class="label">Try this</span>
+            <p>
+              Leave out <strong>{{ e.skip }}</strong> for your next few workouts but keep doing
+              {{ e.keep.join(', ') }}. If the headaches carry on, {{ e.skip }} is less likely to be
+              linked to them.
+            </p>
+          </div>
+        }
+      } @else if (hasPending()) {
+        <p>Your workouts will show here once 24 hours have passed since they ended.</p>
+      } @else {
+        <p>
+          Not enough variety in {{ periodLabel() }} yet: each exercise needs
+          {{ minWorkouts }} workouts with and without it.
+        </p>
+      }
+    } @else if (hasError()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
+
+<ng-template #info>
+  <p>
+    Each row is one exercise or muscle group from your workouts. For each one, we split your
+    workouts into two piles: the ones where you did it, and the ones where you didn't. Then we
+    count how many in each pile were followed by a headache within 24 hours.
+  </p>
+  <p>
+    <strong>"Pattern: % likely"</strong> shows how likely it is, from what you've logged so far, that
+    headaches are more common in workouts with that exercise. It points to a pattern, not to
+    what's behind your headaches, and it may change as you log more.
+  </p>
+  <p>
+    An exercise only shows up once you have at least {{ minWorkouts }} workouts with it and
+    {{ minWorkouts }} without it. If you always do some exercises together, they're shown as one
+    row, because there's no way to tell them apart.
+    @if (alwaysDone().length) {
+      @let one = alwaysDone().length === 1;
+      You do {{ alwaysDone().join(', ') }} in nearly every workout, so there's nothing to compare
+      {{ one ? 'it' : 'them' }} with and {{ one ? "it isn't" : "they aren't" }} listed.
+    }
+  </p>
+  <p>
+    <strong>
+      This shows a pattern, not proof of what's behind your headaches. Sleep, food, stress and
+      other things you don't log here can play a part too.
+    </strong>
+  </p>
+</ng-template>

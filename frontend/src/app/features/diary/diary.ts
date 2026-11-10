@@ -8,6 +8,9 @@ import { ListItem } from '../../components/list-item/list-item';
 import { WorkoutService } from '../../services/workout.service';
 import { Workout } from '../../models/workout.model';
 import { Headache } from '../../models/headache.model';
+import { MedicationIntake } from '../../models/medication.model';
+import { MedicationService } from '../../services/medication.service';
+import { INTAKE_EFFECT_LABELS, intakeLabel } from '../../utils/medication';
 import { forkJoin, map } from 'rxjs';
 import { formatDuration } from '../../utils/duration';
 import { addDays, dayKey, dayLabel, formatTime, startOfWeek, weekLabel } from '../../utils/date';
@@ -18,6 +21,7 @@ interface DiaryPage {
   page: number;
   headaches: Headache[];
   workouts: Workout[];
+  intakes: MedicationIntake[];
   /** Whether anything was logged before this page's first week. */
   hasEarlier: boolean;
 }
@@ -25,7 +29,7 @@ interface DiaryPage {
 export type DiaryFilter = 'all' | DiaryEntry['kind'];
 
 interface DiaryEntry {
-  kind: 'headache' | 'activity';
+  kind: 'headache' | 'activity' | 'medication';
   id: string;
   title: string;
   line: string;
@@ -57,6 +61,7 @@ interface DiaryWeek {
 export class Diary {
   private headacheService = inject(HeadacheService);
   private workoutService = inject(WorkoutService);
+  private medicationService = inject(MedicationService);
 
   private currentWeek = startOfWeek(new Date());
 
@@ -76,14 +81,17 @@ export class Diary {
       return forkJoin({
         headaches: this.headacheService.getHeadaches({ from, to }),
         workouts: this.workoutService.getWorkouts({ from, to }),
+        intakes: this.medicationService.getIntakes({ from, to }),
         earlierHeadaches: this.headacheService.getHeadaches({ to: from, limit: 1 }),
         earlierWorkouts: this.workoutService.getWorkouts({ to: from, limit: 1 }),
+        earlierIntakes: this.medicationService.getIntakes({ to: from, limit: 1 }),
       }).pipe(
-        map(({ headaches, workouts, earlierHeadaches, earlierWorkouts }): DiaryPage => ({
+        map(({ headaches, workouts, intakes, earlierHeadaches, earlierWorkouts, earlierIntakes }): DiaryPage => ({
           page,
           headaches,
           workouts,
-          hasEarlier: earlierHeadaches.length + earlierWorkouts.length > 0,
+          intakes,
+          hasEarlier: earlierHeadaches.length + earlierWorkouts.length + earlierIntakes.length > 0,
         })),
       );
     },
@@ -107,7 +115,7 @@ export class Diary {
 
   weeks = computed<DiaryWeek[]>(() => {
     const filter = this.filter();
-    const entries = [...this.headacheEntries(), ...this.workoutEntries()]
+    const entries = [...this.headacheEntries(), ...this.workoutEntries(), ...this.intakeEntries()]
       .filter((entry) => filter === 'all' || entry.kind === filter)
       .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime());
     const weeks = new Map<string, { monday: Date; entries: DiaryEntry[] }>();
@@ -170,6 +178,18 @@ export class Diary {
     })),
   );
 
+  private intakeEntries = computed<DiaryEntry[]>(() =>
+    this.pages().flatMap((p) => p.intakes).map((intake) => ({
+      kind: 'medication',
+      id: intake.id,
+      title: intakeLabel(intake),
+      line: formatTime(new Date(intake.takenAt)),
+      details: [intake.effect ? INTAKE_EFFECT_LABELS[intake.effect] : ''].filter(Boolean),
+      link: ['/user/medication', intake.id],
+      startedAt: new Date(intake.takenAt),
+    })),
+  );
+
   private groupByDay(entries: DiaryEntry[]): DiaryDay[] {
     const days = new Map<string, DiaryDay>();
     for (const entry of entries) {
@@ -181,11 +201,14 @@ export class Diary {
   }
 
   private summarise(entries: DiaryEntry[]): string {
-    const workouts = entries.filter((e) => e.kind === 'activity').length;
-    const headaches = entries.length - workouts;
+    const count = (kind: DiaryEntry['kind']) => entries.filter((e) => e.kind === kind).length;
+    const workouts = count('activity');
+    const headaches = count('headache');
+    const doses = count('medication');
     return [
       workouts && `${workouts} ${workouts === 1 ? 'workout' : 'workouts'}`,
       headaches && `${headaches} ${headaches === 1 ? 'headache' : 'headaches'}`,
+      doses && `${doses} ${doses === 1 ? 'dose' : 'doses'}`,
     ].filter(Boolean).join(' · ');
   }
 

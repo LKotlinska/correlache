@@ -1,0 +1,6 @@
+// Sits at the right of mat-card-header; negative margins keep the 40px button from making the header taller
+:host {
+  align-self: center;
+  margin: -0.5em -0.5em -0.5em auto;
+  color: var(--mat-sys-on-surface-variant);
+}

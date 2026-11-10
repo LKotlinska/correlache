@@ -1,13 +1,83 @@
+<mat-chip-listbox aria-label="Filter insights" [value]="filter()" (change)="onFilterChange($event)">
+  <mat-chip-option value="all">All</mat-chip-option>
+  <mat-chip-option value="headaches">Headaches</mat-chip-option>
+  <mat-chip-option value="workouts">Workouts</mat-chip-option>
+  <mat-chip-option value="correlations">Correlations</mat-chip-option>
+  <mat-chip-option value="analysis">Analysis</mat-chip-option>
+</mat-chip-listbox>
+
+<mat-form-field class="range-select" appearance="outline" subscriptSizing="dynamic">
+  <mat-label>Time range</mat-label>
+  <mat-select [value]="rangeKey()" (selectionChange)="onRangeChange($event.value)">
+    @for (range of ranges; track range.key) {
+      <mat-option [value]="range.key">{{ range.label }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+
 <div class="charts">
-  <app-headaches-per-month />
-  <app-top-triggers />
-  <app-pain-over-time />
-  <app-headaches-by-weekday />
-  <app-workouts-per-week />
-  <app-workouts-vs-headaches />
-  <app-workout-day-headaches />
-  <app-time-since-workout />
-  <app-muscle-group-headaches />
-  <app-exercise-progress />
-  <app-muscle-balance />
+  @if (shows('analysis')) {
+    @if (gated('analysis')) {
+      <app-data-notice
+        title="Analysis"
+        [readiness]="readiness()!.analysis"
+        (show)="dismiss('analysis')"
+      />
+    } @else {
+      <app-disclaimer>These look for patterns in your data. They show correlation, not causation.</app-disclaimer>
+      <app-headache-suspects />
+      <app-hard-session-headaches />
+    }
+    <!-- Needs only headaches, so it follows the Headaches threshold rather than Analysis's -->
+    @if (!gated('headaches')) {
+      <app-headache-patterns />
+    }
+  }
+  @if (shows('correlations')) {
+    @if (gated('correlations')) {
+      <app-data-notice
+        title="Correlations"
+        [readiness]="readiness()!.correlations"
+        (show)="dismiss('correlations')"
+      />
+    } @else {
+      <app-disclaimer>Charts show correlation, not causation.</app-disclaimer>
+      <app-workouts-vs-headaches />
+      <app-workout-day-headaches />
+      <app-time-since-workout />
+      <app-muscle-group-headaches />
+      <app-workout-type-headaches />
+      <app-trigger-vs-workout />
+      <app-training-level-headaches />
+    }
+  }
+  @if (shows('headaches')) {
+    @if (gated('headaches')) {
+      <app-data-notice
+        title="Headaches"
+        [readiness]="readiness()!.headaches"
+        (show)="dismiss('headaches')"
+      />
+    } @else {
+      <app-headaches-per-month />
+      <app-top-triggers />
+      <app-top-symptoms />
+      <app-top-locations />
+      <app-pain-over-time />
+      <app-headaches-by-weekday />
+    }
+  }
+  @if (shows('workouts')) {
+    @if (gated('workouts')) {
+      <app-data-notice
+        title="Workouts"
+        [readiness]="readiness()!.workouts"
+        (show)="dismiss('workouts')"
+      />
+    } @else {
+      <app-workouts-per-week />
+      <app-exercise-progress />
+      <app-muscle-balance />
+    }
+  }
 </div>

@@ -1,10 +1,11 @@
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import type { Relation } from "typeorm";
 import { User } from "../../user/entities/user.entity.js";
 import { Trigger } from "../lookups/trigger.entity.js";
 import { Symptom } from "../lookups/symptom.entity.js";
 import { ReliefMeasure } from "../lookups/relief-measure.entity.js";
 import { HeadacheLocation } from "../lookups/headache-location.entity.js";
+import { MedicationIntake } from "../../medications/entities/medication-intake.entity.js";
 @Index(['userId', 'startedAt']) // Speeds up queries by user
 @Entity('headaches')
 export class Headache {
@@ -88,4 +89,8 @@ export class Headache {
         }
     })
     locations: HeadacheLocation[];
+
+    /** Doses taken for this headache. */
+    @OneToMany(() => MedicationIntake, (intake) => intake.headache)
+    intakes: Relation<MedicationIntake>[];
 }

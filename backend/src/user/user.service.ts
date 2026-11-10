@@ -66,6 +66,11 @@ export class UserService {
         .getOne();
   }
   
+  /** Deletes the user; dependent rows are removed by the database's ON DELETE CASCADE. */
+  async remove(id: string): Promise<void> {
+    await this.userRepository.delete({ id });
+  }
+
   /** Invalidates every token issued before now. */
   async revokeTokens(id: string): Promise<void> {
     await this.userRepository.increment({ id }, 'tokenVersion', 1);

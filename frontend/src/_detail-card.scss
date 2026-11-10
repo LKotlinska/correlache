@@ -1,0 +1,33 @@
+@use 'variables' as p;
+
+/// Card layout shared by the detail pages (headache view, workout view).
+@mixin detail-card {
+  .card {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: p.$white;
+    border-radius: p.$card-border;
+    margin-bottom: 1em;
+  }
+
+  .card-heading {
+    margin: 0.25em 0;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: p.$card-padding 0.5em;
+  }
+
+  .label {
+    flex: 1;
+    color: p.$text-strong;
+  }
+
+  .row span:last-child {
+    font-weight: 500;
+  }
+}

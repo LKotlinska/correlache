@@ -7,7 +7,7 @@
       @if (summary(); as s) {
         <div class="summary">
           <p>
-            In the last 4 weeks you trained <strong>{{ s.most }}</strong> the most.
+            In {{ periodLabel() }} you trained <strong>{{ s.most }}</strong> the most.
             @if (s.untrained) {
               You haven't trained <strong>{{ s.untrained }}</strong
               >.
@@ -20,9 +20,9 @@
         </div>
         <p class="note">Sets per muscle group.</p>
       } @else if (list().length) {
-        <p>None of your workouts in the last 4 weeks trained a tracked muscle group.</p>
+        <p>None of your workouts in {{ periodLabel() }} trained a tracked muscle group.</p>
       } @else {
-        <p>No workouts logged in the last 4 weeks.</p>
+        <p>No workouts logged in {{ periodLabel() }}.</p>
       }
     } @else if (hasError()) {
       <p>Couldn't load workout data.</p>

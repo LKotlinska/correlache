@@ -1,0 +1,56 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headache patterns</mat-card-title>
+    @if (headaches.hasValue()) {
+      <app-chart-info [content]="info" />
+    }
+  </mat-card-header>
+  <mat-card-content>
+    @if (headaches.hasValue()) {
+      @if (counts().patterns.length) {
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              {{ s.count }} of your {{ s.total }} headaches in {{ periodLabel() }} resembled a
+              <strong>{{ s.name }}</strong> pattern.
+            </p>
+          </div>
+        }
+
+        <div class="chart-wrap" [style.height.px]="chartHeight()">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else if (!list().length) {
+        <p>No headaches logged in {{ periodLabel() }}.</p>
+      } @else if (!counts().warnings) {
+        <p>Log where it hurt and your symptoms to see which headache patterns yours resemble.</p>
+      }
+
+      @if (counts().warnings) {
+        <p class="warning">
+          {{ counts().warnings }} {{ counts().warnings === 1 ? 'headache has' : 'headaches have' }} symptoms that can
+          need a doctor's attention. If they are new, severe or getting worse, contact a doctor.
+        </p>
+      }
+    } @else if (headaches.error()) {
+      <p>Couldn't load headache data.</p>
+    } @else if (headaches.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>
+
+<ng-template #info>
+  <p>
+    Each headache is matched with common headache patterns, based only on what you logged: where
+    it hurt, symptoms, triggers, how long it lasted and how bad it was. It shows what yours
+    resemble, not a diagnosis.
+  </p>
+  @if (counts().tooLittle) {
+    <p>
+      {{ counts().tooLittle }} {{ counts().tooLittle === 1 ? 'headache has' : 'headaches have' }}
+      no location or symptoms logged, so {{ counts().tooLittle === 1 ? "it isn't" : "they aren't" }}
+      shown.
+    </p>
+  }
+</ng-template>

@@ -1,0 +1,40 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Headaches by workout type</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue() && headaches.hasValue()) {
+      @if (typeRates().length) {
+        @if (summary(); as s) {
+          <div class="summary">
+            <p>
+              <strong>{{ s.strength.percent }}%</strong> of your strength workouts were followed by a headache within
+              24 hours, compared with <strong>{{ s.cardio.percent }}%</strong> of cardio workouts.
+              @switch (s.trend) {
+                @case ('strength') { Headaches were <strong>more common</strong> after strength training. }
+                @case ('cardio') { Headaches were <strong>more common</strong> after cardio. }
+                @case ('same') { That is about the same. }
+              }
+            </p>
+          </div>
+        }
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+        <p class="note">
+          Strength is weights or reps, cardio is time or distance, mixed has both. Faded bars have fewer than
+          {{ minWorkouts }} workouts.
+        </p>
+      } @else if (hasPending()) {
+        <p>Your workouts will show here once 24 hours have passed since they ended.</p>
+      } @else {
+        <p>No workouts with exercises in {{ periodLabel() }}.</p>
+      }
+    } @else if (workouts.error() || headaches.error()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

@@ -34,12 +34,73 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-accordion multi>
-      @if (h.locations.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Location</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (pattern(); as p) {
+      <mat-card class="card pattern" [class.warning]="p.kind === 'warning'">
+        <mat-card-header>
+          <h2 class="card-heading">Pattern</h2>
+        </mat-card-header>
+        <mat-card-content class="pattern-content">
+          @switch (p.kind) {
+            @case ('warning') {
+              <div class="row summary">
+                <mat-icon>warning</mat-icon>
+                <span class="label">Worth checking with a doctor</span>
+              </div>
+              <p>
+                You logged {{ p.symptoms.join(', ').toLowerCase() }}. If this is new, severe or
+                getting worse, contact a doctor or emergency services.
+              </p>
+            }
+            @case ('match') {
+              <div class="row summary">
+                <mat-icon>psychology</mat-icon>
+                <div class="stack">
+                  <span class="label">Resembles</span>
+                  <span>{{ patternLabel(p.patterns) }}</span>
+                </div>
+              </div>
+              @for (match of p.patterns; track match.key) {
+                <p>
+                  {{ p.patterns.length > 1 ? patternNames[match.key] : 'Matched' }}:
+                  {{ match.matched.join(', ') }}.
+                </p>
+              }
+            }
+            @case ('unclear') {
+              <div class="row summary">
+                <mat-icon>psychology</mat-icon>
+                <div class="stack">
+                  <span class="label">Resembles</span>
+                  <span>No clear pattern</span>
+                </div>
+              </div>
+            }
+            @case ('too-little') {
+              <div class="row summary">
+                <mat-icon>psychology</mat-icon>
+                <span class="label">Resembles</span>
+              </div>
+              <p>
+                Log where it hurt and your symptoms to see which headache pattern this resembles.
+              </p>
+            }
+          }
+          @if (p.kind !== 'warning') {
+            <p class="disclaimer">
+              Based only on what you logged, compared with common headache patterns. Not a
+              diagnosis.
+            </p>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (h.locations.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Location</h2>
+        </mat-card-header>
+        <mat-card-content>
           <div class="tile-grid">
             @for (loc of h.locations; track loc.id) {
               <app-media-tile
@@ -50,44 +111,83 @@
               />
             }
           </div>
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.triggers.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Triggers</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.triggers.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Triggers</h2>
+        </mat-card-header>
+        <mat-card-content>
           <app-chip-list heading="Triggers" [options]="h.triggers" [readonly]="true" />
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.symptoms.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Symptoms</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.symptoms.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Symptoms</h2>
+        </mat-card-header>
+        <mat-card-content>
           <app-chip-list heading="Symptoms" [options]="h.symptoms" [readonly]="true" />
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.reliefMeasures.length) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Relief measures</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.reliefMeasures.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Relief measures</h2>
+        </mat-card-header>
+        <mat-card-content>
           <app-chip-list heading="Relief measures" [options]="h.reliefMeasures" [readonly]="true" />
-        </mat-expansion-panel>
-      }
+        </mat-card-content>
+      </mat-card>
+    }
 
-      @if (h.notes) {
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Additional notes</mat-panel-title>
-          </mat-expansion-panel-header>
+    @if (h.intakes.length) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Medications</h2>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="intake-list">
+            @for (intake of h.intakes; track intake.id) {
+              <li>
+                <a class="intake" [routerLink]="['/user/medication', intake.id]">
+                  <mat-icon>medication</mat-icon>
+                  <span class="intake-text">
+                    <span class="label">{{ intakeLabel(intake) }}</span>
+                    <span class="intake-detail">
+                      {{ intake.takenAt | date: 'd MMMM, HH:mm' }}
+                      @if (intake.effect) {
+                        · {{ effectLabels[intake.effect] }}
+                        @if (intake.effectAt) {
+                          from {{ intake.effectAt | date: 'HH:mm' }}
+                        }
+                      }
+                    </span>
+                  </span>
+                </a>
+              </li>
+            }
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (h.notes) {
+      <mat-card class="card section">
+        <mat-card-header>
+          <h2 class="card-heading">Additional notes</h2>
+        </mat-card-header>
+        <mat-card-content>
           <p class="notes">{{ h.notes }}</p>
-        </mat-expansion-panel>
-      }
-    </mat-accordion>
+        </mat-card-content>
+      </mat-card>
+    }
   }
 </main>

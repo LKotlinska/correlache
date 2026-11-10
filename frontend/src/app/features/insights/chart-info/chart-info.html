@@ -1,0 +1,15 @@
+<button
+  mat-icon-button
+  type="button"
+  aria-label="How to read this"
+  aria-haspopup="dialog"
+  (click)="open()"
+>
+  <mat-icon>info</mat-icon>
+</button>
+
+<ng-template #dialog>
+  <app-dialog [heading]="heading()">
+    <ng-container [ngTemplateOutlet]="content()" />
+  </app-dialog>
+</ng-template>

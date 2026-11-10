@@ -3,11 +3,12 @@ import { MatListItem } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 
-type Tone = 'activity' | 'headache';
+type Tone = 'activity' | 'headache' | 'medication';
 
 const ICONS: Record<Tone, string> = {
   headache: 'bolt',
   activity: 'cardio_load',
+  medication: 'medication',
 };
 
 @Component({

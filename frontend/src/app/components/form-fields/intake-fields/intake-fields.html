@@ -1,0 +1,71 @@
+<div class="intake-fields">
+  <h4 class="field-heading">Medication</h4>
+  <div class="medication-row" [id]="idPrefix() + '-medication'">
+    <mat-form-field appearance="outline" class="medication-select">
+      <mat-label>Medication</mat-label>
+      <mat-select
+        [formControl]="group().controls.medicationId"
+        (selectionChange)="onMedicationChange($event.value)"
+      >
+        @for (medication of options(); track medication.id) {
+          <mat-option [value]="medication.id">{{ medication.name }}</mat-option>
+        }
+      </mat-select>
+      @if (group().controls.medicationId.hasError('required')) {
+        <mat-error>Choose a medication</mat-error>
+      }
+    </mat-form-field>
+    <button
+      matIconButton
+      type="button"
+      class="add-medication"
+      aria-label="Add a new medication to your list"
+      (click)="addMedication()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <app-outlined-field
+    [id]="idPrefix() + '-dose'"
+    label="Dose"
+    placeholder="e.g. 400 mg"
+    [myControl]="group().controls.dose"
+  />
+
+  <h4 class="field-heading">Taken</h4>
+  <app-date-time-picker
+    [id]="idPrefix() + '-taken'"
+    [dateControl]="group().controls.takenDate"
+    [timeControl]="group().controls.takenTime"
+    [maxDate]="today"
+    [timeMax]="takenTimeMax()"
+  />
+
+  @if (!isPreventive()) {
+    <h4 class="field-heading">Did it help?</h4>
+    <mat-chip-listbox
+      [id]="idPrefix() + '-effect'" aria-label="Did it help?" [formControl]="group().controls.effect">
+      @for (option of effectOptions; track option.value) {
+        <mat-chip-option [value]="option.value">{{ option.label }}</mat-chip-option>
+      }
+    </mat-chip-listbox>
+
+    @if (showsEffectTime()) {
+      <h4 class="field-heading">Relief from</h4>
+      <app-date-time-picker
+        [dateControl]="group().controls.effectDate"
+        [timeControl]="group().controls.effectTime"
+        [maxDate]="today"
+        [timeMax]="effectTimeMax()"
+      />
+    }
+  }
+
+  @if (group().hasError('effectBeforeDose')) {
+    <p class="form-error" role="alert">Relief can't start before the dose was taken.</p>
+  }
+  @if (group().hasError('futureDate')) {
+    <p class="form-error" role="alert">Doses can't be logged in the future.</p>
+  }
+</div>

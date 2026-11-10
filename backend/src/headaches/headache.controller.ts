@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, ParseUUIDPipe, Put, Delete, HttpCode, HttpStatus, ParseDatePipe, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseUUIDPipe, Put, Delete, HttpCode, HttpStatus, ParseBoolPipe, ParseDatePipe, ParseIntPipe, Query } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { User } from '../user/entities/user.entity.js';
 import { HeadacheService } from './headache.service.js';
@@ -27,9 +27,10 @@ export class HeadacheController {
     @Query('from', new ParseDatePipe({ optional: true })) from?: Date,
     @Query('to', new ParseDatePipe({ optional: true })) to?: Date,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+    @Query('withIntakes', new ParseBoolPipe({ optional: true })) withIntakes?: boolean,
   ): Promise<Headache[]> {
     assertOrderedRange(from, to);
-    return await this.headacheService.getHeadaches(user.id, from, to, limit);
+    return await this.headacheService.getHeadaches(user.id, from, to, limit, withIntakes);
   }
 
   @Get(':id')

@@ -1,47 +1,91 @@
 @use '../../../../variables' as p;
+@use '../../../../detail-card';
 
-.row {
-  display: flex;
-  align-items: center;
-  gap: 1em;
-  padding: p.$card-padding
+@include detail-card.detail-card;
+
+.summary {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background: p.$surface-low;
+  border-radius: 0.5em;
 }
 
 .label {
-  flex: 1;
-  color: p.$text-strong;
-}
-
-// The summary card and the accordion share the same width, surface and radius
-.card,
-mat-accordion {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.card {
-  background-color: p.$white;
-  border-radius: p.$card-border;
-  margin-bottom: 1em;
-}
-
-.row {
-  padding: p.$card-padding 0.5em;
+  font-size: 1.1em;
 }
 
 .row span:last-child {
-  font-weight: 500;
+  font-size: 1.05em;
+}
+
+.pattern p {
+  color: p.$text-strong;
+}
+
+.pattern .disclaimer {
+  font-size: 0.875rem;
+}
+
+.pattern.warning {
+  background-color: var(--mat-sys-error-container, #f9dedc);
+}
+
+.card mat-card-content {
+  padding-top: 0.95em;
+  padding-bottom: 0.95em;
+}
+
+.pattern mat-card-content,
+.section mat-card-content {
+  padding-bottom: 1.5em;
 }
 
 .tile-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1em;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 0.25em;
 }
 
 .notes {
   margin: 0;
   white-space: pre-wrap;
   color: p.$text-strong;
+}
+
+.intake-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5em;
+}
+
+.intake {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  color: p.$text-strong;
+  text-decoration: none;
+}
+
+.intake-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.intake-detail {
+  font-size: 0.875em;
+  opacity: 0.8;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.15em;
+
+  .label {
+    flex: none;
+  }
 }

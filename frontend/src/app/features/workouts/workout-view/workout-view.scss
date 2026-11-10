@@ -1,42 +1,20 @@
 @use '../../../../variables' as p;
+@use '../../../../detail-card';
 
-.row {
-  display: flex;
-  align-items: center;
-  gap: 1em;
-  padding: p.$card-padding
-}
+@include detail-card.detail-card;
 
-.label {
-  flex: 1;
+.card-heading {
   color: p.$text-strong;
 }
 
-// The summary card and the accordion share the same width, surface and radius
-.card,
-mat-accordion {
+.details mat-card-content {
+  padding-block: p.$card-padding;
+}
+
+// The chip set adds its own space under the chips; this gives the accordion the same gap above the card edge
+.details mat-accordion {
   display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.card {
-  background-color: p.$white;
-  border-radius: p.$card-border;
-  margin-bottom: 1em;
-}
-
-.row {
-  padding: p.$card-padding 0.5em;
-}
-
-.row span:last-child {
-  font-weight: 500;
-}
-
-.section-title {
-  margin: 0 0 0.5em;
-  color: p.$text-strong;
+  margin-bottom: 0.75em;
 }
 
 .sets {
@@ -106,4 +84,13 @@ mat-accordion {
     margin: 0 0 1em;
     font-size: 0.85em;
     text-transform: capitalize;
+    display:flex;
+    align-items: center;
+    gap: 0.35em;
+    mat-icon {
+      font-size: 2em;
+      width: 1.1em;
+      height: 1.1em;
+      opacity: 0.8;
+    }
 }

@@ -20,7 +20,7 @@
       } @else if (hasPending()) {
         <p>Your workouts will show here once 24 hours have passed since they ended.</p>
       } @else {
-        <p>No workouts logged in the last 8 weeks.</p>
+        <p>No workouts logged in {{ periodLabel() }}.</p>
       }
     } @else if (workouts.error() || headaches.error()) {
       <p>Couldn't load workout and headache data.</p>

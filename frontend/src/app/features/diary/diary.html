@@ -1,5 +1,5 @@
 @if (hasInitialError()) {
-  <p>Couldn't load headaches or workouts.</p>
+  <p>Couldn't load your diary.</p>
   <app-button appearance="outlined" (click)="retry()">Try again</app-button>
 } @else if (isInitialLoading()) {
   <mat-progress-bar mode="indeterminate" />
@@ -8,6 +8,7 @@
     <mat-chip-option value="all">All</mat-chip-option>
     <mat-chip-option value="headache">Headaches</mat-chip-option>
     <mat-chip-option value="activity">Workouts</mat-chip-option>
+    <mat-chip-option value="medication">Medications</mat-chip-option>
   </mat-chip-listbox>
 
   @for (week of weeks(); track week.key) {

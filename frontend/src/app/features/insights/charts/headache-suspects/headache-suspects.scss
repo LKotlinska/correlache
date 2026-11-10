@@ -1,0 +1,106 @@
+@use '../../summary';
+
+.summary {
+  @include summary.summary;
+  margin-bottom: 0.5em;
+}
+
+.suspects {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 1em 0;
+
+    & + li {
+      border-top: 1px solid var(--mat-sys-outline-variant, #ccc);
+    }
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1em;
+  margin-bottom: 0.5em;
+}
+
+.name {
+  font-size: 1.15em; // ~16px on the 14px body text
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-transform: capitalize;
+}
+
+.rates {
+  flex-shrink: 0;
+  color: var(--mat-sys-primary);
+  font-size: 1.15em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  .vs {
+    font-size: 0.8em;
+    font-weight: 400;
+    opacity: 0.8;
+  }
+}
+
+.confidence {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  margin-top: 0.5em;
+
+  mat-progress-bar {
+    flex: 1;
+    border-radius: 999px;
+  }
+}
+
+.sure {
+  font-size: 0.93em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25em 1em;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.together {
+  margin: 0.25em 0 0;
+  font-size: 0.93em;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.experiment {
+  padding: 0.5em 0.5em 0.5em 1em;
+  border-left: 4px solid var(--mat-sys-primary);
+  border-radius: 0.25em;
+  .label {
+    display: block;
+    color: var(--mat-sys-primary);
+    font-size: 0.95em;
+    font-weight: 700;
+    margin-bottom: 0.35em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}

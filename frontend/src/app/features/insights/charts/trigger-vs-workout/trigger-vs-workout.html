@@ -1,0 +1,35 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Exercise triggers and workouts</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (workouts.hasValue() && headaches.hasValue()) {
+      @if (enoughData()) {
+        <div class="summary">
+          <p>
+            <strong>{{ counts().taggedWithWorkout }} of {{ tagged() }}</strong> headaches tagged
+            Cardio or Physical strain ({{ taggedWithWorkoutPercent() }}%) came within 24 hours after
+            a logged workout.
+          </p>
+          <p>
+            <strong>{{ counts().untaggedWithWorkout }}</strong> headaches logged without those tags
+            also followed a workout.
+          </p>
+        </div>
+
+        <div class="chart-wrap">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>
+          Tag at least {{ minTagged }} headaches with Cardio or Physical strain in
+          {{ periodLabel() }} to compare them with your workouts.
+        </p>
+      }
+    } @else if (workouts.error() || headaches.error()) {
+      <p>Couldn't load workout and headache data.</p>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

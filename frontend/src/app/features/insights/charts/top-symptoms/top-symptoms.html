@@ -1,0 +1,27 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Most common symptoms</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    @if (headaches.hasValue()) {
+      @if (summary(); as s) {
+        <div class="summary">
+          <p>
+            You had <strong>{{ s.name }}</strong> with {{ s.count }} of your {{ s.total }} headaches
+            in {{ periodLabel() }}.
+          </p>
+        </div>
+
+        <div class="chart-wrap" [style.height.px]="chartHeight()">
+          <canvas baseChart type="bar" [data]="chartData()" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p>No symptoms logged in {{ periodLabel() }}.</p>
+      }
+    } @else if (headaches.error()) {
+      <p>Couldn't load headache data.</p>
+    } @else if (headaches.isLoading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+  </mat-card-content>
+</mat-card>

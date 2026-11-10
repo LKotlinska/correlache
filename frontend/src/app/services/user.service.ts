@@ -18,6 +18,10 @@ export class UserService {
         return this.http.post('/api/auth/logout', null);
     }
 
+    deleteAccount() {
+        return this.http.delete('/api/user/me');
+    }
+
     me() {
         return this.http.get('/api/auth/me');
     }

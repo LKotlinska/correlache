@@ -20,7 +20,7 @@
           <canvas baseChart type="line" [data]="chartData()" [options]="chartOptions"></canvas>
         </div>
       } @else {
-        <p>No headaches logged in the last 3 months.</p>
+        <p>No headaches logged in {{ periodLabel() }}.</p>
       }
     } @else if (headaches.error()) {
       <p>Couldn't load headache data.</p>

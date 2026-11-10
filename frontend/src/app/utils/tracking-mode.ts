@@ -35,5 +35,5 @@ export function defaultTrackingModeFor(equipmentName: string): TrackingMode {
 }
 
 export function columnCount(tracked: TrackedFields): number {
-  return (tracked.weight ? 1 : 0) + (tracked.reps ? 1 : 0) + (tracked.distance ? 1 : 0) + (tracked.duration ? 2 : 0);
+  return (tracked.weight ? 1 : 0) + (tracked.reps ? 1 : 0) + (tracked.distance ? 1 : 0) + (tracked.duration ? 3 : 0);
 }

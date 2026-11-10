@@ -1,0 +1,28 @@
+@use '../../../../variables' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 1em;
+  padding: 0.5em 0.75em;
+  border: 1px solid $headache-border;
+  border-radius: 0.35em;
+  background-color: $headache-bg;
+}
+
+.icon {
+  flex: none;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.8;
+  font-size: 1.3em;
+  // mat-icon has a fixed 24px box; sizing the box to the glyph (1em of its own font-size) lets align-items centre it
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+}
+
+.text {
+  margin: 0;
+  font-style: italic;
+}

@@ -131,6 +131,42 @@ export const SymptomSeed = [
     {
         name: 'Fatigue'
     },
+    {
+        name: 'Pressing or tightening'
+    },
+    {
+        name: 'Worse with movement'
+    },
+    {
+        name: 'Worse when moving neck'
+    },
+    {
+        name: 'Watery or red eye'
+    },
+    {
+        name: 'Restlessness'
+    },
+    {
+        name: 'Sudden, severe onset'
+    },
+    {
+        name: 'Runny nose'
+    },
+    {
+        name: 'Drooping or swollen eyelid'
+    },
+    {
+        name: 'Forehead or face sweating'
+    },
+    {
+        name: 'Woke me from sleep'
+    },
+    {
+        name: 'Zigzag lines or flashing lights'
+    },
+    {
+        name: 'Spreading tingling or numbness'
+    },
 ]
 
 export const TriggerSeed = [
@@ -175,7 +211,10 @@ export const TriggerSeed = [
     },
     {
         name: 'Infection'
-    }
+    },
+    {
+        name: 'Cough or straining'
+    },
 
 ]
 
