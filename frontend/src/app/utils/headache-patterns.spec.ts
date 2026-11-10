@@ -18,6 +18,11 @@ const headache = (
   intakes,
 });
 
+const dose = (effect: 'none' | 'some' | 'full' | null, use: 'as_needed' | 'preventive' = 'as_needed') => ({
+  effect,
+  medication: { use },
+});
+
 const keys = (h: PatternInput) => {
   const m = matchPattern(h);
   return m.kind === 'match' ? m.patterns.map(p => p.key) : m.kind;
@@ -53,6 +58,30 @@ describe('matchPattern', () => {
     it('needs at least 2 pain features', () => {
       expect(keys(headache(20, 3, ['Whole head'], ['Nausea', 'Throbbing']))).not.toContain('migraine');
     });
+
+    it('is found whenever its criteria are met, however few other features there are', () => {
+      expect(keys(headache(6, 4, ['Whole head'], ['Throbbing', 'Nausea']))).toEqual(['migraine']);
+      expect(keys(headache(8, 6, ['Whole head'], ['Throbbing', 'Light sensitivity', 'Sound sensitivity']))).toEqual([
+        'migraine',
+      ]);
+    });
+
+    it('is found with aura alone, and aura rules out tension-type', () => {
+      expect(keys(headache(5, 5, ['Whole head'], ['Throbbing', 'Zigzag lines or flashing lights']))).toEqual(['migraine']);
+      expect(keys(headache(100, 4, ['Left side'], ['Aura']))).toEqual(['migraine']);
+    });
+
+    it("doesn't hold missing nausea against it when there is aura", () => {
+      // One side 2, throbbing 1, moderate pain 1 and duration 1 out of those plus worse with movement 1.
+      // Nausea and light and sound sensitivity don't count either way.
+      expect(score(headache(10, 6, ['Left side'], ['Throbbing', 'Aura']), 'migraine').score).toBeCloseTo(5 / 6);
+    });
+
+    it("doesn't hold a missing hormonal trigger or aura against it", () => {
+      const h = headache(10, 7, ['Left side'], ['Throbbing', 'Worse with movement', 'Nausea', 'Light sensitivity', 'Sound sensitivity']);
+      expect(score(h, 'migraine').score).toBe(1);
+      expect(score(h, 'migraine').matched).not.toContain('aura');
+    });
   });
 
   describe('tension-type-like', () => {
@@ -81,6 +110,21 @@ describe('matchPattern', () => {
       expect(keys(headache(1, 5, ['Behind left eye'], ['Watery or red eye', 'Restlessness']))).not.toContain('cluster');
     });
 
+    it('needs to last 15 minutes to 3 hours when that is known', () => {
+      expect(keys(headache(10, 8, ['Right side'], ['Congested nose']))).toBe('unclear');
+      expect(keys(headache(null, 8, ['Right side'], ['Congested nose']))).toEqual(['cluster']);
+    });
+
+    it('counts restlessness and eye signs as alternatives', () => {
+      expect(score(headache(1, 9, ['Behind left eye'], ['Restlessness']), 'cluster').score).toBe(1);
+      expect(score(headache(1, 9, ['Behind left eye'], ['Watery or red eye']), 'cluster').score).toBe(1);
+    });
+
+    it('wins over migraine for a short attack with migraine symptoms', () => {
+      const h = headache(1.5, 9, ['Behind left eye'], ['Watery or red eye', 'Nausea', 'Light sensitivity', 'Sound sensitivity', 'Throbbing']);
+      expect(keys(h)).toEqual(['cluster']);
+    });
+
     it('needs an eye or nose sign or restlessness', () => {
       expect(keys(headache(1, 9, ['Behind left eye'], ['Throbbing']))).not.toContain('cluster');
       expect(keys(headache(1, 9, ['Behind left eye'], ['Drooping or swollen eyelid']))).toEqual(['cluster']);
@@ -94,6 +138,17 @@ describe('matchPattern', () => {
 
     it('is ruled out when it lasted over 2 days', () => {
       expect(keys(headache(60, 6, ['Back of head'], ['Throbbing'], ['Cardio']))).not.toContain('exercise');
+    });
+
+    it('gives way to migraine when the headache fits it', () => {
+      const h = headache(6, 8, ['Left side'], ['Throbbing', 'Nausea', 'Light sensitivity', 'Sound sensitivity'], ['Cardio']);
+      expect(keys(h)).toEqual(['migraine']);
+      expect(score(h, 'exercise').score).toBe(0);
+    });
+
+    it('gives way to cluster when the headache fits it', () => {
+      const h = headache(1, 9, ['Behind left eye'], ['Watery or red eye', 'Restlessness'], ['Physical strain']);
+      expect(keys(h)).toEqual(['cluster']);
     });
 
     it("doesn't count coughing or straining", () => {
@@ -110,6 +165,15 @@ describe('matchPattern', () => {
     it('needs both', () => {
       expect(keys(headache(4, 5, ['Back of head'], ['Fatigue'], ['Tense muscles']))).not.toContain('neck');
     });
+
+    it('is unclear with only its core features', () => {
+      expect(keys(headache(4, 5, ['Back of head'], ['Neck pain']))).toBe('unclear');
+    });
+
+    it('still lists its core features as matched', () => {
+      const h = headache(4, 5, ['Back of head'], ['Neck pain', 'Worse when moving neck']);
+      expect(score(h, 'neck').matched).toEqual(['back of head or neck', 'neck pain or stiffness', 'worse when moving neck', 'not throbbing']);
+    });
   });
 
   describe('sinus-related', () => {
@@ -121,6 +185,10 @@ describe('matchPattern', () => {
     it('needs both', () => {
       expect(keys(headache(6, 5, ['Sinus area'], ['Fatigue'], ['Infection']))).not.toContain('sinus');
     });
+
+    it('is unclear with only its core features', () => {
+      expect(keys(headache(6, 5, ['Sinus area'], ['Runny nose']))).toBe('unclear');
+    });
   });
 
   describe('duration', () => {
@@ -129,19 +197,20 @@ describe('matchPattern', () => {
 
     it('counts against a pattern when untreated', () => {
       expect(score(migraine([]), 'migraine').matched).not.toContain('lasted 4 to 72 hours');
-      expect(score(migraine([]), 'migraine').score).toBeLessThan(score(migraine([{ effect: 'full' }]), 'migraine').score);
+      expect(score(migraine([]), 'migraine').score).toBeLessThan(score(migraine([dose('full')]), 'migraine').score);
     });
 
-    it("is left out when a dose helped or its effect wasn't logged", () => {
+    it('is left out when a dose helped', () => {
       const untreated = score(migraine([]), 'migraine').score;
-      expect(score(migraine([{ effect: 'some' }]), 'migraine').score).toBeGreaterThan(untreated);
-      expect(score(migraine([{ effect: null }]), 'migraine').score).toBeGreaterThan(untreated);
+      expect(score(migraine([dose('some')]), 'migraine').score).toBeGreaterThan(untreated);
+      expect(score(migraine([dose('full')]), 'migraine').score).toBeGreaterThan(untreated);
     });
 
-    it("counts when a dose didn't help or was a preventive", () => {
+    it("counts when a dose didn't help, its effect wasn't logged, or it was a preventive", () => {
       const untreated = score(migraine([]), 'migraine').score;
-      expect(score(migraine([{ effect: 'none' }]), 'migraine').score).toBe(untreated);
-      expect(score(migraine([{ effect: 'full', medication: { use: 'preventive' } }]), 'migraine').score).toBe(untreated);
+      expect(score(migraine([dose('none')]), 'migraine').score).toBe(untreated);
+      expect(score(migraine([dose(null)]), 'migraine').score).toBe(untreated);
+      expect(score(migraine([dose('full', 'preventive')]), 'migraine').score).toBe(untreated);
     });
 
     it("is left out while the headache hasn't ended", () => {
@@ -165,10 +234,6 @@ describe('matchPattern', () => {
       expect(m.patterns.map(p => p.key)).toEqual(['tension', 'neck']);
       expect(patternLabel(m.patterns)).toBe('Tension-type-like and neck-related');
     }
-  });
-
-  it('is unclear when a pattern has its core features but little else', () => {
-    expect(keys(headache(100, 4, ['Left side'], ['Aura']))).toBe('unclear');
   });
 
   it('is unclear when no pattern has its core features', () => {

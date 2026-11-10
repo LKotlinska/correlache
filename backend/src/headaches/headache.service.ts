@@ -114,12 +114,15 @@ export class HeadacheService {
     return { triggers, symptoms, reliefMeasures, headacheLocations };
   }
 
-  /** The user's headaches, newest first, optionally limited to those started from `from` (inclusive) until `to` (exclusive), and to at most `limit` of them. */
-  async getHeadaches(userId: string, from?: Date, to?: Date, limit?: number): Promise<Headache[]> {
+  /**
+   * The user's headaches, newest first, optionally limited to those started from `from` (inclusive) until `to`
+   * (exclusive), and to at most `limit` of them. Their doses and medications are only loaded when `withIntakes`,
+   * which headache patterns need to tell treated headaches from untreated ones.
+   */
+  async getHeadaches(userId: string, from?: Date, to?: Date, limit?: number, withIntakes = false): Promise<Headache[]> {
     const headaches = await this.headacheRepo.find({
       where: { userId, ...startedWithin(from, to) },
-      // Doses are included so headache patterns can tell treated headaches from untreated ones.
-      relations: { locations: true, symptoms: true, triggers: true, intakes: { medication: true } },
+      relations: { locations: true, symptoms: true, triggers: true, ...(withIntakes && { intakes: { medication: true } }) },
       // One query per relation, as joining them all multiplies the rows per headache.
       relationLoadStrategy: 'query',
       order: { startedAt: 'DESC'},
