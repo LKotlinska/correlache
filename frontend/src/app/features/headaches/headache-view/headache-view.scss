@@ -3,16 +3,22 @@
 
 @include detail-card.detail-card;
 
+.summary {
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background: p.$surface-low;
+  border-radius: 0.5em;
+}
+
 .label {
   font-size: 1.1em;
 }
 
 .row span:last-child {
-  font-size: 1.1em;
+  font-size: 1.05em;
 }
 
 .pattern p {
-  margin: 0 0.5em p.$card-padding;
   color: p.$text-strong;
 }
 
@@ -27,6 +33,11 @@
 .card mat-card-content {
   padding-top: 0.95em;
   padding-bottom: 0.95em;
+}
+
+.pattern mat-card-content,
+.section mat-card-content {
+  padding-bottom: 1.5em;
 }
 
 .tile-grid {
@@ -66,4 +77,15 @@
 .intake-detail {
   font-size: 0.875em;
   opacity: 0.8;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.15em;
+
+  .label {
+    flex: none;
+  }
 }
