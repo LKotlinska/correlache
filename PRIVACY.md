@@ -78,11 +78,11 @@ Headache records are health data, which GDPR treats as a special category. We re
 
 Under GDPR you have the right to:
 
-- **Access** the data we hold about you
+- **Access** the data we hold about you (Settings → Download my data)
 - **Rectify** inaccurate data (you can edit your entries in the App)
 - **Erase** your data (Settings → Delete account)
 - **Restrict or object** to processing
-- **Data portability**. The App has no export feature yet, so email us and we will send you your data in a common format (such as CSV or JSON)
+- **Data portability**. Settings → Download my data gives you everything we hold about you as a JSON file
 - **Withdraw consent** at any time
 - **Complain** to your national data protection authority
 

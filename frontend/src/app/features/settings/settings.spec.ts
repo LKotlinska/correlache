@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -18,6 +18,7 @@ describe('Settings', () => {
   const deleteAccount = vi.fn();
   const dialogOpen = vi.fn();
   const deleteMedication = vi.fn();
+  const exportData = vi.fn();
 
   beforeEach(async () => {
     logoutUser.mockReset();
@@ -26,10 +27,11 @@ describe('Settings', () => {
     deleteAccount.mockReset();
     dialogOpen.mockReset();
     deleteMedication.mockReset();
+    exportData.mockReset();
     await TestBed.configureTestingModule({
       imports: [Settings],
       providers: [
-        { provide: UserService, useValue: { logoutUser, deleteAccount } },
+        { provide: UserService, useValue: { logoutUser, deleteAccount, exportData } },
         { provide: MedicationService, useValue: { getMedications: () => of([]), deleteMedication } },
         { provide: DialogService, useValue: { open: dialogOpen } },
         { provide: Router, useValue: { navigate } },
@@ -44,6 +46,31 @@ describe('Settings', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('downloads the export under the filename the server sends', () => {
+    const body = new Blob(['{}'], { type: 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Disposition': 'attachment; filename="correlache-export-2026-11-10.json"' });
+    exportData.mockReturnValue(of(new HttpResponse({ body, headers })));
+    const createUrl = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:x');
+    const revokeUrl = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+
+    component.downloadData();
+
+    expect(createUrl).toHaveBeenCalledWith(body);
+    const link = click.mock.contexts[0] as HTMLAnchorElement;
+    expect(link.download).toBe('correlache-export-2026-11-10.json');
+    expect(revokeUrl).toHaveBeenCalledWith('blob:x');
+    expect(component.exporting()).toBe(false);
+    vi.restoreAllMocks();
+  });
+
+  it('shows an error when the export fails', () => {
+    exportData.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    component.downloadData();
+    expect(open).toHaveBeenCalled();
+    expect(component.exporting()).toBe(false);
   });
 
   it('navigates home after a successful sign out', () => {

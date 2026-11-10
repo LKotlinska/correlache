@@ -33,6 +33,9 @@
   <ul class="settings-list">
     <li><button class="destructive" type="button" (click)="signOut()">Sign out</button></li>
     <li>
+      <button type="button" [disabled]="exporting()" (click)="downloadData()">Download my data</button>
+    </li>
+    <li>
       <button type="button" (click)="confirmDeleteAccount()">Delete account and data</button>
     </li>
   </ul>

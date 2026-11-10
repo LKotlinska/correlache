@@ -1,14 +1,31 @@
-import { Body, Controller, Delete, HttpCode, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Post, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { CurrentUser } from '@nestjs/authentication';
 import { UserService } from './user.service.js';
+import { ExportService } from './export.service.js';
 import { User } from './entities/user.entity.js';
 import { GiveConsentDto } from './dto/user.dto.js';
 import { AUTH_COOKIE, authCookieOptions } from '../auth/auth-cookie.js';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly userService: UserService,
+        private readonly exportService: ExportService,
+    ) {}
+
+    /**
+     * Downloads everything stored about the current user as JSON (GDPR art. 15 and 20).
+     * Not behind HealthConsentGuard: the right of access holds whether or not consent was given.
+     */
+    @Get('me/export')
+    async exportMe(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
+        const data = await this.exportService.exportUser(user.id);
+        const date = data.exportedAt.slice(0, 10);
+        res.setHeader('Content-Disposition', `attachment; filename="correlache-export-${date}.json"`);
+        res.setHeader('Cache-Control', 'no-store');
+        return data;
+    }
 
     /** Records consent to processing health data, for accounts created before signup asked for it. */
     @Post('consent')

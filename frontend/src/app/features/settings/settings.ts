@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { AccountActions } from '../../services/account-actions';
 import { DialogKey, DialogService } from '../../components/dialog/dialog.service';
 import { ConfirmDialog, ConfirmDialogData } from '../../components/dialog/confirm-dialog/confirm-dialog';
 import { MedicationService } from '../../services/medication.service';
+import { UserService } from '../../services/user.service';
 import { Medication } from '../../models/medication.model';
 import { MedicationDialog, MedicationDialogData } from '../medications/medication-dialog/medication-dialog';
 import { MEDICATION_CLASS_LABELS, MEDICATION_USE_LABELS } from '../../utils/medication';
@@ -28,6 +29,9 @@ export class Settings {
   private accountActions = inject(AccountActions);
   private dialogService = inject(DialogService);
   private medicationService = inject(MedicationService);
+  private userService = inject(UserService);
+
+  exporting = signal(false);
 
   medications = rxResource({ stream: () => this.medicationService.getMedications() });
 
@@ -70,6 +74,28 @@ export class Settings {
 
   openDialog(key: DialogKey) {
     this.dialogService.open(key);
+  }
+
+  /** Downloads all of the user's data as a JSON file. */
+  downloadData() {
+    this.exporting.set(true);
+    this.userService.exportData().subscribe({
+      next: (res) => {
+        this.exporting.set(false);
+        const filename =
+          /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '')?.[1] ?? 'correlache-export.json';
+        const url = URL.createObjectURL(res.body!);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.exporting.set(false);
+        this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
+      },
+    });
   }
 
   signOut() {

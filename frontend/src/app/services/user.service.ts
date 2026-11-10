@@ -22,6 +22,11 @@ export class UserService {
         return this.http.delete('/api/user/me');
     }
 
+    /** Everything stored about the current user, as a JSON file (GDPR art. 15 and 20). */
+    exportData() {
+        return this.http.get('/api/user/me/export', { responseType: 'blob', observe: 'response' });
+    }
+
     me() {
         return this.http.get<MeResponse>('/api/auth/me');
     }
