@@ -1,0 +1,50 @@
+<app-dialog heading="About CorrelAche">
+  <p>
+    CorrelAche is a headache and workout diary developed as an examination project at YRGO. It
+    investigates whether headaches correlate with specific aspects of physical training: not only
+    whether you exercised, but which muscle groups you trained, the intensity of the session and how
+    long before the headache it took place.
+  </p>
+
+  <h3>Background</h3>
+  <p>
+    Most headache trackers record exercise as a single yes-or-no trigger, although a heavy strength
+    session and a light run place very different demands on the body. CorrelAche records training in
+    the same detail as headaches, so that the two can be compared in a meaningful way.
+  </p>
+
+  <h3>Scope and limitations</h3>
+  <p>
+    CorrelAche is a diary that identifies patterns in the data you record. It does not provide
+    diagnoses or medical advice, and only shows correlation, not causation. If your symptoms concern
+    you, consult a doctor. Your diary can serve as a useful basis for that conversation.
+  </p>
+
+  <h3>Privacy</h3>
+  <p>
+    Your data is never sold or used for marketing. You can delete your account and all associated
+    data at any time under Settings. For full details, see the
+    <button type="button" class="inline-link" (click)="openPrivacy()">Privacy Policy</button>.
+  </p>
+
+  <h3>Technology</h3>
+  <p>
+    The application is built with Angular and Angular Material, with a NestJS backend and a MySQL
+    database. The exercise library is based on the open-source
+    <a href="https://github.com/hasaneyldrm/exercises-dataset" target="_blank" rel="noopener"
+      >Exercises-Dataset</a
+    >.
+  </p>
+
+  <mat-dialog-actions class="btn-container">
+    <a
+      matButton="outlined"
+      href="https://github.com/LKotlinska/correlache"
+      target="_blank"
+      rel="noopener"
+    >
+      View on GitHub
+    </a>
+    <a matButton="filled" href="mailto:laura.devhub@gmail.com">Get in touch</a>
+  </mat-dialog-actions>
+</app-dialog>
