@@ -42,7 +42,7 @@
         <mat-card-content class="pattern-content">
           @switch (p.kind) {
             @case ('warning') {
-              <div class="row">
+              <div class="row summary">
                 <mat-icon>warning</mat-icon>
                 <span class="label">Worth checking with a doctor</span>
               </div>
@@ -52,10 +52,12 @@
               </p>
             }
             @case ('match') {
-              <div class="row">
+              <div class="row summary">
                 <mat-icon>psychology</mat-icon>
-                <span class="label">Resembles</span>
-                <span>{{ patternLabel(p.patterns) }}</span>
+                <div class="stack">
+                  <span class="label">Resembles</span>
+                  <span>{{ patternLabel(p.patterns) }}</span>
+                </div>
               </div>
               @for (match of p.patterns; track match.key) {
                 <p>
@@ -65,14 +67,16 @@
               }
             }
             @case ('unclear') {
-              <div class="row">
+              <div class="row summary">
                 <mat-icon>psychology</mat-icon>
-                <span class="label">Resembles</span>
-                <span>No clear pattern</span>
+                <div class="stack">
+                  <span class="label">Resembles</span>
+                  <span>No clear pattern</span>
+                </div>
               </div>
             }
             @case ('too-little') {
-              <div class="row">
+              <div class="row summary">
                 <mat-icon>psychology</mat-icon>
                 <span class="label">Resembles</span>
               </div>

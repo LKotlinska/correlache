@@ -42,7 +42,9 @@ export interface Headache {
     /** Included in the list response only */
     locations?: LookupOption[],
     symptoms?: LookupOption[],
-    triggers?: LookupOption[]
+    triggers?: LookupOption[],
+    /** Doses taken for this headache */
+    intakes?: MedicationIntake[]
 }
 
 export interface HeadacheDetail extends Headache {

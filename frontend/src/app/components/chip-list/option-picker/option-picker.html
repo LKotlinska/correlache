@@ -9,7 +9,7 @@
       </mat-chip-option>
     }
   </mat-chip-listbox>
-  <div class="btn-container">
-    <button matButton="filled" [mat-dialog-close]="selected()">Done</button>
-  </div>
+  <mat-dialog-actions align="end">
+    <button matButton="filled" type="button" [mat-dialog-close]="selected()">Done</button>
+  </mat-dialog-actions>
 </app-dialog>

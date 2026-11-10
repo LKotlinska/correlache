@@ -46,7 +46,8 @@ export class InsightsData {
 
   headaches = rxResource({
     params: this.loadFrom('headaches'),
-    stream: ({ params: from }) => this.headacheService.getHeadaches({ from: new Date(from) }),
+    // With doses, as headache patterns need them.
+    stream: ({ params: from }) => this.headacheService.getHeadaches({ from: new Date(from) }, true),
   });
 
   workouts = rxResource({
