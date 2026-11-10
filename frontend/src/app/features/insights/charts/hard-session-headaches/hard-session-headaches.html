@@ -1,17 +1,8 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>Headache after load spike</mat-card-title>
+    <mat-card-title>Headache after load spikes</mat-card-title>
     @if (workouts.hasValue() && headaches.hasValue() && hasComparison()) {
-      <button
-        mat-icon-button
-        class="info"
-        type="button"
-        aria-label="How to read this"
-        aria-haspopup="dialog"
-        (click)="openInfo(info)"
-      >
-        <mat-icon>info</mat-icon>
-      </button>
+      <app-chart-info [content]="info" />
     }
   </mat-card-header>
   <mat-card-content>
@@ -59,22 +50,20 @@
 </mat-card>
 
 <ng-template #info>
-  <app-dialog heading="How to read this chart">
-    <p>
-      Each bar shows how often a headache followed that kind of session within 24 hours ("Yes"),
-      compared with your other sessions ("No").
-    </p>
-    <p>
-      <strong>Load spike:</strong> in the week before, you trained at least {{ spikePercent }}% more
-      minutes than in a usual week over the last 4 weeks.
-    </p>
-    <p>
-      <strong>Personal best:</strong> you beat your heaviest weight, most reps, longest time or
-      fastest pace in an exercise compared with the previous 3 months.
-      @if (topBests().length) {
-        You set them most often in {{ topBests().join(', ') }}.
-      }
-    </p>
-    <p>Each needs at least {{ minWorkouts }} sessions with it and {{ minWorkouts }} without.</p>
-  </app-dialog>
+  <p>
+    Each bar shows how often a headache followed that kind of session within 24 hours ("Yes"),
+    compared with your other sessions ("No").
+  </p>
+  <p>
+    <strong>Load spike:</strong> in the week before, you trained at least {{ spikePercent }}% more
+    minutes than in a usual week over the last 4 weeks.
+  </p>
+  <p>
+    <strong>Personal best:</strong> you beat your heaviest weight, most reps, longest time or
+    fastest pace in an exercise compared with the previous 3 months.
+    @if (topBests().length) {
+      You set them most often in {{ topBests().join(', ') }}.
+    }
+  </p>
+  <p>Each needs at least {{ minWorkouts }} sessions with it and {{ minWorkouts }} without.</p>
 </ng-template>

@@ -2,16 +2,7 @@
   <mat-card-header>
     <mat-card-title>Possible headache suspects</mat-card-title>
     @if (hasData() && canCompare()) {
-      <button
-        mat-icon-button
-        class="info"
-        type="button"
-        aria-label="How to read this"
-        aria-haspopup="dialog"
-        (click)="openInfo(info)"
-      >
-        <mat-icon>info</mat-icon>
-      </button>
+      <app-chart-info [content]="info" />
     }
   </mat-card-header>
   <mat-card-content>
@@ -56,10 +47,10 @@
                     mode="determinate"
                     [value]="s.probability * 100"
                     [attr.aria-label]="
-                      'How likely the pattern is real: ' + confidence(s.probability)
+                      'Pattern: ' + confidence(s.probability) + ' likely'
                     "
                   />
-                  <span class="sure">{{ confidence(s.probability) }} likely</span>
+                  <span class="sure">Pattern: {{ confidence(s.probability) }} likely</span>
                 </div>
                 @if (s.features.length > 1) {
                   <p class="together">Always done together, so these can't be told apart.</p>
@@ -96,32 +87,30 @@
 </mat-card>
 
 <ng-template #info>
-  <app-dialog heading="How to read this chart">
-    <p>
-      Each row is one exercise or muscle group from your workouts. For each one, we split your
-      workouts into two piles: the ones where you did it, and the ones where you didn't. Then we
-      count how many in each pile were followed by a headache within 24 hours.
-    </p>
-    <p>
-      <strong>"Likely"</strong> shows how likely it is, from what you've logged so far, that
-      headaches are more common in workouts with that exercise. It points to a pattern, not to
-      what's behind your headaches, and it may change as you log more.
-    </p>
-    <p>
-      An exercise only shows up once you have at least {{ minWorkouts }} workouts with it and
-      {{ minWorkouts }} without it. If you always do some exercises together, they're shown as one
-      row, because there's no way to tell them apart.
-      @if (alwaysDone().length) {
-        @let one = alwaysDone().length === 1;
-        You do {{ alwaysDone().join(', ') }} in nearly every workout, so there's nothing to compare
-        {{ one ? 'it' : 'them' }} with and {{ one ? "it isn't" : "they aren't" }} listed.
-      }
-    </p>
-    <p>
-      <strong>
-        This shows a pattern, not proof of what's behind your headaches. Sleep, food, stress and
-        other things you don't log here can play a part too.
-      </strong>
-    </p>
-  </app-dialog>
+  <p>
+    Each row is one exercise or muscle group from your workouts. For each one, we split your
+    workouts into two piles: the ones where you did it, and the ones where you didn't. Then we
+    count how many in each pile were followed by a headache within 24 hours.
+  </p>
+  <p>
+    <strong>"Pattern: % likely"</strong> shows how likely it is, from what you've logged so far, that
+    headaches are more common in workouts with that exercise. It points to a pattern, not to
+    what's behind your headaches, and it may change as you log more.
+  </p>
+  <p>
+    An exercise only shows up once you have at least {{ minWorkouts }} workouts with it and
+    {{ minWorkouts }} without it. If you always do some exercises together, they're shown as one
+    row, because there's no way to tell them apart.
+    @if (alwaysDone().length) {
+      @let one = alwaysDone().length === 1;
+      You do {{ alwaysDone().join(', ') }} in nearly every workout, so there's nothing to compare
+      {{ one ? 'it' : 'them' }} with and {{ one ? "it isn't" : "they aren't" }} listed.
+    }
+  </p>
+  <p>
+    <strong>
+      This shows a pattern, not proof of what's behind your headaches. Sleep, food, stress and
+      other things you don't log here can play a part too.
+    </strong>
+  </p>
 </ng-template>
