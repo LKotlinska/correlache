@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Post, Res, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { CurrentUser } from '@nestjs/authentication';
 import { UserService } from './user.service.js';
@@ -19,10 +20,12 @@ export class UserController {
      * Not behind HealthConsentGuard: the right of access holds whether or not consent was given.
      */
     @Get('me/export')
+    // Each call loads the user's whole history, so it shares the auth routes' limit (5 per minute per IP)
+    @UseGuards(ThrottlerGuard)
     async exportMe(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
         const data = await this.exportService.exportUser(user.id);
-        const date = data.exportedAt.slice(0, 10);
-        res.setHeader('Content-Disposition', `attachment; filename="correlache-export-${date}.json"`);
+        // No date here: the server can't know the user's local day. The web app adds it when saving.
+        res.setHeader('Content-Disposition', 'attachment; filename="correlache-export.json"');
         res.setHeader('Cache-Control', 'no-store');
         return data;
     }

@@ -76,20 +76,13 @@ export class Settings {
     this.dialogService.open(key);
   }
 
-  /** Downloads all of the user's data as a JSON file. */
+  /** Downloads all of the user's data as a JSON file named with today's local date. */
   downloadData() {
     this.exporting.set(true);
     this.userService.exportData().subscribe({
-      next: (res) => {
+      next: (blob) => {
         this.exporting.set(false);
-        const filename =
-          /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '')?.[1] ?? 'correlache-export.json';
-        const url = URL.createObjectURL(res.body!);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-        URL.revokeObjectURL(url);
+        saveFile(blob, `correlache-export-${localDate(new Date())}.json`);
       },
       error: (err: HttpErrorResponse) => {
         this.exporting.set(false);
@@ -105,4 +98,23 @@ export class Settings {
   confirmDeleteAccount() {
     this.accountActions.confirmDeleteAccount().subscribe(() => this.router.navigate(['/']));
   }
+}
+
+/** "2026-11-10" in the user's time zone. */
+function localDate(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function saveFile(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  // Some browsers ignore clicks on links that aren't in the document
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  // The download starts asynchronously in some browsers, so the URL must outlive the click
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

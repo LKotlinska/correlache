@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { UserController } from './user.controller.js';
 import { UserService } from './user.service.js';
 import { ExportService } from './export.service.js';
@@ -16,7 +17,11 @@ describe('UserController', () => {
         { provide: UserService, useValue: userService },
         { provide: ExportService, useValue: exportService },
       ],
-    }).compile();
+    })
+      // The real guard needs ThrottlerModule's storage; its behaviour belongs to e2e tests.
+      .overrideGuard(ThrottlerGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<UserController>(UserController);
   });
@@ -33,7 +38,7 @@ describe('UserController', () => {
     expect(userService.giveConsent).toHaveBeenCalledWith('uuid-1');
   });
 
-  it('sends the export as a dated JSON attachment', async () => {
+  it('sends the export as a JSON attachment', async () => {
     const data = { exportedAt: '2026-11-10T12:00:00.000Z', account: { id: 'uuid-1' } };
     exportService.exportUser.mockResolvedValue(data);
     const res = { setHeader: vi.fn() };
@@ -42,6 +47,6 @@ describe('UserController', () => {
 
     expect(exportService.exportUser).toHaveBeenCalledWith('uuid-1');
     expect(result).toBe(data);
-    expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="correlache-export-2026-11-10.json"');
+    expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="correlache-export.json"');
   });
 });

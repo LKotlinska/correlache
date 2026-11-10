@@ -98,6 +98,8 @@ export class ExportService {
         startedAt: w.startedAt,
         durationSeconds: w.durationSeconds,
         exercises: [...w.exercises].sort(byOrder).map((e) => ({
+          // Id in the app's exercise library; null when the exercise wasn't found there
+          exerciseId: e.exerciseId,
           exerciseName: e.exerciseName,
           trackingMode: e.trackingMode,
           sets: [...e.sets].sort(byOrder).map((s) => ({

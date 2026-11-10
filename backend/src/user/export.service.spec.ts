@@ -58,8 +58,8 @@ describe('ExportService', () => {
       {
         id: 'w1', title: 'Legs', startedAt: new Date(), durationSeconds: 3600,
         exercises: [
-          { order: 1, exerciseName: 'Lunge', trackingMode: 'weight_reps', sets: [] },
-          { order: 0, exerciseName: 'Squat', trackingMode: 'weight_reps', sets: [
+          { order: 1, exerciseId: 12, exerciseName: 'Lunge', trackingMode: 'weight_reps', sets: [] },
+          { order: 0, exerciseId: 7, exerciseName: 'Squat', trackingMode: 'weight_reps', sets: [
             { order: 1, weight: 60, reps: 8, distance: null, durationSeconds: null },
             { order: 0, weight: 50, reps: 10, distance: null, durationSeconds: null },
           ] },
@@ -97,6 +97,7 @@ describe('ExportService', () => {
     expect(result.medicationIntakes[0].medication).toBe('Ibuprofen');
     const [squat, lunge] = result.workouts[0].exercises;
     expect([squat.exerciseName, lunge.exerciseName]).toEqual(['Squat', 'Lunge']);
+    expect([squat.exerciseId, lunge.exerciseId]).toEqual([7, 12]);
     expect(squat.sets.map((s) => s.weight)).toEqual([50, 60]);
   });
 

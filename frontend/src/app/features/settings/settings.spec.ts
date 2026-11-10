@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -48,21 +48,30 @@ describe('Settings', () => {
     expect(component).toBeTruthy();
   });
 
-  it('downloads the export under the filename the server sends', () => {
+  it('downloads the export named with the local date, then frees the URL', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 10, 11, 0, 30)); // just after local midnight
     const body = new Blob(['{}'], { type: 'application/json' });
-    const headers = new HttpHeaders({ 'Content-Disposition': 'attachment; filename="correlache-export-2026-11-10.json"' });
-    exportData.mockReturnValue(of(new HttpResponse({ body, headers })));
+    exportData.mockReturnValue(of(body));
     const createUrl = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:x');
     const revokeUrl = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
-    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    let inDocument = false;
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+      inDocument = document.body.contains(this);
+    });
 
     component.downloadData();
 
     expect(createUrl).toHaveBeenCalledWith(body);
     const link = click.mock.contexts[0] as HTMLAnchorElement;
-    expect(link.download).toBe('correlache-export-2026-11-10.json');
+    expect(link.download).toBe('correlache-export-2026-11-11.json');
+    expect(inDocument).toBe(true);
+    expect(document.body.contains(link)).toBe(false);
+    expect(revokeUrl).not.toHaveBeenCalled();
+    vi.runAllTimers();
     expect(revokeUrl).toHaveBeenCalledWith('blob:x');
     expect(component.exporting()).toBe(false);
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
