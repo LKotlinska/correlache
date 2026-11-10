@@ -1,7 +1,11 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, TemplateRef } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatIconButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { Dialog } from '../../../../components/dialog/dialog';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { alwaysDone, Feature, MIN_WORKOUTS, rankSuspects, Session, Suspect } from '../../suspects';
@@ -16,7 +20,7 @@ const MIN_SHOWN = 0.6;
 const LIKELY = 0.8;
 
 @Component({
-  imports: [MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
+  imports: [Dialog, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon, MatIconButton, MatProgressBar, PercentPipe],
   selector: 'app-headache-suspects',
   styleUrl: './headache-suspects.scss',
   templateUrl: './headache-suspects.html',
@@ -25,6 +29,7 @@ export class HeadacheSuspects {
   readonly minWorkouts = MIN_WORKOUTS;
 
   private data = inject(InsightsData);
+  private dialog = inject(MatDialog);
 
   /** Workouts, headaches and the exercise library shared by the insights charts. */
   workouts = this.data.workouts;
@@ -103,6 +108,19 @@ export class HeadacheSuspects {
     const exercises = rest.filter(f => f.kind === 'exercise').map(f => f.name);
     if (first.kind === 'muscleGroup') return exercises.length ? `${first.name} (${exercises.join(', ')})` : first.name;
     return [first.name, ...exercises].join(' + ');
+  }
+
+  /** How sure, as a whole percent; never 0% or 100%, since the data can't make either certain. */
+  confidence(probability: number): string {
+    const percent = Math.round(probability * 100);
+    if (percent >= 100) return '>99%';
+    if (percent <= 0) return '<1%';
+    return `${percent}%`;
+  }
+
+  /** Opens the explanation of the numbers. */
+  openInfo(info: TemplateRef<unknown>): void {
+    this.dialog.open(info);
   }
 
   rate({ workouts, withHeadache }: { workouts: number; withHeadache: number }): number {
