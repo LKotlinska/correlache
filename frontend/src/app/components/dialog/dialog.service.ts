@@ -4,14 +4,16 @@ import { Login } from "./login/login";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { PrivacyPolicy } from "./privacy-policy/privacy-policy";
 import { Terms } from "./terms/terms";
+import { About } from "./about/about";
 
-export type DialogKey ='register' | 'login' | 'privacy' | 'terms';
+export type DialogKey ='register' | 'login' | 'privacy' | 'terms' | 'about';
 
 const DialogComponents: Record<DialogKey, Type<unknown>> = {
   register: Register,
   login: Login,
   privacy: PrivacyPolicy,
   terms: Terms,
+  about: About,
 };
 
 @Service()
