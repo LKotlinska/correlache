@@ -4,6 +4,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
+import { ChartInfo } from '../../chart-info/chart-info';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { matchPattern, PATTERN_NAMES } from '../../../../utils/headache-patterns';
@@ -13,7 +14,7 @@ const MIXED = 'A mix of patterns';
 const UNCLEAR = 'No clear pattern';
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
+  imports: [ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
   selector: 'app-headache-patterns',
   styleUrl: './headache-patterns.scss',
   templateUrl: './headache-patterns.html',

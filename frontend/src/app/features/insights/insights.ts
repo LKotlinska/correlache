@@ -22,6 +22,7 @@ import { HeadacheSuspects } from './charts/headache-suspects/headache-suspects';
 import { HeadachePatterns } from './charts/headache-patterns/headache-patterns';
 import { HardSessionHeadaches } from './charts/hard-session-headaches/hard-session-headaches';
 import { DataNotice } from './data-notice/data-notice';
+import { Disclaimer } from './disclaimer/disclaimer';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
 
@@ -58,6 +59,7 @@ function loadDismissed(): InsightsCategory[] {
     MatSelect,
     MatOption,
     DataNotice,
+    Disclaimer,
     HeadachesPerMonth,
     TopTriggers,
     TopSymptoms,

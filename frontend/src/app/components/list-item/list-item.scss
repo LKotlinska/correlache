@@ -43,8 +43,8 @@
 
   // Colors per tone
   &.headache {
-    background: #fff1ec;
-    border-color: #f6d3c8;
+    background: p.$headache-bg;
+    border-color: p.$headache-border;
 
     .icon-container {
       background: #f2d4cc;

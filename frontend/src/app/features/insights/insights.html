@@ -24,7 +24,7 @@
         (show)="dismiss('analysis')"
       />
     } @else {
-      <p class="disclaimer">These look for patterns in your data. They show correlation, not causation.</p>
+      <app-disclaimer>These look for patterns in your data. They show correlation, not causation.</app-disclaimer>
       <app-headache-suspects />
       <app-hard-session-headaches />
     }
@@ -41,7 +41,7 @@
         (show)="dismiss('correlations')"
       />
     } @else {
-      <p class="disclaimer">Charts show correlation, not causation.</p>
+      <app-disclaimer>Charts show correlation, not causation.</app-disclaimer>
       <app-workouts-vs-headaches />
       <app-workout-day-headaches />
       <app-time-since-workout />

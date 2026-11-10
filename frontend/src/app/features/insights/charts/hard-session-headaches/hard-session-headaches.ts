@@ -4,6 +4,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
+import { ChartInfo } from '../../chart-info/chart-info';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { addDays } from '../../../../utils/date';
@@ -26,7 +27,7 @@ interface Comparison {
 }
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
+  imports: [ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
   selector: 'app-hard-session-headaches',
   styleUrl: './hard-session-headaches.scss',
   templateUrl: './hard-session-headaches.html',

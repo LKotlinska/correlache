@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { ChartInfo } from '../../chart-info/chart-info';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { alwaysDone, Feature, MIN_WORKOUTS, rankSuspects, Session, Suspect } from '../../suspects';
@@ -16,7 +17,7 @@ const MIN_SHOWN = 0.6;
 const LIKELY = 0.8;
 
 @Component({
-  imports: [MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
+  imports: [ChartInfo, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
   selector: 'app-headache-suspects',
   styleUrl: './headache-suspects.scss',
   templateUrl: './headache-suspects.html',
@@ -103,6 +104,14 @@ export class HeadacheSuspects {
     const exercises = rest.filter(f => f.kind === 'exercise').map(f => f.name);
     if (first.kind === 'muscleGroup') return exercises.length ? `${first.name} (${exercises.join(', ')})` : first.name;
     return [first.name, ...exercises].join(' + ');
+  }
+
+  /** How sure, as a whole percent; never 0% or 100%, since the data can't make either certain. */
+  confidence(probability: number): string {
+    const percent = Math.round(probability * 100);
+    if (percent >= 100) return '>99%';
+    if (percent <= 0) return '<1%';
+    return `${percent}%`;
   }
 
   rate({ workouts, withHeadache }: { workouts: number; withHeadache: number }): number {
