@@ -26,7 +26,7 @@ describe('AuthController', () => {
   });
 
   it('delegates registration to the service', async () => {
-    const dto = { name: 'Jane', email: 'jane@example.com', password: 'supersecret' };
+    const dto = { name: 'Jane', email: 'jane@example.com', password: 'supersecret', healthDataConsent: true };
     authService.register.mockResolvedValue({ id: '1', username: 'Jane', email: dto.email });
 
     await expect(controller.register(dto)).resolves.toEqual({ id: '1', username: 'Jane', email: dto.email });
@@ -55,6 +55,17 @@ describe('AuthController', () => {
   it('returns only the public fields of the current user', () => {
     const user = { id: '1', username: 'Jane', email: 'jane@example.com', password_hash: 'secret' } as User;
 
-    expect(controller.me(user)).toEqual({ id: '1', username: 'Jane', email: 'jane@example.com' });
+    expect(controller.me(user)).toEqual({
+      id: '1',
+      username: 'Jane',
+      email: 'jane@example.com',
+      hasHealthDataConsent: false,
+    });
+  });
+
+  it('reports recorded health data consent', () => {
+    const user = { id: '1', username: 'Jane', email: 'jane@example.com', health_data_consent_at: new Date() } as User;
+
+    expect(controller.me(user).hasHealthDataConsent).toBe(true);
   });
 });

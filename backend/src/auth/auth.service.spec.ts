@@ -27,7 +27,7 @@ describe('AuthService', () => {
   });
 
   it('delegates registration to the user service', async () => {
-    const dto = { name: 'Jane', ...credentials };
+    const dto = { name: 'Jane', ...credentials, healthDataConsent: true };
     userService.create.mockResolvedValue({ id: '1', username: 'Jane', email: dto.email });
 
     await expect(service.register(dto)).resolves.toEqual({ id: '1', username: 'Jane', email: dto.email });

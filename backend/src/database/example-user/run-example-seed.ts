@@ -69,9 +69,9 @@ try {
     const passwordHash = await hashPassword(EXAMPLE_USER.password);
     let user = await manager.findOneBy(User, { email: EXAMPLE_USER.email });
     if (user) {
-      await manager.update(User, user.id, { username: EXAMPLE_USER.username, password_hash: passwordHash });
+      await manager.update(User, user.id, { username: EXAMPLE_USER.username, password_hash: passwordHash, health_data_consent_at: new Date() });
     } else {
-      user = await manager.save(manager.create(User, { username: EXAMPLE_USER.username, email: EXAMPLE_USER.email, password_hash: passwordHash }));
+      user = await manager.save(manager.create(User, { username: EXAMPLE_USER.username, email: EXAMPLE_USER.email, password_hash: passwordHash, health_data_consent_at: new Date() }));
     }
     const userId = user.id;
 

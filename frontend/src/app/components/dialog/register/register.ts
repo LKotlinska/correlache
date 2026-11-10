@@ -1,6 +1,7 @@
 import {Component, inject, signal} from '@angular/core';
 import {FormControl, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
 import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
+import { HealthConsentCheckbox } from '../../form-fields/health-consent-checkbox/health-consent-checkbox';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Dialog } from '../dialog';
 import { Button } from '../../button/button';
@@ -10,7 +11,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogKey, DialogService } from '../dialog.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { getErrorMessage } from '../../../utils/error-message';
-import { MatTabLink } from '@angular/material/tabs';
 
 
 @Component({
@@ -20,6 +20,7 @@ import { MatTabLink } from '@angular/material/tabs';
   imports: [
     ReactiveFormsModule,
     OutlinedField,
+    HealthConsentCheckbox,
     MatCheckboxModule,
     Dialog,
     Button,
@@ -38,11 +39,20 @@ export class Register {
     emailFormControl: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(255)]),
     passwordFormControl: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(128)]),
     termsFormControl: new FormControl(false, [Validators.requiredTrue]),
+    // Kept apart from the terms: art. 9 consent must be specific and not bundled with other agreements
+    healthConsentFormControl: new FormControl(false, [Validators.requiredTrue]),
   });
 
   get termsInvalid() {
     const terms = this.addUserForm.controls.termsFormControl;
     return terms.invalid && terms.touched;
+  }
+
+  /** Opens Terms or Privacy on top, so the form keeps what was filled in. */
+  openOnTop(event: Event, key: 'terms' | 'privacy') {
+    // Stops the click from also toggling the checkbox the link sits in
+    event.preventDefault();
+    this.dialogService.open(key);
   }
 
   switchDialog(key: DialogKey){
@@ -64,6 +74,7 @@ export class Register {
       name: nameFormControl!,
       email: emailFormControl!,
       password: passwordFormControl!,
+      healthDataConsent: true, // the form can't be submitted without it
     }).subscribe({
       next: () => {
         this.dialogRef.close();

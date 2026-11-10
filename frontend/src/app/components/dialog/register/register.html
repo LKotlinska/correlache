@@ -21,21 +21,27 @@
       [hasPassView]="true"
     />
 
-    <div class="terms-field">
+    <div class="checkbox-field">
       <mat-checkbox
         [formControl]="addUserForm.controls.termsFormControl"
         [attr.aria-describedby]="termsInvalid ? 'terms-error' : null"
       >
         I agree to the
-        <span class="link" (click)="switchDialog('terms')">Terms of Service</span> and
-        <span class="link" (click)="switchDialog('privacy')">Privacy Policy</span>
+        <a href="#" class="text-link" (click)="openOnTop($event, 'terms')">Terms of Service</a>
+        and have read the
+        <a href="#" class="text-link" (click)="openOnTop($event, 'privacy')">Privacy Policy</a>
       </mat-checkbox>
       @if (termsInvalid) {
-        <p id="terms-error" class="terms-error" role="alert">
+        <p id="terms-error" class="checkbox-error" role="alert">
           You must accept the terms to create an account
         </p>
       }
     </div>
+
+    <app-health-consent-checkbox
+      [control]="addUserForm.controls.healthConsentFormControl"
+      errorMessage="CorrelAche can't store your headache data without this consent"
+    />
 
     <div class="button-container">
       <app-button type="submit" [isFullWidth]="true" [disabled]="isSubmitting()"

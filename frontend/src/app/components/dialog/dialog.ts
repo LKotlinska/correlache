@@ -10,4 +10,6 @@ import { DialogHeader } from './dialog-header/dialog-header';
 })
 export class Dialog {
   heading = input.required<string>();
+  /** False hides the close button, for dialogs that need an explicit choice. */
+  closable = input(true);
 }

@@ -18,6 +18,10 @@ export class User {
 
     @Column({ type: 'int', default: 0 })
     tokenVersion: number
+
+    /** When the user gave explicit consent to processing health data (GDPR art. 9(2)(a)). Null for accounts created before consent was recorded. */
+    @Column({ type: 'datetime', nullable: true })
+    health_data_consent_at: Date | null
     
     @OneToMany(() => Headache, (headache) => headache.user)
     headaches: Headache[]

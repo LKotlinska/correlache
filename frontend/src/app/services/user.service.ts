@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { authUserPayload, CreateUserPayload } from '../models/user.model';
+import { authUserPayload, CreateUserPayload, MeResponse } from '../models/user.model';
 
 @Service()
 export class UserService {
@@ -23,6 +23,10 @@ export class UserService {
     }
 
     me() {
-        return this.http.get('/api/auth/me');
+        return this.http.get<MeResponse>('/api/auth/me');
+    }
+
+    giveConsent() {
+        return this.http.post<void>('/api/user/consent', { healthDataConsent: true });
     }
 }

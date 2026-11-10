@@ -1,0 +1,20 @@
+<app-dialog heading="Your consent is needed" [closable]="false">
+  <p>
+    Your account was created before CorrelAche started recording consent. To keep using the app,
+    please confirm that we may process your health data.
+  </p>
+
+  <app-health-consent-checkbox
+    [control]="consentControl"
+    errorMessage="Tick the box to continue, or sign out"
+  />
+
+  <app-button [isFullWidth]="true" [disabled]="isSubmitting()" (click)="giveConsent()"
+    >Continue</app-button
+  >
+
+  <div class="other-actions">
+    <app-button appearance="text" (click)="signOut()">Sign out</app-button>
+    <app-button appearance="text" (click)="deleteAccount()">Delete account</app-button>
+  </div>
+</app-dialog>
