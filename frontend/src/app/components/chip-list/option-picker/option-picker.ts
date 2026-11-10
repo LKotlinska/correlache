@@ -14,7 +14,6 @@ export interface OptionPickerData {
 @Component({
   imports: [Dialog, MatChipsModule, MatDialogModule, MatButtonModule],
   selector: 'app-option-picker',
-  styleUrl: './option-picker.scss',
   templateUrl: './option-picker.html',
 })
 export class OptionPicker {
