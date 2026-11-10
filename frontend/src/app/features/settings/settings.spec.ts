@@ -18,6 +18,7 @@ describe('Settings', () => {
   const deleteAccount = vi.fn();
   const dialogOpen = vi.fn();
   const deleteMedication = vi.fn();
+  const exportData = vi.fn();
 
   beforeEach(async () => {
     logoutUser.mockReset();
@@ -26,10 +27,11 @@ describe('Settings', () => {
     deleteAccount.mockReset();
     dialogOpen.mockReset();
     deleteMedication.mockReset();
+    exportData.mockReset();
     await TestBed.configureTestingModule({
       imports: [Settings],
       providers: [
-        { provide: UserService, useValue: { logoutUser, deleteAccount } },
+        { provide: UserService, useValue: { logoutUser, deleteAccount, exportData } },
         { provide: MedicationService, useValue: { getMedications: () => of([]), deleteMedication } },
         { provide: DialogService, useValue: { open: dialogOpen } },
         { provide: Router, useValue: { navigate } },
@@ -44,6 +46,40 @@ describe('Settings', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('downloads the export named with the local date, then frees the URL', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 10, 11, 0, 30)); // just after local midnight
+    const body = new Blob(['{}'], { type: 'application/json' });
+    exportData.mockReturnValue(of(body));
+    const createUrl = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:x');
+    const revokeUrl = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    let inDocument = false;
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+      inDocument = document.body.contains(this);
+    });
+
+    component.downloadData();
+
+    expect(createUrl).toHaveBeenCalledWith(body);
+    const link = click.mock.contexts[0] as HTMLAnchorElement;
+    expect(link.download).toBe('correlache-export-2026-11-11.json');
+    expect(inDocument).toBe(true);
+    expect(document.body.contains(link)).toBe(false);
+    expect(revokeUrl).not.toHaveBeenCalled();
+    vi.runAllTimers();
+    expect(revokeUrl).toHaveBeenCalledWith('blob:x');
+    expect(component.exporting()).toBe(false);
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('shows an error when the export fails', () => {
+    exportData.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    component.downloadData();
+    expect(open).toHaveBeenCalled();
+    expect(component.exporting()).toBe(false);
   });
 
   it('navigates home after a successful sign out', () => {

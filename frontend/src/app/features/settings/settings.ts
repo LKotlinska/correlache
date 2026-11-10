@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { AccountActions } from '../../services/account-actions';
 import { DialogKey, DialogService } from '../../components/dialog/dialog.service';
 import { ConfirmDialog, ConfirmDialogData } from '../../components/dialog/confirm-dialog/confirm-dialog';
 import { MedicationService } from '../../services/medication.service';
+import { UserService } from '../../services/user.service';
 import { Medication } from '../../models/medication.model';
 import { MedicationDialog, MedicationDialogData } from '../medications/medication-dialog/medication-dialog';
 import { MEDICATION_CLASS_LABELS, MEDICATION_USE_LABELS } from '../../utils/medication';
@@ -28,6 +29,9 @@ export class Settings {
   private accountActions = inject(AccountActions);
   private dialogService = inject(DialogService);
   private medicationService = inject(MedicationService);
+  private userService = inject(UserService);
+
+  exporting = signal(false);
 
   medications = rxResource({ stream: () => this.medicationService.getMedications() });
 
@@ -72,6 +76,21 @@ export class Settings {
     this.dialogService.open(key);
   }
 
+  /** Downloads all of the user's data as a JSON file named with today's local date. */
+  downloadData() {
+    this.exporting.set(true);
+    this.userService.exportData().subscribe({
+      next: (blob) => {
+        this.exporting.set(false);
+        saveFile(blob, `correlache-export-${localDate(new Date())}.json`);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.exporting.set(false);
+        this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
+      },
+    });
+  }
+
   signOut() {
     this.accountActions.signOut().subscribe(() => this.router.navigate(['/']));
   }
@@ -79,4 +98,23 @@ export class Settings {
   confirmDeleteAccount() {
     this.accountActions.confirmDeleteAccount().subscribe(() => this.router.navigate(['/']));
   }
+}
+
+/** "2026-11-10" in the user's time zone. */
+function localDate(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function saveFile(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  // Some browsers ignore clicks on links that aren't in the document
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  // The download starts asynchronously in some browsers, so the URL must outlive the click
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
