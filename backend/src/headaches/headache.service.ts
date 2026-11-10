@@ -118,8 +118,9 @@ export class HeadacheService {
   async getHeadaches(userId: string, from?: Date, to?: Date, limit?: number): Promise<Headache[]> {
     const headaches = await this.headacheRepo.find({
       where: { userId, ...startedWithin(from, to) },
-      relations: { locations: true, symptoms: true, triggers: true },
-      // One query per relation, as joining all three multiplies the rows per headache.
+      // Doses are included so headache patterns can tell treated headaches from untreated ones.
+      relations: { locations: true, symptoms: true, triggers: true, intakes: { medication: true } },
+      // One query per relation, as joining them all multiplies the rows per headache.
       relationLoadStrategy: 'query',
       order: { startedAt: 'DESC'},
       take: limit,
