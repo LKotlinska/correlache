@@ -14,7 +14,7 @@ describe('UserService', () => {
     createQueryBuilder: vi.fn(),
   };
 
-  const dto = { name: 'Jane', email: 'jane@example.com', password: 'supersecret' };
+  const dto = { name: 'Jane', email: 'jane@example.com', password: 'supersecret', healthDataConsent: true };
 
   beforeEach(async () => {
     vi.resetAllMocks();
@@ -45,6 +45,21 @@ describe('UserService', () => {
     expect(created.password_hash).not.toBe(dto.password);
     expect(created.password_hash).toContain(':');
     expect(result).toEqual({ id: 'uuid-1', username: 'Jane', email: 'jane@example.com' });
+  });
+
+  it('records when health data consent was given, using the server clock', async () => {
+    repo.findOneBy.mockResolvedValue(null);
+    repo.create.mockImplementation((u) => u);
+    repo.save.mockImplementation(async (u) => ({ id: 'uuid-1', ...u }));
+
+    const before = Date.now();
+    await service.create(dto);
+    const after = Date.now();
+
+    const consentAt: Date = repo.create.mock.calls[0][0].health_data_consent_at;
+    expect(consentAt).toBeInstanceOf(Date);
+    expect(consentAt.getTime()).toBeGreaterThanOrEqual(before);
+    expect(consentAt.getTime()).toBeLessThanOrEqual(after);
   });
 
   it('throws ConflictException when the email already exists', async () => {

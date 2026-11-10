@@ -38,11 +38,18 @@ export class Register {
     emailFormControl: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(255)]),
     passwordFormControl: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(128)]),
     termsFormControl: new FormControl(false, [Validators.requiredTrue]),
+    // Kept apart from the terms: art. 9 consent must be specific and not bundled with other agreements
+    healthConsentFormControl: new FormControl(false, [Validators.requiredTrue]),
   });
 
   get termsInvalid() {
     const terms = this.addUserForm.controls.termsFormControl;
     return terms.invalid && terms.touched;
+  }
+
+  get healthConsentInvalid() {
+    const consent = this.addUserForm.controls.healthConsentFormControl;
+    return consent.invalid && consent.touched;
   }
 
   switchDialog(key: DialogKey){
@@ -64,6 +71,7 @@ export class Register {
       name: nameFormControl!,
       email: emailFormControl!,
       password: passwordFormControl!,
+      healthDataConsent: true, // the form can't be submitted without it
     }).subscribe({
       next: () => {
         this.dialogRef.close();

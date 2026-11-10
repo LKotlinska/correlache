@@ -27,12 +27,28 @@
         [attr.aria-describedby]="termsInvalid ? 'terms-error' : null"
       >
         I agree to the
-        <span class="link" (click)="switchDialog('terms')">Terms of Service</span> and
-        <span class="link" (click)="switchDialog('privacy')">Privacy Policy</span>
+        <span class="link" (click)="switchDialog('terms')">Terms of Service</span> and have read
+        the <span class="link" (click)="switchDialog('privacy')">Privacy Policy</span>
       </mat-checkbox>
       @if (termsInvalid) {
         <p id="terms-error" class="terms-error" role="alert">
           You must accept the terms to create an account
+        </p>
+      }
+    </div>
+
+    <div class="terms-field">
+      <mat-checkbox
+        [formControl]="addUserForm.controls.healthConsentFormControl"
+        [attr.aria-describedby]="healthConsentInvalid ? 'health-consent-error' : null"
+      >
+        I explicitly consent to CorrelAche processing my health data (headaches, symptoms,
+        medications). I can withdraw consent at any time, see the
+        <span class="link" (click)="switchDialog('privacy')">Privacy Policy</span>.
+      </mat-checkbox>
+      @if (healthConsentInvalid) {
+        <p id="health-consent-error" class="terms-error" role="alert">
+          CorrelAche can't store your headache data without this consent
         </p>
       }
     </div>

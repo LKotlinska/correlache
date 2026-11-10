@@ -8,6 +8,16 @@
 
 .terms-field {
     margin: 1em 0;
+
+    // Pin the box to the first line of multi-line labels instead of centring it
+    ::ng-deep .mat-internal-form-field {
+        align-items: flex-start;
+    }
+
+    // Box sits in a 40px state layer; pad the label so its first line lines up with the box
+    ::ng-deep .mat-internal-form-field-label {
+        padding-top: calc((var(--mat-checkbox-state-layer-size, 40px) - 1lh) / 2);
+    }
 }
 
 .terms-error {

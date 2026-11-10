@@ -26,7 +26,7 @@ describe('AuthController', () => {
   });
 
   it('delegates registration to the service', async () => {
-    const dto = { name: 'Jane', email: 'jane@example.com', password: 'supersecret' };
+    const dto = { name: 'Jane', email: 'jane@example.com', password: 'supersecret', healthDataConsent: true };
     authService.register.mockResolvedValue({ id: '1', username: 'Jane', email: dto.email });
 
     await expect(controller.register(dto)).resolves.toEqual({ id: '1', username: 'Jane', email: dto.email });

@@ -18,6 +18,7 @@ Correlache is a **student project**, not a commercial service. There is no suppo
 - Username
 - Email address
 - Password, stored only as a salted hash (we cannot read your password)
+- The date and time you gave explicit consent to processing your health data
 
 ### 2.2 Health data (special category data)
 
@@ -51,7 +52,7 @@ Workouts you log manually: the exercises, sets, reps, weight and similar details
 | Letting you log and view headaches and workouts           | Health data, workout data  | Explicit consent (Art. 9(2)(a))                         |
 | Showing patterns between your headaches and workouts      | Health data, workout data  | Explicit consent (Art. 9(2)(a))                         |
 
-Headache records are health data, which GDPR treats as a special category. We rely on your **explicit consent**, which you give when you create an account and save headache entries. You can withdraw it at any time by deleting your entries or your account (Section 7). Withdrawing consent does not affect processing that happened before.
+Headache records are health data, which GDPR treats as a special category. We rely on your **explicit consent**, which you give by ticking a separate consent box when you create an account. We record when you gave it. You can withdraw it at any time by deleting your entries or your account (Section 7). Withdrawing consent does not affect processing that happened before.
 
 ## 4. How your data is stored and secured
 

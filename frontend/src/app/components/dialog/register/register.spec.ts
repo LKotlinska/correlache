@@ -19,6 +19,7 @@ describe('Register', () => {
       emailFormControl: 'jane@example.com',
       passwordFormControl: 'supersecret',
       termsFormControl: true,
+      healthConsentFormControl: true,
     });
 
   beforeEach(async () => {
@@ -59,6 +60,17 @@ describe('Register', () => {
     expect(userService.createUser).not.toHaveBeenCalled();
   });
 
+  it('requires explicit health data consent, separately from the terms', () => {
+    fillValidForm();
+    component.addUserForm.controls.healthConsentFormControl.setValue(false);
+
+    component.onSubmit();
+
+    expect(userService.createUser).not.toHaveBeenCalled();
+    expect(component.healthConsentInvalid).toBe(true);
+    expect(component.termsInvalid).toBe(false);
+  });
+
   it('shows the terms error only once the checkbox has been touched', () => {
     expect(component.termsInvalid).toBe(false);
 
@@ -77,6 +89,7 @@ describe('Register', () => {
       name: 'Jane',
       email: 'jane@example.com',
       password: 'supersecret',
+      healthDataConsent: true,
     });
     expect(dialogRef.close).toHaveBeenCalled();
     expect(snackBar.open).toHaveBeenCalledWith(

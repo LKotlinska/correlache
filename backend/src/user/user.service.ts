@@ -31,6 +31,8 @@ export class UserService {
         username: dto.name,
         email,
         password_hash: await hashPassword(dto.password),
+        // Set by the server, so the record shows when consent was actually received
+        health_data_consent_at: new Date(),
     });
 
     let saved: User;
