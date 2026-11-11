@@ -20,7 +20,7 @@
         <p>No headaches logged in {{ periodLabel() }}.</p>
       }
     } @else if (workouts.error() || headaches.error()) {
-      <p>Couldn't load workout and headache data.</p>
+      <app-error-message message="Couldn't load workout and headache data." compact />
     }
   </mat-card-content>
 </mat-card>

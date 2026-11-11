@@ -8,7 +8,7 @@
   @if (workout.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (workout.error()) {
-    <p>Couldn't load this workout.</p>
+    <app-error-message message="Couldn't load this workout." retryable (retry)="workout.reload()" />
   } @else if (workout.value(); as w) {
     <mat-card class="card">
       <mat-card-content>

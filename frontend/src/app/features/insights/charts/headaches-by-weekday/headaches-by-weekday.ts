@@ -6,11 +6,12 @@ import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
 import { Period } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-headaches-by-weekday',
   styleUrl: './headaches-by-weekday.scss',
   templateUrl: './headaches-by-weekday.html',

@@ -19,7 +19,7 @@
         <p>No headache locations logged in {{ periodLabel() }}.</p>
       }
     } @else if (headaches.error()) {
-      <p>Couldn't load headache data.</p>
+      <app-error-message message="Couldn't load headache data." compact />
     }
   </mat-card-content>
 </mat-card>

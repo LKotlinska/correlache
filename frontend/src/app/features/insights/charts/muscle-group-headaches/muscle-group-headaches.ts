@@ -5,6 +5,7 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workouts a muscle group needs before its rate is trusted. Groups below it are shown faded. */
@@ -20,7 +21,7 @@ interface GroupRate {
 }
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-muscle-group-headaches',
   styleUrl: './muscle-group-headaches.scss',
   templateUrl: './muscle-group-headaches.html',

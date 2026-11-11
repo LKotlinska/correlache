@@ -6,6 +6,7 @@ import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../char
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { TrackingMode, Workout } from '../../../../models/workout.model';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workouts a type needs before its rate is trusted. Types below it are shown faded. */
@@ -37,7 +38,7 @@ function workoutType(workout: Workout): WorkoutType | null {
 }
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-workout-type-headaches',
   styleUrl: './workout-type-headaches.scss',
   templateUrl: './workout-type-headaches.html',

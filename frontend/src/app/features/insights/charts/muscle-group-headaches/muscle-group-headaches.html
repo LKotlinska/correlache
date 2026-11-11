@@ -25,7 +25,7 @@
         <p>No workouts in {{ periodLabel() }} trained a tracked muscle group.</p>
       }
     } @else if (hasError()) {
-      <p>Couldn't load workout and headache data.</p>
+      <app-error-message message="Couldn't load workout and headache data." compact />
     }
   </mat-card-content>
 </mat-card>

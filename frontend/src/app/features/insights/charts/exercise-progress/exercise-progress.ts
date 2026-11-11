@@ -10,6 +10,7 @@ import { InsightsData } from '../../insights-data';
 import { TrackingMode } from '../../../../models/workout.model';
 import { sessionValue } from '../../../../utils/exercise-metric';
 import { Period } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 
@@ -34,7 +35,7 @@ interface ExerciseOption {
 }
 
 @Component({
-  imports: [
+  imports: [ErrorMessage, 
     BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent,
     MatFormField, MatLabel, MatInput, MatAutocomplete, MatAutocompleteTrigger, MatOption,
   ],

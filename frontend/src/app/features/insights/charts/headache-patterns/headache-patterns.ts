@@ -7,13 +7,14 @@ import { ChartInfo } from '../../chart-info/chart-info';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { matchPattern, PATTERN_NAMES } from '../../../../utils/headache-patterns';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 const MIXED = 'A mix of patterns';
 const UNCLEAR = 'No clear pattern';
 
 @Component({
-  imports: [ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-headache-patterns',
   styleUrl: './headache-patterns.scss',
   templateUrl: './headache-patterns.html',

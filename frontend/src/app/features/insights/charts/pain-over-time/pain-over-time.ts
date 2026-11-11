@@ -6,13 +6,14 @@ import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { weekIndex } from '../../../../utils/date';
 import { Period, periodWeeks } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 /** Recent weeks compared against the rest of the period in the summary. */
 const RECENT_WEEKS = 4;
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-pain-over-time',
   styleUrl: './pain-over-time.scss',
   templateUrl: './pain-over-time.html',

@@ -1,0 +1,66 @@
+@use '../../../variables' as p;
+
+// Default: a centred block that fills the top of a page or section
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75em;
+  padding: 2.5em 1em;
+  text-align: center;
+  color: p.$text-strong;
+
+  .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3.5em;
+    height: 3.5em;
+    border-radius: 50%;
+    background-color: p.$brand-tint;
+    color: p.$brand-primary;
+  }
+
+  .message {
+    margin: 0;
+    max-width: 22em;
+    font-size: 1.05em;
+  }
+
+  // Full-width button (end of a list) stretches; the default one stays its own width
+  app-button {
+    align-self: stretch;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+// Compact: one line inside a card, where a big block would be too heavy
+:host(.compact) .error-message {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.75em 0;
+  text-align: left;
+
+  .icon {
+    width: auto;
+    height: auto;
+    background: none;
+
+    mat-icon {
+      width: 1.25em;
+      height: 1.25em;
+      font-size: 1.25em;
+    }
+  }
+
+  .message {
+    font-size: 1em;
+  }
+
+  app-button {
+    align-self: auto;
+    margin-left: auto;
+  }
+}

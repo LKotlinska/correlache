@@ -11,9 +11,10 @@ import { MediaTile } from '../../../components/form-fields/media-tile/media-tile
 import { HeadacheService } from '../../../services/headache.service';
 import { matchPattern, PATTERN_NAMES, patternLabel } from '../../../utils/headache-patterns';
 import { INTAKE_EFFECT_LABELS, intakeLabel } from '../../../utils/medication';
+import { ErrorMessage } from '../../../components/error-message/error-message';
 
 @Component({
-  imports: [DatePipe, RouterLink, MatCardModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
+  imports: [ErrorMessage, DatePipe, RouterLink, MatCardModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
   selector: 'app-headache-view',
   styleUrl: './headache-view.scss',
   templateUrl: './headache-view.html',

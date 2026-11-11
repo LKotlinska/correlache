@@ -6,11 +6,12 @@ import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { weekIndex } from '../../../../utils/date';
 import { Period, periodWeeks } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-workouts-per-week',
   styleUrl: './workouts-per-week.scss',
   templateUrl: './workouts-per-week.html',

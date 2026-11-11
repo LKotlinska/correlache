@@ -9,4 +9,5 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 })
 export class ProgressSpinner {
   ariaLabel = input.required<string>();
+  diameter = input(48);
 }

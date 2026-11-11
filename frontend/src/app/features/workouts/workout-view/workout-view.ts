@@ -12,9 +12,10 @@ import { WorkoutDetail, WorkoutExerciseDetail } from '../../../models/workout.mo
 import { LookupOption } from '../../../models/headache.model';
 import { ChipList } from '../../../components/chip-list/chip-list';
 import { DurationPipe } from '../../../pipes/duration.pipe';
+import { ErrorMessage } from '../../../components/error-message/error-message';
 
 @Component({
-  imports: [DecimalPipe, DatePipe, DurationPipe, DetailHeader, ChipList, MatProgressBar, MatCard, MatCardContent, MatExpansionModule, MatIcon, MatCardHeader],
+  imports: [ErrorMessage, DecimalPipe, DatePipe, DurationPipe, DetailHeader, ChipList, MatProgressBar, MatCard, MatCardContent, MatExpansionModule, MatIcon, MatCardHeader],
   selector: 'app-workout-view',
   styleUrl: './workout-view.scss',
   templateUrl: './workout-view.html',

@@ -20,7 +20,7 @@
         <p>No workouts logged in {{ periodLabel() }}.</p>
       }
     } @else if (workouts.error()) {
-      <p>Couldn't load workout data.</p>
+      <app-error-message message="Couldn't load workout data." compact />
     }
   </mat-card-content>
 </mat-card>

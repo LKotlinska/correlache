@@ -7,6 +7,7 @@ import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
 import { MuscleRole } from '../../../../models/workout.model';
 import { Period } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 4 };
 
@@ -17,7 +18,7 @@ const ROLE_WEIGHT: Record<MuscleRole, number> = { primary: 1, secondary: 0.5 };
 const HIDDEN_GROUPS = new Set(['Cardio']);
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-muscle-balance',
   styleUrl: './muscle-balance.scss',
   templateUrl: './muscle-balance.html',

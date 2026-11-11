@@ -9,6 +9,7 @@ import { Period } from '../../period';
 import { addDays } from '../../../../utils/date';
 import { Count, MIN_WORKOUTS, probabilityHigher } from '../../suspects';
 import { BEST_LOOKBACK_DAYS, loadRatio, personalBests, SPIKE_RATIO } from '../../training-load';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 /** Chance from which headaches count as more common after these sessions, or below 1 minus it, less common. */
@@ -26,7 +27,7 @@ interface Comparison {
 }
 
 @Component({
-  imports: [ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-hard-session-headaches',
   styleUrl: './hard-session-headaches.scss',
   templateUrl: './hard-session-headaches.html',

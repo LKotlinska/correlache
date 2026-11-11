@@ -6,6 +6,7 @@ import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { addDays } from '../../../../utils/date';
 import { Period } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Days before the first shown day searched for the workout before each headache. */
@@ -24,7 +25,7 @@ const BUCKETS = [
 ];
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-time-since-workout',
   styleUrl: './time-since-workout.scss',
   templateUrl: './time-since-workout.html',

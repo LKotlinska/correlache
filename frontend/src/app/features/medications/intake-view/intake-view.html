@@ -8,7 +8,7 @@
   @if (intake.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (intake.error()) {
-    <p>Couldn't load this dose.</p>
+    <app-error-message message="Couldn't load this dose." retryable (retry)="intake.reload()" />
   } @else if (intake.value(); as i) {
     <mat-card class="card">
       <mat-card-content>
