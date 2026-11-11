@@ -1,0 +1,162 @@
+<app-page-header title="Import workouts" fallback="/user/settings" />
+<main class="page-wrapper">
+  <section class="section">
+    <h2>Your Lyfta export</h2>
+    <p class="hint">
+      Export your workouts from Lyfta as a CSV file, then choose it here. The file is read on this
+      device.
+    </p>
+    <input #fileInput type="file" accept=".csv,text/csv" hidden (change)="selectFile($event)" />
+    <div class="file-row">
+      <button matButton="outlined" type="button" (click)="fileInput.click()">
+        <mat-icon>upload_file</mat-icon>
+        {{ file() ? 'Choose another file' : 'Choose file' }}
+      </button>
+      @if (file(); as file) {
+        <span class="file-name">{{ file.name }}</span>
+      }
+    </div>
+
+    <!-- Lyfta's export doesn't say which units it uses -->
+    <div class="units">
+      <div class="unit">
+        <span id="weight-unit">Weights in</span>
+        <mat-button-toggle-group
+          aria-labelledby="weight-unit"
+          hideSingleSelectionIndicator
+          [value]="weightUnit()"
+          (change)="weightUnit.set($event.value)"
+        >
+          <mat-button-toggle value="kg">kg</mat-button-toggle>
+          <mat-button-toggle value="lb">lb</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <div class="unit">
+        <span id="distance-unit">Distances in</span>
+        <mat-button-toggle-group
+          aria-labelledby="distance-unit"
+          hideSingleSelectionIndicator
+          [value]="distanceUnit()"
+          (change)="distanceUnit.set($event.value)"
+        >
+          <mat-button-toggle value="km">km</mat-button-toggle>
+          <mat-button-toggle value="mi">miles</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+  </section>
+
+  @if (parsed(); as parsed) {
+    @if (!parsed.ok) {
+      <app-error-message
+        [message]="parsed.message + ' Check that you chose the CSV file exported from Lyfta.'"
+      />
+    } @else if (summary(); as summary) {
+      <section class="section">
+        <h2>What's in the file</h2>
+        <p>
+          {{ summary.workouts }} {{ summary.workouts === 1 ? 'workout' : 'workouts' }} from
+          {{ summary.firstStartedAt | date: 'mediumDate' }} to
+          {{ summary.lastStartedAt | date: 'mediumDate' }}, with {{ summary.sets }} sets.
+        </p>
+        @if (summary.warmupSets > 0) {
+          <mat-checkbox [checked]="includeWarmups()" (change)="includeWarmups.set($event.checked)">
+            Include {{ summary.warmupSets }} warmup {{ summary.warmupSets === 1 ? 'set' : 'sets' }}
+          </mat-checkbox>
+        }
+        @if (parsed.result.emptySetsDropped > 0) {
+          <p class="hint">
+            {{ parsed.result.emptySetsDropped }}
+            {{ parsed.result.emptySetsDropped === 1 ? 'set has' : 'sets have' }} no values and will
+            be left out.
+          </p>
+        }
+        @if (parsed.result.problems.length > 0) {
+          <details class="problems">
+            <summary>
+              {{ parsed.result.problems.length }}
+              {{ parsed.result.problems.length === 1 ? 'row' : 'rows' }} couldn't be read and will
+              be left out
+            </summary>
+            <ul>
+              @for (problem of parsed.result.problems; track problem.line) {
+                <li>Line {{ problem.line }}: {{ problem.message }}</li>
+              }
+            </ul>
+          </details>
+        }
+      </section>
+
+      @if (library.isLoading()) {
+        <mat-progress-bar mode="indeterminate" />
+      } @else if (library.error()) {
+        <app-error-message
+          message="Couldn't load the exercise library."
+          retryable
+          (retry)="library.reload()"
+        />
+      } @else {
+        @if (toReview().length > 0) {
+          <section class="section">
+            <h2>Match your exercises</h2>
+            <p class="hint">
+              These names don't match a single exercise here. Choose one for each, or skip it to
+              leave its sets out.
+            </p>
+            <ul class="name-list">
+              @for (row of toReview(); track row.name) {
+                <li>
+                  <ng-container
+                    [ngTemplateOutlet]="nameRow"
+                    [ngTemplateOutletContext]="{ $implicit: row }"
+                  />
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (autoMatched().length > 0) {
+          <details class="section auto-matched">
+            <summary>
+              <h2>{{ autoMatched().length }} matched automatically</h2>
+            </summary>
+            <ul class="name-list">
+              @for (row of autoMatched(); track row.name) {
+                <li>
+                  <ng-container
+                    [ngTemplateOutlet]="nameRow"
+                    [ngTemplateOutletContext]="{ $implicit: row }"
+                  />
+                </li>
+              }
+            </ul>
+          </details>
+        }
+
+        <p class="status" role="status">
+          @if (undecided().length > 0) {
+            {{ undecided().length }} {{ undecided().length === 1 ? 'name needs' : 'names need' }} an
+            exercise or a skip.
+          } @else if (payloads(); as payloads) {
+            Ready to import {{ payloads.length }}
+            {{ payloads.length === 1 ? 'workout' : 'workouts' }} with {{ payloadSets() }} sets.
+          }
+        </p>
+      }
+    } @else {
+      <app-error-message message="This file has no workouts that could be read." />
+    }
+  }
+</main>
+
+<ng-template #nameRow let-row>
+  <app-name-match-row
+    [row]="row"
+    [choice]="choices().get(row.name)"
+    (picked)="choose(row.name, $event)"
+    (searchRequested)="search(row)"
+    (skipped)="skip(row.name)"
+    (resetRequested)="reset(row)"
+  />
+</ng-template>

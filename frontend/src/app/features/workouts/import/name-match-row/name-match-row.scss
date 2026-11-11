@@ -1,0 +1,77 @@
+@use '../../../../../variables' as *;
+
+:host {
+  display: block;
+  padding: 0.75em 1em 0.25em;
+  border-radius: $card-border;
+  background: $surface-low;
+  color: $text-strong;
+}
+
+.heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.exported-name {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.set-count {
+  flex: none;
+  font-size: 0.875em;
+  color: $outline;
+}
+
+// Library names are lower case, e.g. "cable bar lateral pulldown"
+.exercise-name::first-letter {
+  text-transform: uppercase;
+}
+
+.exercise-name {
+  display: inline-block;
+}
+
+.suggestions {
+  display: grid;
+  gap: 0.25em;
+  margin-top: 0.5em;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+
+  img {
+    flex: none;
+    width: 3em;
+    height: 3em;
+    border-radius: 0.5em;
+    object-fit: cover;
+    background: $white;
+  }
+}
+
+.option-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.details {
+  font-size: 0.875em;
+  color: $outline;
+}
+
+.outcome {
+  margin: 0.5em 0 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25em -0.75em 0;
+}

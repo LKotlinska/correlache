@@ -70,6 +70,22 @@ export function exerciseMatcher(library: Exercise[]): (name: string) => Exercise
   };
 }
 
+/**
+ * Library exercises whose name has every word of the query, in any order, shortest names first
+ * (the closest to what was typed). At most `limit` of them.
+ */
+export function searchExercises(library: Exercise[], query: string, limit: number): Exercise[] {
+  const words = normalise(query).replace(VERSION_SUFFIX, '').split(' ').filter(Boolean);
+  if (words.length === 0) return [];
+  return library
+    .filter((exercise) => {
+      const name = normalise(exercise.name);
+      return words.every((word) => name.includes(word));
+    })
+    .sort((a, b) => a.name.length - b.name.length || a.name.localeCompare(b.name))
+    .slice(0, limit);
+}
+
 function countSetsByName(workouts: ImportedWorkout[]): Map<string, number> {
   const counts = new Map<string, number>();
   for (const exercise of workouts.flatMap((workout) => workout.exercises)) {

@@ -69,9 +69,14 @@ export function inferTrackingMode(sets: ImportedSet[]): TrackingMode {
   return 'reps';
 }
 
-function toExercise(name: string, sets: ImportedSet[]): ImportedExercise {
+/** Works out the tracking mode for an exercise's sets and clears the values it does not measure. */
+export function applyTrackingMode(sets: ImportedSet[]): Omit<ImportedExercise, 'name'> {
   const trackingMode = inferTrackingMode(sets);
-  return { name, trackingMode, sets: sets.map((set) => keepTrackedFields(set, trackingMode)) };
+  return { trackingMode, sets: sets.map((set) => keepTrackedFields(set, trackingMode)) };
+}
+
+function toExercise(name: string, sets: ImportedSet[]): ImportedExercise {
+  return { name, ...applyTrackingMode(sets) };
 }
 
 // Clears values the mode does not measure, e.g. the weight 0 on a crunch tracked as reps only

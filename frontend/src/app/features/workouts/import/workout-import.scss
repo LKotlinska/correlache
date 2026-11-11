@@ -1,0 +1,76 @@
+@use '../../../../variables' as *;
+
+.section {
+  margin-top: 1.5em;
+  color: $text-strong;
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 0 0 0.5em;
+  }
+
+  p {
+    margin: 0 0 0.5em;
+  }
+}
+
+.hint {
+  color: $outline;
+}
+
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em 1em;
+}
+
+.file-name {
+  overflow-wrap: anywhere;
+}
+
+.units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 2em;
+  margin-top: 1em;
+}
+
+.unit {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+details summary {
+  cursor: pointer;
+}
+
+.problems {
+  margin-top: 0.5em;
+
+  ul {
+    margin: 0.5em 0 0;
+    padding-left: 1.25em;
+  }
+}
+
+// The heading sits inside the summary so the whole line toggles the list
+.auto-matched summary h2 {
+  display: inline;
+}
+
+.name-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5em 0 0;
+  display: grid;
+  gap: 0.5em;
+}
+
+.status {
+  margin: 1.5em 0;
+  font-weight: 500;
+  color: $text-strong;
+}

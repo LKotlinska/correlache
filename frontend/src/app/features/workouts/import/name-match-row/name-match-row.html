@@ -1,0 +1,52 @@
+<div class="heading">
+  <span class="exported-name">{{ row().name }}</span>
+  <span class="set-count">{{ row().setCount }} {{ row().setCount === 1 ? 'set' : 'sets' }}</span>
+</div>
+
+@if (suggestions().length > 0 && !isSkipped()) {
+  <mat-radio-group
+    class="suggestions"
+    [attr.aria-label]="'Exercise for ' + row().name"
+    [value]="chosen()?.id ?? null"
+    (change)="pickSuggestion($event)"
+  >
+    @for (option of suggestions(); track option.id) {
+      <mat-radio-button [value]="option.id">
+        <span class="option">
+          @if (option.imageName) {
+            <img [src]="'/images/exercises/stills/' + option.imageName" alt="" />
+          }
+          <span class="option-text">
+            <span class="exercise-name">{{ option.name }}</span>
+            <span class="details">{{ option.equipment.name }}</span>
+          </span>
+        </span>
+      </mat-radio-button>
+    }
+  </mat-radio-group>
+}
+
+@if (isSkipped()) {
+  <p class="outcome">Skipped. Its sets won't be imported.</p>
+} @else if (showChosen()) {
+  <p class="outcome">
+    Imported as <strong class="exercise-name">{{ chosen()!.name }}</strong>
+  </p>
+} @else if (isUnmatched() && !chosen()) {
+  <p class="outcome">No exercise here has this name.</p>
+}
+
+<div class="actions">
+  <button matButton type="button" (click)="searchRequested.emit()">
+    <mat-icon>search</mat-icon>
+    {{ isUnmatched() && !chosen() ? 'Choose exercise' : 'Search exercises' }}
+  </button>
+  @if (isSkipped()) {
+    <button matButton type="button" (click)="resetRequested.emit()">Undo skip</button>
+  } @else {
+    <button matButton type="button" (click)="skipped.emit()">Skip</button>
+  }
+  @if (isChangedFromAutomatic()) {
+    <button matButton type="button" (click)="resetRequested.emit()">Use automatic match</button>
+  }
+</div>

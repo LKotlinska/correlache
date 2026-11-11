@@ -1,0 +1,38 @@
+<app-dialog [heading]="'Match “' + data.exportedName + '”'">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
+    <mat-label>Search exercises</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput type="search" cdkFocusInitial [value]="query()" (input)="search($event)" />
+  </mat-form-field>
+
+  @if (results().length === 0) {
+    <p class="hint" role="status">
+      No exercises have all of these words. Try fewer or different words.
+    </p>
+  } @else {
+    <ul class="results">
+      @for (exercise of results(); track exercise.id) {
+        <li>
+          <button type="button" (click)="pick(exercise)">
+            @if (exercise.imageName) {
+              <img [src]="'/images/exercises/stills/' + exercise.imageName" alt="" />
+            } @else {
+              <mat-icon class="placeholder" aria-hidden="true">fitness_center</mat-icon>
+            }
+            <span class="text">
+              <span class="name">{{ exercise.name }}</span>
+              <span class="details"
+                >{{ exercise.equipment.name }} · {{ exercise.bodyPart.name }}</span
+              >
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+    @if (hasMore()) {
+      <p class="hint" role="status">
+        Showing the first {{ results().length }}. Add words to narrow it down.
+      </p>
+    }
+  }
+</app-dialog>

@@ -78,6 +78,10 @@ export class Settings {
   }
 
   /** Downloads all of the user's data as a JSON file named with today's local date. */
+  importWorkouts() {
+    this.router.navigate(['/user/workout/import']);
+  }
+
   downloadData() {
     this.exporting.set(true);
     this.userService.exportData().subscribe({

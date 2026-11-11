@@ -1,5 +1,5 @@
 import { Exercise } from '../../../models/workout.model';
-import { exerciseMatcher, matchExerciseNames } from './exercise-matching';
+import { exerciseMatcher, matchExerciseNames, searchExercises } from './exercise-matching';
 import { ImportedWorkout } from './imported-workout';
 
 let nextId = 1;
@@ -121,5 +121,24 @@ describe('matchExerciseNames', () => {
       ['Lever Leg Extension', 1, 'matched'],
       ['Run on Treadmill', 1, 'unmatched'],
     ]);
+  });
+});
+
+describe('searchExercises', () => {
+  const names = (query: string, limit = 10) =>
+    searchExercises(library, query, limit).map((e) => e.name);
+
+  it('finds names with every word, in any order, shortest first', () => {
+    expect(names('curl')).toEqual(['barbell curl', 'ez barbell curl']);
+    expect(names('pulldown bar')).toEqual(['cable bar lateral pulldown']);
+  });
+
+  it('ignores case, spacing and a version suffix', () => {
+    expect(names('  Straight  Arm Pulldown (VERSION 2)')).toEqual(['cable straight arm pulldown']);
+  });
+
+  it('returns nothing for an empty query and stops at the limit', () => {
+    expect(names('  ')).toEqual([]);
+    expect(names('press', 2)).toHaveLength(2);
   });
 });
