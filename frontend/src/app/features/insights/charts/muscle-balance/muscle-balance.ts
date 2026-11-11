@@ -2,7 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
-import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
@@ -18,7 +17,7 @@ const ROLE_WEIGHT: Record<MuscleRole, number> = { primary: 1, secondary: 0.5 };
 const HIDDEN_GROUPS = new Set(['Cardio']);
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
+  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-muscle-balance',
   styleUrl: './muscle-balance.scss',
   templateUrl: './muscle-balance.html',

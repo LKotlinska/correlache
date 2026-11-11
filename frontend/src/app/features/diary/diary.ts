@@ -14,6 +14,7 @@ import { INTAKE_EFFECT_LABELS, intakeLabel } from '../../utils/medication';
 import { forkJoin, map } from 'rxjs';
 import { formatDuration } from '../../utils/duration';
 import { addDays, dayKey, dayLabel, formatTime, startOfWeek, weekLabel } from '../../utils/date';
+import { ProgressSpinner } from '../../components/progress-spinner/progress-spinner';
 
 const WEEKS_PER_PAGE = 4;
 
@@ -53,7 +54,14 @@ interface DiaryWeek {
 }
 
 @Component({
-  imports: [MatChipListbox, MatChipOption, MatProgressBar, Button, ListItem],
+  imports: [
+    MatChipListbox, 
+    MatChipOption, 
+    MatProgressBar, 
+    Button, 
+    ListItem, 
+    ProgressSpinner, 
+    ProgressSpinner],
   selector: 'app-diary',
   styleUrl: './diary.scss',
   templateUrl: './diary.html',

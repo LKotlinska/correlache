@@ -2,7 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
-import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { ChartInfo } from '../../chart-info/chart-info';
 import { InsightsData } from '../../insights-data';
@@ -27,7 +26,7 @@ interface Comparison {
 }
 
 @Component({
-  imports: [ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
+  imports: [ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-hard-session-headaches',
   styleUrl: './hard-session-headaches.scss',
   templateUrl: './hard-session-headaches.html',

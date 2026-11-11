@@ -2,7 +2,7 @@
   <p>Couldn't load your diary.</p>
   <app-button appearance="outlined" (click)="retry()">Try again</app-button>
 } @else if (isInitialLoading()) {
-  <mat-progress-bar mode="indeterminate" />
+  <app-progress-spinner ariaLabel="Loading diary" />
 } @else {
   <mat-chip-listbox aria-label="Filter diary" [value]="filter()" (change)="onFilterChange($event)">
     <mat-chip-option value="all">All</mat-chip-option>

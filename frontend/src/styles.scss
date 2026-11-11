@@ -35,8 +35,10 @@ body {
   color-scheme: light;
   background-color: var(--mat-sys-surface);
   color: $text-strong;
-  font: var(--mat-sys-body-medium);
-  margin: 0;
+  font-family: var(--mat-sys-body-medium-font);
+  font-size: var(--mat-sys-body-medium-size);
+  font-weight: var(--mat-sys-body-medium-weight);
+  line-height: var(--mat-sys-body-medium-line-height);  margin: 0;
   height: 100%;
 
   .mat-mdc-form-field {
@@ -59,6 +61,7 @@ body {
   .nav-title {
     font-weight: 600;
     font-size: 1.5em;
+    margin: 0.45em 0;
   }
 
   .nav-img {
