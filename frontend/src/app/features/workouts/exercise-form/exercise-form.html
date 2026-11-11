@@ -4,7 +4,7 @@
   @if (exercises.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (exercises.error()) {
-    <p>Couldn't load exercises.</p>
+    <app-error-message message="Couldn't load exercises." retryable (retry)="exercises.reload()" />
   } @else if (exercises.value()) {
     <div class="search-row">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">

@@ -8,7 +8,7 @@
   @if (headache.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (headache.error()) {
-    <p>Couldn't load this headache.</p>
+    <app-error-message message="Couldn't load this headache." retryable (retry)="headache.reload()" />
   } @else if (headache.value(); as h) {
     <mat-card class="card">
       <mat-card-content>

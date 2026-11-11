@@ -2,11 +2,11 @@ import { Component, computed, inject } from '@angular/core';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
-import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { addDays, dayKey } from '../../../../utils/date';
 import { Period } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workout days and rest days needed before the rates are compared. */
@@ -17,7 +17,7 @@ const SAME_THRESHOLD = 10;
 const WINDOW_MS = 24 * 60 * 60 * 1000;
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-workout-day-headaches',
   styleUrl: './workout-day-headaches.scss',
   templateUrl: './workout-day-headaches.html',

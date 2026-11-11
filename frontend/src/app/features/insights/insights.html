@@ -15,7 +15,12 @@
   </mat-select>
 </mat-form-field>
 
-<div class="charts">
+@if (loading()) {
+  <app-progress-spinner ariaLabel="Loading insights" />
+}
+
+<!-- Hidden while loading-->
+<div class="charts" [class.loading]="loading()">
   @if (shows('analysis')) {
     @if (gated('analysis')) {
       <app-data-notice
@@ -24,7 +29,9 @@
         (show)="dismiss('analysis')"
       />
     } @else {
-      <app-disclaimer>These look for patterns in your data. They show correlation, not causation.</app-disclaimer>
+      <app-disclaimer
+        >These look for patterns in your data. They show correlation, not causation.</app-disclaimer
+      >
       <app-headache-suspects />
       <app-hard-session-headaches />
     }

@@ -6,6 +6,7 @@ import { ChartInfo } from '../../chart-info/chart-info';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { alwaysDone, Feature, MIN_WORKOUTS, rankSuspects, Session, Suspect } from '../../suspects';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 /** Longer than other charts: each exercise is only done in some workouts, so it needs a long history to compare. */
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
@@ -17,7 +18,7 @@ const MIN_SHOWN = 0.6;
 const LIKELY = 0.8;
 
 @Component({
-  imports: [ChartInfo, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
+  imports: [ErrorMessage, ChartInfo, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
   selector: 'app-headache-suspects',
   styleUrl: './headache-suspects.scss',
   templateUrl: './headache-suspects.html',

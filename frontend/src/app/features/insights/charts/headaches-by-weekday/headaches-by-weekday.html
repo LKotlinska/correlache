@@ -20,9 +20,7 @@
         <p>No headaches logged in {{ periodLabel() }}.</p>
       }
     } @else if (headaches.error()) {
-      <p>Couldn't load headache data.</p>
-    } @else if (headaches.isLoading()) {
-      <mat-progress-bar mode="indeterminate" />
+      <app-error-message message="Couldn't load headache data." compact />
     }
   </mat-card-content>
 </mat-card>

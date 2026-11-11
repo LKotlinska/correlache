@@ -1,8 +1,7 @@
 @if (hasInitialError()) {
-  <p>Couldn't load your diary.</p>
-  <app-button appearance="outlined" (click)="retry()">Try again</app-button>
+  <app-error-message message="Couldn't load your diary." retryable (retry)="retry()" />
 } @else if (isInitialLoading()) {
-  <mat-progress-bar mode="indeterminate" />
+  <app-progress-spinner ariaLabel="Loading diary" />
 } @else {
   <mat-chip-listbox aria-label="Filter diary" [value]="filter()" (change)="onFilterChange($event)">
     <mat-chip-option value="all">All</mat-chip-option>
@@ -39,8 +38,7 @@
     <mat-progress-bar mode="indeterminate" />
   }
   @if (hasLoadMoreError()) {
-    <p>Couldn't load earlier weeks.</p>
-    <app-button appearance="outlined" [isFullWidth]="true" (click)="retry()">Try again</app-button>
+    <app-error-message message="Couldn't load earlier weeks." retryable isFullWidth (retry)="retry()" />
   } @else if (hasEarlier()) {
     <app-button
       appearance="outlined"

@@ -25,6 +25,7 @@ import { DataNotice } from './data-notice/data-notice';
 import { Disclaimer } from './disclaimer/disclaimer';
 import { InsightsData } from './insights-data';
 import { Period } from './period';
+import { ProgressSpinner } from '../../components/progress-spinner/progress-spinner';
 
 export type InsightsCategory = 'headaches' | 'workouts' | 'correlations' | 'analysis';
 export type InsightsFilter = 'all' | InsightsCategory;
@@ -79,7 +80,8 @@ function loadDismissed(): InsightsCategory[] {
     HeadacheSuspects,
     ExerciseProgress,
     MuscleBalance,
-  ],
+    ProgressSpinner
+],
   providers: [InsightsData],
   selector: 'app-insights',
   styleUrl: './insights.scss',
@@ -95,6 +97,8 @@ export class Insights {
   rangeKey = signal('default');
 
   readiness = this.data.readiness;
+
+  loading = this.data.loading;
 
   /** Categories whose "needs more data" notice the user has dismissed. */
   private dismissed = signal<InsightsCategory[]>(loadDismissed());

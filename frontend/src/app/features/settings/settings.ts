@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 import { getErrorMessage } from '../../utils/error-message';
+import { ErrorMessage } from '../../components/error-message/error-message';
 import { AccountActions } from '../../services/account-actions';
 import { DialogKey, DialogService } from '../../components/dialog/dialog.service';
 import { ConfirmDialog, ConfirmDialogData } from '../../components/dialog/confirm-dialog/confirm-dialog';
@@ -18,7 +19,7 @@ import { MedicationDialog, MedicationDialogData } from '../medications/medicatio
 import { MEDICATION_CLASS_LABELS, MEDICATION_USE_LABELS } from '../../utils/medication';
 
 @Component({
-  imports: [MatButtonModule, MatIcon, MatProgressBar],
+  imports: [ErrorMessage, MatButtonModule, MatIcon, MatProgressBar],
   selector: 'app-settings',
   styleUrl: './settings.scss',
   templateUrl: './settings.html',

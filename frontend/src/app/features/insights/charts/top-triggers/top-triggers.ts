@@ -2,16 +2,16 @@ import { Component, computed, inject } from '@angular/core';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
-import { MatProgressBar } from '@angular/material/progress-bar';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
+import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 const TRIGGERS_SHOWN = 6;
 
 @Component({
-  imports: [BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar],
+  imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-top-triggers',
   styleUrl: './top-triggers.scss',
   templateUrl: './top-triggers.html',

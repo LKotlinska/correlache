@@ -72,6 +72,18 @@ export class InsightsData {
     };
   });
 
+  /**
+   * True while data for the shown charts is loading, so the page shows one spinner instead of one per chart.
+   * A failed "all entries" load doesn't count, or the spinner would never go away.
+   */
+  loading = computed(
+    () =>
+      (this.readiness() === undefined && !this.allHeadaches.error() && !this.allWorkouts.error()) ||
+      this.headaches.isLoading() ||
+      this.workouts.isLoading() ||
+      this.exercises.isLoading(),
+  );
+
   /** The exercise library, for each exercise's muscles. */
   exercises = rxResource({
     stream: () => this.workoutService.getExercises(),

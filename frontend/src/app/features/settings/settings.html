@@ -3,7 +3,7 @@
   @if (medications.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (medications.error()) {
-    <p>Couldn't load your medications.</p>
+    <app-error-message message="Couldn't load your medications." retryable (retry)="medications.reload()" />
   }
   <ul class="settings-list">
     <li>
