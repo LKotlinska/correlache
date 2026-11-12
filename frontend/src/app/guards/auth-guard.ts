@@ -26,7 +26,8 @@ export const authGuard: CanActivateFn = () => {
           panelClass: 'snackbar-error',
         });
       }
-      return of(router.createUrlTree(['/']));
+      // Landing page opens the sign-in dialog when it sees this flag
+      return of(err.status === 401 ? router.createUrlTree(['/'], { queryParams: { signIn: 'required' } }) : router.createUrlTree(['/']));
     }),
   );
 };

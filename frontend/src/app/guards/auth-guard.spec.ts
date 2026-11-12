@@ -58,11 +58,11 @@ describe('authGuard', () => {
     expect(router.createUrlTree).toHaveBeenCalledWith(['/']);
   });
 
-  it('redirects to the landing page silently on 401', async () => {
+  it('redirects to the landing page with the sign-in flag on 401', async () => {
     userService.me.mockReturnValue(throwError(() => ({ status: 401 })));
 
     await expect(runGuard()).resolves.toBe(landing);
-    expect(router.createUrlTree).toHaveBeenCalledWith(['/']);
+    expect(router.createUrlTree).toHaveBeenCalledWith(['/'], { queryParams: { signIn: 'required' } });
     expect(snackBar.open).not.toHaveBeenCalled();
   });
 
