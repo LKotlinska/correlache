@@ -15,9 +15,11 @@ import { Trigger } from '../../headaches/lookups/trigger.entity.js';
 import { Symptom } from '../../headaches/lookups/symptom.entity.js';
 import { ReliefMeasure } from '../../headaches/lookups/relief-measure.entity.js';
 import { HeadacheLocation } from '../../headaches/lookups/headache-location.entity.js';
+import { Medication } from '../../medications/entities/medication.entity.js';
+import { MedicationIntake } from '../../medications/entities/medication-intake.entity.js';
 import { EXAMPLE_EXERCISE_IDS, generateExampleData } from './example-data.js';
 
-// Creates (or resets) a demo account with a year of workouts and headaches ending yesterday.
+// Creates (or resets) a demo account with a year of workouts, headaches and medication ending yesterday.
 // Needs the lookup data from `npm run seed` first. Running it again replaces the account's data.
 
 const EXAMPLE_USER = { username: 'Data example', email: 'data@example.com', password: 'example123' };
@@ -52,7 +54,7 @@ async function lookupIds(manager: EntityManager, entity: new () => { id: number;
 
 try {
   await dataSource.initialize();
-  const { workouts, headaches } = generateExampleData(new Date());
+  const { workouts, headaches, medications, intakes } = generateExampleData(new Date());
 
   await dataSource.transaction(async (manager) => {
     const exercises = await manager.findBy(Exercise, { id: In(EXAMPLE_EXERCISE_IDS) });
@@ -78,6 +80,8 @@ try {
     // Exercises, sets and headache links go with them through ON DELETE CASCADE
     await manager.delete(Workout, { userId });
     await manager.delete(Headache, { userId });
+    // Doses go with their medication
+    await manager.delete(Medication, { userId });
 
     const workoutRows: Partial<Workout>[] = [];
     const exerciseRows: Partial<WorkoutExercise>[] = [];
@@ -109,10 +113,12 @@ try {
       });
     }
 
+    const headacheIds: string[] = [];
     const headacheRows: Partial<Headache>[] = [];
     const links = { headache_triggers: [], headache_symptoms: [], headache_relief: [], headache_locations: [] } as Record<string, ObjectLiteral[]>;
     for (const h of headaches) {
       const headacheId = randomUUID();
+      headacheIds.push(headacheId);
       headacheRows.push({ id: headacheId, userId, startedAt: h.startedAt, endedAt: h.endedAt, painLevel: h.painLevel, notes: h.notes });
       for (const name of h.triggers) links.headache_triggers.push({ headache_id: headacheId, trigger_id: triggers.get(name) });
       for (const name of h.symptoms) links.headache_symptoms.push({ headache_id: headacheId, symptom_id: symptoms.get(name) });
@@ -120,15 +126,30 @@ try {
       for (const name of h.locations) links.headache_locations.push({ headache_id: headacheId, location_id: locations.get(name) });
     }
 
+    const medicationIds = new Map(medications.map((m) => [m.name, randomUUID()]));
+    const medicationRows: Partial<Medication>[] = medications.map((m) => ({ id: medicationIds.get(m.name), userId, ...m }));
+    const intakeRows: Partial<MedicationIntake>[] = intakes.map((d) => ({
+      id: randomUUID(),
+      userId,
+      medicationId: medicationIds.get(d.medication)!,
+      takenAt: d.takenAt,
+      dose: d.dose,
+      headacheId: d.headacheIndex === null ? null : headacheIds[d.headacheIndex],
+      effect: d.effect,
+      effectAt: d.effectAt,
+    }));
+
     await insertChunked(manager, Workout, workoutRows);
     await insertChunked(manager, WorkoutExercise, exerciseRows);
     await insertChunked(manager, WorkoutSet, setRows);
     await insertChunked(manager, Headache, headacheRows);
     for (const [table, rows] of Object.entries(links)) await insertChunked(manager, table, rows);
+    await insertChunked(manager, Medication, medicationRows);
+    await insertChunked(manager, MedicationIntake, intakeRows);
   });
 
   console.log(
-    `Seeded ${EXAMPLE_USER.email} (password: ${EXAMPLE_USER.password}) with ${workouts.length} workouts and ${headaches.length} headaches.`,
+    `Seeded ${EXAMPLE_USER.email} (password: ${EXAMPLE_USER.password}) with ${workouts.length} workouts, ${headaches.length} headaches and ${intakes.length} medication doses.`,
   );
 } finally {
   if (dataSource.isInitialized) await dataSource.destroy();

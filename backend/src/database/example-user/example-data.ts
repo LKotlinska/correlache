@@ -1,4 +1,5 @@
 import type { TrackingMode } from '../../exercise-library/tracking-mode.js';
+import type { IntakeEffect, MedicationClass, MedicationUse } from '../../medications/medication-kinds.js';
 
 // Generates a year of believable training and headache history for the example account.
 // Pure (no database access) and seeded, so every run produces the same shape of data,
@@ -34,6 +35,32 @@ export interface ExampleHeadache {
   symptoms: string[];
   reliefMeasures: string[];
   locations: string[];
+}
+
+export interface ExampleMedication {
+  name: string;
+  medicationClass: MedicationClass;
+  defaultDose: string;
+  use: MedicationUse;
+  createdAt: Date;
+  archivedAt: Date | null;
+}
+
+// Medications by name and headaches by index into the generated list, since neither has an id yet
+export interface ExampleIntake {
+  medication: string;
+  takenAt: Date;
+  dose: string | null;
+  effect: IntakeEffect | null;
+  effectAt: Date | null;
+  headacheIndex: number | null;
+}
+
+export interface ExampleData {
+  workouts: ExampleWorkout[];
+  headaches: ExampleHeadache[];
+  medications: ExampleMedication[];
+  intakes: ExampleIntake[];
 }
 
 const TIME_ZONE = 'Europe/Warsaw';
@@ -197,7 +224,7 @@ interface LoggedWorkout {
 
 // ---------------------------------------------------------------- generator
 
-export function generateExampleData(now: Date, seed = 42): { workouts: ExampleWorkout[]; headaches: ExampleHeadache[] } {
+export function generateExampleData(now: Date, seed = 42): ExampleData {
   const rnd = createRandom(seed);
   const end = addDays(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())), -1);
   const start = addDays(end, -364);
@@ -451,6 +478,7 @@ export function generateExampleData(now: Date, seed = 42): { workouts: ExampleWo
   };
 
   const headaches: ExampleHeadache[] = [];
+  const kinds = new Map<ExampleHeadache, HeadacheKind>();
   const busy: Range[] = []; // logged headaches plus an 8 hour cool-down, so they never overlap
 
   const addHeadache = (startedAt: Date, kind: HeadacheKind) => {
@@ -460,7 +488,7 @@ export function generateExampleData(now: Date, seed = 42): { workouts: ExampleWo
     const coolDown = addMinutes(endedAt, 8 * 60);
     if (busy.some(([from, to]) => startedAt < to && from < coolDown)) return;
     busy.push([startedAt, coolDown]);
-    headaches.push({
+    const headache: ExampleHeadache = {
       startedAt,
       endedAt: rnd.next() < 0.03 ? null : endedAt, // occasionally forgot to log the end
       painLevel: h.pain,
@@ -469,7 +497,9 @@ export function generateExampleData(now: Date, seed = 42): { workouts: ExampleWo
       symptoms: h.symptoms,
       reliefMeasures: rnd.next() < 0.1 ? [] : h.reliefMeasures,
       locations: h.locations,
-    });
+    };
+    headaches.push(headache);
+    kinds.set(headache, kind);
   };
 
   // Hard cardio (worse in summer heat) and heavy leg days make a headache that day more likely
@@ -505,5 +535,93 @@ export function generateExampleData(now: Date, seed = 42): { workouts: ExampleWo
   }
 
   headaches.sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime());
-  return { workouts, headaches };
+
+  // ---------------------------------------------------------------- medications
+  // A separate random stream, so adding medications left the workouts and headaches unchanged.
+
+  const med = createRandom(seed + 1);
+  const switchDay = addDays(start, 120); // Naproxen swapped for Ibuprofen
+  const preventiveDay = addDays(start, 200); // Daily magnesium from here on
+  const medications: ExampleMedication[] = [
+    { name: 'Paracetamol', medicationClass: 'simple_painkiller', defaultDose: '1 g', use: 'as_needed', createdAt: at(start, 9, 0), archivedAt: null },
+    { name: 'Naproxen', medicationClass: 'nsaid', defaultDose: '500 mg', use: 'as_needed', createdAt: at(start, 9, 0), archivedAt: at(switchDay, 20, 0) },
+    { name: 'Sumatriptan', medicationClass: 'triptan', defaultDose: '50 mg', use: 'as_needed', createdAt: at(start, 9, 0), archivedAt: null },
+    { name: 'Ibuprofen', medicationClass: 'nsaid', defaultDose: '400 mg', use: 'as_needed', createdAt: at(switchDay, 20, 0), archivedAt: null },
+    { name: 'Magnesium', medicationClass: 'preventive', defaultDose: '400 mg', use: 'preventive', createdAt: at(preventiveDay, 8, 0), archivedAt: null },
+  ];
+  const doseOf = new Map(medications.map((m) => [m.name, m.defaultDose]));
+  const intakes: ExampleIntake[] = [];
+
+  const rate = (takenAt: Date, weights: [number, number, number]) => {
+    if (med.next() < 0.15) return { effect: null, effectAt: null }; // not rated
+    const effect = med.weighted(['none', 'some', 'full'] as const, weights);
+    const effectAt = med.next() < 0.8 ? addMinutes(takenAt, med.int(30, 120)) : null;
+    return { effect, effectAt: effectAt && effectAt < now ? effectAt : null };
+  };
+
+  const takeDose = (medication: string, takenAt: Date, headacheIndex: number | null, weights: [number, number, number]) => {
+    const h = headacheIndex === null ? null : headaches[headacheIndex];
+    if (takenAt >= now || (h?.endedAt && takenAt >= h.endedAt)) return null;
+    const intake: ExampleIntake = {
+      medication,
+      takenAt,
+      dose: med.next() < 0.9 ? doseOf.get(medication)! : null,
+      headacheIndex,
+      ...rate(takenAt, weights),
+    };
+    intakes.push(intake);
+    return intake;
+  };
+
+  // The everyday painkiller: Naproxen at first, Ibuprofen after the switch
+  const nsaid = (day: Date) => (day < switchDay ? 'Naproxen' : 'Ibuprofen');
+
+  headaches.forEach((h, i) => {
+    const day = h.startedAt;
+    const soon = (lo: number, hi: number) => addMinutes(day, med.int(lo, hi));
+    switch (kinds.get(h)!) {
+      case 'migraine': {
+        if (med.next() < 0.8) {
+          const first = takeDose('Sumatriptan', soon(10, 60), i, [1, 3.5, 5.5]);
+          // A second dose a few hours later when the first only partly helped
+          if (first && first.effect !== 'full' && med.next() < 0.35) takeDose('Sumatriptan', addMinutes(first.takenAt, med.int(120, 240)), i, [1, 4, 5]);
+        } else {
+          takeDose(nsaid(day), soon(10, 90), i, [3, 5, 2]);
+        }
+        break;
+      }
+      case 'tension':
+        if (med.next() < 0.55) takeDose(med.next() < 0.5 ? 'Paracetamol' : nsaid(day), soon(15, 150), i, [1.5, 4, 4.5]);
+        break;
+      case 'strain':
+        if (med.next() < 0.45) takeDose(nsaid(day), soon(20, 120), i, [1.5, 4.5, 4]);
+        break;
+      case 'exertion':
+        if (med.next() < 0.35) takeDose(med.next() < 0.7 ? nsaid(day) : 'Paracetamol', soon(15, 90), i, [2, 4, 4]);
+        break;
+      case 'weekend':
+        if (med.next() < 0.5) takeDose(med.next() < 0.75 ? 'Paracetamol' : nsaid(day), soon(20, 120), i, [1.5, 4, 4.5]);
+        break;
+      case 'sinus':
+        if (med.next() < 0.7) takeDose(med.next() < 0.5 ? 'Paracetamol' : nsaid(day), soon(10, 90), i, [2, 5, 3]);
+        break;
+    }
+  });
+
+  // A painkiller now and then for something other than a headache, kept clear of logged ones
+  const nearHeadache = (t: Date) => headaches.some((h) => Math.abs(h.startedAt.getTime() - t.getTime()) < 12 * 60 * 60 * 1000);
+  for (let day = start; day <= end; day = addDays(day, 1)) {
+    if (med.next() >= 0.03) continue;
+    const takenAt = at(day, med.int(9, 21), med.int(0, 59));
+    if (!nearHeadache(takenAt)) takeDose(med.next() < 0.5 ? 'Paracetamol' : nsaid(day), takenAt, null, [1, 4, 5]);
+  }
+
+  // Preventive taken with breakfast, occasionally forgotten; never rated or linked
+  for (let day = preventiveDay; day <= end; day = addDays(day, 1)) {
+    if (med.next() < 0.08) continue;
+    intakes.push({ medication: 'Magnesium', takenAt: at(day, med.int(7, 8), med.int(0, 59)), dose: '400 mg', effect: null, effectAt: null, headacheIndex: null });
+  }
+
+  intakes.sort((a, b) => a.takenAt.getTime() - b.takenAt.getTime());
+  return { workouts, headaches, medications, intakes };
 }
