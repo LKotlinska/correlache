@@ -2,10 +2,12 @@
 .header-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 25px 24px 0;
-
+  gap: 1em;
   h2 {
+    // Material sets flex-shrink: 0 on mat-dialog-title, which stops long headings from wrapping
+    flex-shrink: 1;
     margin: 0;
     padding: 0;
     display: flex;

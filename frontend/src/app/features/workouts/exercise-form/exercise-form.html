@@ -45,6 +45,7 @@
               [altText]="exercise.name"
               [title]="exercise.name"
               [subtitle]="exercise.bodyPart.name"
+              [animation]="exercise.gifName ? '/images/exercises/' + exercise.gifName : null"
               [checked]="isSelected(exercise.id)"
               (checkedChange)="toggleExercise(exercise.id, $event)"
             />

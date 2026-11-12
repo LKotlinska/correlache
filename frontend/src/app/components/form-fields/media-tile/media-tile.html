@@ -1,5 +1,11 @@
 <label class="checkbox-card" [class.readonly]="readonly()">
-  <input type="checkbox" class="visually-hidden" [checked]="checked()" [disabled]="readonly()" (change)="toggle($event)" />
+  <input
+    type="checkbox"
+    class="visually-hidden"
+    [checked]="checked()"
+    [disabled]="readonly()"
+    (change)="toggle($event)"
+  />
   @if (image(); as src) {
     <img class="image" [src]="src" [alt]="altText()" />
   } @else {
@@ -13,4 +19,23 @@
       <span class="subtitle">{{ subtitle() }}</span>
     }
   </div>
+  @if (animation()) {
+    <button
+      mat-icon-button
+      class="floating-btn"
+      type="button"
+      class="floating-btn"
+      [attr.aria-label]="'How to do ' + title()"
+      aria-haspopup="dialog"
+      (click)="openAnimation()"
+    >
+      <mat-icon>help</mat-icon>
+    </button>
+  }
 </label>
+
+<ng-template #animationDialog>
+  <app-dialog class="exercise-title" [heading]="title()">
+    <img class="exercise-gif" [src]="animation()" [alt]="'How to do ' + title()" />
+  </app-dialog>
+</ng-template>
