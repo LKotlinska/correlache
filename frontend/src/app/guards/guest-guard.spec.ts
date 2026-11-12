@@ -1,20 +1,20 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, convertToParamMap, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { guestGuard } from './guest-guard';
+import { signInRequiredQuery } from './sign-in-redirect';
 
 describe('guestGuard', () => {
   const userService = { me: vi.fn() };
   const account = new UrlTree();
   const router = { createUrlTree: vi.fn() };
 
-  const runGuard = () =>
-    firstValueFrom(
-      TestBed.runInInjectionContext(() =>
-        guestGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
-      ) as Observable<boolean | UrlTree>,
-    );
+  const runGuard = (queryParams: Record<string, string> = {}) => {
+    const route = { queryParamMap: convertToParamMap(queryParams) } as ActivatedRouteSnapshot;
+    const result = TestBed.runInInjectionContext(() => guestGuard(route, {} as RouterStateSnapshot));
+    return typeof result === 'boolean' ? Promise.resolve(result) : firstValueFrom(result as Observable<boolean | UrlTree>);
+  };
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -33,6 +33,11 @@ describe('guestGuard', () => {
 
     await expect(runGuard()).resolves.toBe(account);
     expect(router.createUrlTree).toHaveBeenCalledWith(['/user']);
+  });
+
+  it('skips the session check when authGuard already found no session', async () => {
+    await expect(runGuard(signInRequiredQuery)).resolves.toBe(true);
+    expect(userService.me).not.toHaveBeenCalled();
   });
 
   it('shows the landing page on 401', async () => {

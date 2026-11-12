@@ -80,7 +80,7 @@ describe('Login', () => {
       password: 'supersecret',
     });
     expect(dialogRef.close).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/user/insights']);
+    expect(router.navigate).toHaveBeenCalledWith(['/user/diary']);
   });
 
   it('shows a credentials message and re-enables submit on 401', () => {

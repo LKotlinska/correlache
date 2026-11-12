@@ -3,8 +3,8 @@
     [formControl]="control()"
     [attr.aria-describedby]="invalid ? 'health-consent-error' : null"
   >
-    I explicitly consent to CorrelAche processing my health data (headaches, symptoms,
-    medications). I can withdraw consent at any time, see the
+    I explicitly consent to CorrelAche processing my health data. I can withdraw consent at any
+    time, see the
     <a href="#" class="text-link" (click)="openPrivacyPolicy($event)">Privacy Policy</a>.
   </mat-checkbox>
   @if (invalid) {

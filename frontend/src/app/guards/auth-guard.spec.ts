@@ -5,6 +5,7 @@ import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ConsentPrompt } from '../services/consent-prompt';
 import { authGuard } from './auth-guard';
+import { signInRequiredQuery } from './sign-in-redirect';
 
 describe('authGuard', () => {
   const userService = { me: vi.fn() };
@@ -62,7 +63,7 @@ describe('authGuard', () => {
     userService.me.mockReturnValue(throwError(() => ({ status: 401 })));
 
     await expect(runGuard()).resolves.toBe(landing);
-    expect(router.createUrlTree).toHaveBeenCalledWith(['/'], { queryParams: { signIn: 'required' } });
+    expect(router.createUrlTree).toHaveBeenCalledWith(['/'], { queryParams: signInRequiredQuery });
     expect(snackBar.open).not.toHaveBeenCalled();
   });
 
