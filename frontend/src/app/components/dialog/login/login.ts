@@ -4,10 +4,15 @@ import { OutlinedField } from '../../form-fields/outlined-field/outlined-field';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from '../../button/button';
 import { DialogKey, DialogService } from '../dialog.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserService } from '../../../services/user.service';
+
+/** Optional dialog data; `notice` explains why sign-in was asked for. */
+export interface LoginData {
+  notice?: string;
+}
 
 @Component({
   imports: [Dialog, OutlinedField, ReactiveFormsModule, Button],
@@ -20,6 +25,7 @@ export class Login {
   private dialogRef = inject(MatDialogRef<Login>);
   private userService = inject(UserService);
   private router = inject(Router);
+  protected notice = inject<LoginData | null>(MAT_DIALOG_DATA, { optional: true })?.notice;
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
 

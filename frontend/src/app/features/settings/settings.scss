@@ -33,8 +33,11 @@
       background: $brand-tint;
     }
   }
-  .primary {
-    background: $brand-tint;
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-weight: 500;
   }
 }
 
@@ -42,6 +45,11 @@
   display: flex;
   align-items: center;
   gap: 0.25em;
+  margin-left: 1em;
+  .list-item {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 
   // The row's own buttons: the wide edit button and the remove icon
   > button:first-child {

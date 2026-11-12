@@ -18,6 +18,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatBadge } from '@angular/material/badge';
 import { DialogService } from '../../../components/dialog/dialog.service';
 import { ExerciseFilters, ExerciseFilterSelection, ExerciseFiltersData } from './exercise-filters/exercise-filters';
+import { ErrorMessage } from '../../../components/error-message/error-message';
+import { exerciseAnimationUrl, exerciseStillUrl } from '../../../utils/image-urls';
 
 /** Distinct options picked out of `list` by `pick`, sorted by name. */
 function distinctSorted<T>(list: T[], pick: (item: T) => LookupOption): LookupOption[] {
@@ -26,7 +28,7 @@ function distinctSorted<T>(list: T[], pick: (item: T) => LookupOption): LookupOp
 }
 
 @Component({
-  imports: [
+  imports: [ErrorMessage, 
     PageHeader,
     ScrollingModule,
     MatProgressBar,
@@ -55,6 +57,9 @@ export class ExerciseForm {
   // must match the row height and columns set in exercise-form.scss
   readonly columns = 2;
   readonly rowHeight = 245;
+  protected readonly stillUrl = exerciseStillUrl;
+  protected readonly animationUrl = exerciseAnimationUrl;
+
   searchControl = new FormControl('', { nonNullable: true });
   searchQuery = toSignal(this.searchControl.valueChanges, { initialValue: '' });
   // an empty list means no filter for that group

@@ -10,7 +10,11 @@ describe('Insights gate', () => {
     const http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
     const reqs = http.match(() => true);
-    for (const r of reqs) r.flush(r.request.url.includes('headaches') ? [{ startedAt: new Date().toISOString(), painLevel: 3 }] : []);
+    const history = { headaches: { count: 1, firstStartedAt: new Date().toISOString() }, workouts: { count: 0, firstStartedAt: null } };
+    for (const r of reqs) {
+      if (r.request.url.endsWith('/me/history')) r.flush(history);
+      else r.flush(r.request.url.includes('headaches') ? [{ startedAt: new Date().toISOString(), painLevel: 3 }] : []);
+    }
     await fixture.whenStable();
     fixture.detectChanges();
     expect(fixture.componentInstance.readiness()?.correlations.ready).toBe(false);

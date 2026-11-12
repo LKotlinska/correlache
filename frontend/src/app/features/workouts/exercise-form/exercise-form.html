@@ -4,7 +4,7 @@
   @if (exercises.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (exercises.error()) {
-    <p>Couldn't load exercises.</p>
+    <app-error-message message="Couldn't load exercises." retryable (retry)="exercises.reload()" />
   } @else if (exercises.value()) {
     <div class="search-row">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -41,10 +41,11 @@
           @for (exercise of row; track exercise.id) {
             <app-media-tile
               class="media-tile"
-              [image]="exercise.imageName ? '/images/exercises/stills/' + exercise.imageName : null"
+              [image]="stillUrl(exercise.imageName)"
               [altText]="exercise.name"
               [title]="exercise.name"
               [subtitle]="exercise.bodyPart.name"
+              [animation]="animationUrl(exercise.gifName)"
               [checked]="isSelected(exercise.id)"
               (checkedChange)="toggleExercise(exercise.id, $event)"
             />

@@ -4,6 +4,11 @@
   display: block;
 }
 
+.tile {
+  position: relative;
+  height: 100%;
+}
+
 
 .checkbox-card {
   position: relative;
@@ -73,4 +78,19 @@
     font-size: var(--mat-sys-body-medium-size);
     text-transform: capitalize;
   }
+}
+
+.floating-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0.15em;
+}
+
+.exercise-gif {
+  display: block;
+  margin-inline: auto;
+  // width/height attributes reserve the space before it loads; these let it shrink on narrow screens
+  max-width: 100%;
+  height: auto;
 }

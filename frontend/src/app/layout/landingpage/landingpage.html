@@ -1,68 +1,263 @@
-<header class="header-wrapper">
-  <div class="nav-container">
-    <div class="logo">
-      <img class="nav-img" src="favicon.svg" alt="CorrelAche logo" />
-      <h1 class="nav-title">CorrelAche</h1>
+<mat-sidenav-container class="landing-container">
+  <mat-sidenav
+    #menu
+    id="landing-menu"
+    class="landing-menu"
+    mode="over"
+    position="end"
+    fixedInViewport
+    aria-label="Menu"
+  >
+    <div class="menu-body">
+      <div class="menu-header">
+        <div class="logo">
+          <img class="nav-img" src="favicon.svg" alt="" />
+          <span class="menu-title">CorrelAche</span>
+        </div>
+        <button matIconButton type="button" aria-label="Close menu" (click)="menu.close()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <nav class="menu-nav" aria-labelledby="menu-sections-label">
+        <span class="menu-label" id="menu-sections-label">On this page</span>
+        <mat-action-list>
+          <button mat-list-item type="button" (click)="scrollTo(whoItsFor, menu)">
+            <mat-icon matListItemIcon>group</mat-icon>
+            <span matListItemTitle>Who it's for</span>
+          </button>
+          <button mat-list-item type="button" (click)="scrollTo(howItWorks, menu)">
+            <mat-icon matListItemIcon>route</mat-icon>
+            <span matListItemTitle>How it works</span>
+          </button>
+          <button mat-list-item type="button" (click)="scrollTo(doctor, menu)">
+            <mat-icon matListItemIcon>stethoscope</mat-icon>
+            <span matListItemTitle>Talk to your doctor</span>
+          </button>
+        </mat-action-list>
+      </nav>
+      <div class="menu-footer">
+        <button matButton="filled" type="button" (click)="openDialog('register', menu)">
+          Start your diary
+        </button>
+        <button matButton="outlined" type="button" (click)="openDialog('login', menu)">
+          Sign in
+        </button>
+        <div class="menu-links">
+          <button matButton type="button" (click)="openDialog('privacy', menu)">Privacy</button>
+          <button matButton type="button" (click)="openDialog('terms', menu)">Terms</button>
+          <button matButton type="button" (click)="openDialog('about', menu)">About</button>
+        </div>
+      </div>
     </div>
-    <div class="btn-container">
-      <button matButton (click)="openDialog('login')">Sign in</button>
-      <button matIconButton>
-        <mat-icon>menu</mat-icon>
-      </button>
-    </div>
-  </div>
-  <div class="page-heading">
-    <hgroup class="hgroup">
-      <h2 class="heading">Headache & workout diary</h2>
-      <p class="headline">
-        Headaches<br />
-        have patterns.<br />Find yours.
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <header class="header-wrapper">
+      <div class="nav-container">
+        <div class="logo">
+          <img class="nav-img" src="favicon.svg" alt="CorrelAche logo" />
+          <h1 class="nav-title">CorrelAche</h1>
+        </div>
+        <div class="btn-container">
+          <button matButton (click)="openDialog('login')">Sign in</button>
+          <button
+            matIconButton
+            type="button"
+            aria-label="Open menu"
+            aria-controls="landing-menu"
+            [attr.aria-expanded]="menu.opened"
+            (click)="menu.open()"
+          >
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="page-heading">
+        <hgroup class="hgroup">
+          <h2 class="heading">Headache & workout diary</h2>
+          <p class="headline">
+            Headaches<br />
+            have patterns.<br />Find yours.
+          </p>
+          <p class="subhead">
+            Log your headaches and workouts in one place, <br />and see what they have in common.
+          </p>
+        </hgroup>
+        <div class="action-container">
+          <button matButton="filled" (click)="openDialog('register')">Start your diary</button>
+          <button matButton="outlined" (click)="scrollTo(howItWorks)">See how it works</button>
+        </div>
+      </div>
+      <div class="illustration">
+        <svg class="waves" viewBox="0 -53 420 280" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            class="w1"
+            transform="scale(1 1.6)"
+            d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
+          />
+          <path
+            class="w2"
+            transform="translate(0 60) scale(1 1.6)"
+            d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
+          />
+        </svg>
+        <div class="illu-content">
+          <svg class="arcs" viewBox="0 0 400 272" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M62 66 C 70 130, 120 160, 168 142" />
+            <path d="M322 120 C 322 120, 320 180, 245 168" />
+          </svg>
+          <span class="chip chip--left"
+            ><mat-icon class="chip-icon">bolt</mat-icon>Tension pattern</span
+          >
+          <span class="chip chip--right"
+            ><mat-icon class="chip-icon">fitness_center</mat-icon>Neck & Traps</span
+          >
+          <img class="illu-img" src="illustration.webp" width="400" height="600" alt="" />
+        </div>
+        <svg
+          class="waves waves--front"
+          viewBox="0 -53 420 280"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            class="w3"
+            transform="translate(0 120) scale(1 1.6)"
+            d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
+          />
+        </svg>
+      </div>
+    </header>
+    <main>
+      <div class="page-wrapper">
+        <section #whoItsFor>
+          <div class="section-heading">
+            <h3 class="small-heading">Who it's for</h3>
+            <span class="slogan">Sounds familiar?</span>
+          </div>
+          <div class="bubbles b1">
+            <p>
+              “My headaches never feel quite the same from one day to the next. I want to see what
+              each kind has in common.”
+            </p>
+          </div>
+          <div class="bubbles b2">
+            <p>
+              “I've been training for a while now. Do my headaches show up after certain workouts,
+              or is it all in my head?”
+            </p>
+          </div>
+          <div class="bubbles b3">
+            <p>“I want a clear record of every headache, so I have something to show my doctor.”</p>
+          </div>
+        </section>
+        <section #howItWorks>
+          <div class="section-heading">
+            <h3 class="small-heading">How it works</h3>
+            <span class="slogan">Four steps.</span>
+            <span class="slogan">Your patterns.</span>
+          </div>
+          <ol class="steps">
+            <li class="step">
+              <span class="number" aria-hidden="true">1</span>
+              <h4 class="step-title">Log a headache in a few taps</h4>
+              <p class="step-text">
+                When it started, how bad it was, where it hurt, triggers, symptoms, what helped and
+                any medication you took. Every detail, without the hassle.
+              </p>
+            </li>
+            <li class="step">
+              <span class="number" aria-hidden="true">2</span>
+              <h4 class="step-title">Add your training</h4>
+              <p class="step-text">
+                Pick from the exercise library and add your sets: weight and reps, time or distance.
+                The muscles each exercise works are tagged for you.
+              </p>
+            </li>
+            <li class="step">
+              <span class="number" aria-hidden="true">3</span>
+              <h4 class="step-title">Watch your diary grow</h4>
+              <p class="step-text">
+                Headaches, workouts and medication sit side by side, week by week. Give it about a
+                month, and your patterns start to show.
+              </p>
+            </li>
+            <li class="step">
+              <span class="number" aria-hidden="true">4</span>
+              <h4 class="step-title">Find your patterns</h4>
+              <p class="step-text">
+                See which patterns your headaches resemble, which exercises and muscle groups stand
+                out, and how soon after training they start. Then get a simple idea of what to try
+                leaving out next.
+              </p>
+            </li>
+          </ol>
+        </section>
+      </div>
+      <!-- Hero waves flipped upside down: purple section flows into the light one -->
+      <div class="wave-divider" aria-hidden="true">
+        <!-- tight viewBox around the top of the shape exaggerates the curve -->
+        <svg class="waves" viewBox="0 0 420 70" preserveAspectRatio="none">
+          <path
+            d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
+          />
+        </svg>
+      </div>
+      <div class="light-wrapper">
+        <section class="doctor" #doctor>
+          <div class="section-heading">
+            <h3 class="small-heading">Talk to your doctor</h3>
+            <span class="slogan">Bring a record, <br />not a hunch.</span>
+          </div>
+          <p class="doctor-text">
+            A clear history of your headaches and your training gives your doctor or physiotherapist
+            something specific to work with.
+          </p>
+          <figure class="preview-card">
+            <h4 class="preview-title">Workouts vs headaches</h4>
+            <p class="preview-summary">
+              In your more active weeks you had <strong>1.5</strong> headaches on average, compared
+              with <strong>1.0</strong> in less active weeks.
+            </p>
+            <img
+              class="preview-img"
+              src="workouts-vs-headaches.webp"
+              width="345"
+              height="249"
+              loading="lazy"
+              alt="Bar and line chart over eight weeks: workouts per week as bars, headaches per week as a line. The headache line rises in the weeks with more workouts."
+            />
+            <figcaption class="preview-caption">Example data</figcaption>
+          </figure>
+        </section>
+        <section class="closing">
+          <svg
+            class="closing-wave"
+            viewBox="0 0 420 70"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
+            />
+          </svg>
+          <h3 class="closing-title">Start with your <br />next headache</h3>
+          <p class="closing-text">Free, private, and ready in two minutes.</p>
+          <button matButton="filled" class="closing-cta" (click)="openDialog('register')">
+            Start your diary
+          </button>
+        </section>
+      </div>
+    </main>
+    <footer class="footer">
+      <nav class="footer-links" aria-label="Footer">
+        <button matButton (click)="openDialog('privacy')">Privacy</button>
+        <button matButton (click)="openDialog('terms')">Terms</button>
+        <button matButton (click)="openDialog('about')">About</button>
+      </nav>
+      <p class="footer-note">
+        <span>Student examination project</span>
+        <span>&copy; 2026 Laura Greta Kotlinska</span>
       </p>
-      <p class="subhead">Add your workouts, track your headaches, <br />and see what lines up.</p>
-    </hgroup>
-    <div class="action-container">
-      <button matButton="filled" (click)="openDialog('register')">Start your diary</button>
-      <button matButton="outlined">See how it works</button>
-    </div>
-  </div>
-  <div class="illustration">
-    <svg class="waves" viewBox="0 -53 420 260" preserveAspectRatio="none" aria-hidden="true">
-      <path
-        class="w1"
-        d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
-      />
-      <path
-        class="w2"
-        transform="translate(0 57)"
-        d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
-      />
-    </svg>
-    <div class="illu-content">
-      <svg class="arcs" viewBox="0 0 400 272" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M62 66 C 70 130, 120 160, 168 142" />
-        <path d="M322 120 C 322 120, 320 180, 245 168" />
-      </svg>
-      <span class="chip chip--left"
-        ><mat-icon class="chip-icon">bolt</mat-icon>Tension headache</span
-      >
-      <span class="chip chip--right"
-        ><mat-icon class="chip-icon">fitness_center</mat-icon>Neck & Traps</span
-      >
-      <img class="illu-img" src="illustration.webp" width="400" height="600" alt="" />
-    </div>
-    <svg
-      class="waves waves--front"
-      viewBox="0 -53 420 260"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <path
-        class="w3"
-        transform="translate(0 117)"
-        d="M368.809 15.4316C393.243 1.89709 411.972 -1.84024 426.071 1.8291C440.139 5.49033 449.739 16.5664 455.834 33.0195C461.931 49.4796 464.49 71.2513 464.5 96.1406C464.51 121.023 461.974 148.984 457.907 177.805C449.774 235.445 435.523 296.481 423.303 343.113C417.193 366.428 411.592 386.138 407.519 400.021C405.482 406.961 403.826 412.445 402.681 416.193C402.108 418.067 401.663 419.508 401.36 420.479C401.209 420.965 401.094 421.334 401.017 421.581C401.014 421.589 401.012 421.596 401.01 421.604H-16.955C-16.9971 421.45 -17.0526 421.248 -17.1201 420.999C-17.2944 420.357 -17.5521 419.402 -17.8838 418.155C-18.547 415.662 -19.5077 411.997 -20.6972 407.315C-23.0764 397.951 -26.3706 384.518 -30.0312 368.24C-37.3527 335.684 -46.1379 291.758 -51.9941 246.271C-57.8511 200.777 -60.7751 153.749 -56.3877 114.98C-51.9955 76.1705 -40.2981 45.8287 -17.1015 33.4316C6.20034 20.9785 29.6737 20.3619 54.8848 24.7891C67.4948 27.0035 80.5302 30.4775 94.1924 34.3604C107.848 38.2413 122.135 42.5316 137.214 46.3643C197.579 61.7068 270.758 69.7431 368.809 15.4316Z"
-      />
-    </svg>
-  </div>
-</header>
-
-<main class="page-wrapper"></main>
+    </footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

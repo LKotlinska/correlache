@@ -16,19 +16,42 @@
 
     <div class="action-menu">
       @if (open()) {
-        <ul class="actions" id="create-actions">
+        <ul
+          class="actions"
+          id="create-actions"
+          animate.enter="actions-enter"
+          animate.leave="actions-leave"
+        >
           <li>
-            <a matFab extended routerLink="/user/headache/add" (click)="open.set(false)">
+            <a
+              class="link"
+              matFab
+              extended
+              routerLink="/user/headache/add"
+              (click)="open.set(false)"
+            >
               Headache
             </a>
           </li>
           <li>
-            <a matFab extended routerLink="/user/workout/add" (click)="open.set(false)">
+            <a
+              class="link"
+              matFab
+              extended
+              routerLink="/user/workout/add"
+              (click)="open.set(false)"
+            >
               Workout
             </a>
           </li>
           <li>
-            <a matFab extended routerLink="/user/medication/add" (click)="open.set(false)">
+            <a
+              class="link"
+              matFab
+              extended
+              routerLink="/user/medication/add"
+              (click)="open.set(false)"
+            >
               Medication
             </a>
           </li>
@@ -43,7 +66,7 @@
         (click)="open.set(!open())"
         (keydown.escape)="open.set(false)"
       >
-        <mat-icon>{{ open() ? 'close' : 'add' }}</mat-icon>
+        <mat-icon class="toggle-icon" [class.open]="open()">add</mat-icon>
       </button>
     </div>
   </div>

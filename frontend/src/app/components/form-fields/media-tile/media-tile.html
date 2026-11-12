@@ -1,16 +1,38 @@
-<label class="checkbox-card" [class.readonly]="readonly()">
-  <input type="checkbox" class="visually-hidden" [checked]="checked()" [disabled]="readonly()" (change)="toggle($event)" />
-  @if (image(); as src) {
-    <img class="image" [src]="src" [alt]="altText()" />
-  } @else {
-    <div class="image placeholder" role="img" [attr.aria-label]="altText()">
-      <mat-icon>hide_image</mat-icon>
-    </div>
-  }
-  <div class="image-context">
-    <span class="title">{{ title() }}</span>
-    @if (subtitle()) {
-      <span class="subtitle">{{ subtitle() }}</span>
+<div class="tile">
+  <label class="checkbox-card" [class.readonly]="readonly()">
+    <input
+      type="checkbox"
+      class="visually-hidden"
+      [checked]="checked()"
+      [disabled]="readonly()"
+      (change)="toggle($event)"
+    />
+    @if (image(); as src) {
+      <img class="image" [src]="src" [alt]="altText()" />
+    } @else {
+      <div class="image placeholder" role="img" [attr.aria-label]="altText()">
+        <mat-icon>hide_image</mat-icon>
+      </div>
     }
-  </div>
-</label>
+    <div class="image-context">
+      <span class="title">{{ title() }}</span>
+      @if (subtitle()) {
+        <span class="subtitle">{{ subtitle() }}</span>
+      }
+    </div>
+  </label>
+  <!-- Sibling of the label, not inside it, so it isn't part of the checkbox's name or click target -->
+  @if (animation(); as src) {
+    <app-info-button
+      class="floating-btn"
+      icon="help"
+      compactHeading
+      [heading]="title() | titlecase"
+      [label]="'How to do ' + title()"
+      [content]="animationContent"
+    />
+    <ng-template #animationContent>
+      <img class="exercise-gif" [src]="src" [alt]="'How to do ' + title()" width="180" height="180" />
+    </ng-template>
+  }
+</div>

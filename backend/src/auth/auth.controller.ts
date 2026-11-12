@@ -39,6 +39,11 @@ export class AuthController {
 
     @Get('me')
     me(@CurrentUser() user: User) {
-        return { id: user.id, username: user.username, email: user.email}
+        return {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            hasHealthDataConsent: !!user.health_data_consent_at,
+        }
     }
 }

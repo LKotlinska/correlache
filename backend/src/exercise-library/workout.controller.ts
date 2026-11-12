@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus, ParseDatePipe, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, ParseUUIDPipe, HttpCode, HttpStatus, ParseDatePipe, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
+import { HealthConsentGuard } from '../user/health-consent.guard.js';
 import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
@@ -8,6 +9,7 @@ import { Workout } from './entities/workout.entity.js';
 import { assertOrderedRange } from '../common/validators/ordered-range.js';
 
 @Controller('workout')
+@UseGuards(HealthConsentGuard)
 export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 

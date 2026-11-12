@@ -1,0 +1,7 @@
+<div class="error-message" role="alert">
+  <span class="icon" aria-hidden="true"><mat-icon>cloud_off</mat-icon></span>
+  <p class="message">{{ message() }}</p>
+  @if (retryable()) {
+    <app-button appearance="outlined" [isFullWidth]="isFullWidth()" (click)="retry.emit()">Try again</app-button>
+  }
+</div>

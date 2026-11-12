@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseDatePipe, ParseIntPipe, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseDatePipe, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
+import { HealthConsentGuard } from '../user/health-consent.guard.js';
 import { User } from '../user/entities/user.entity.js';
 import { MedicationService } from './medication.service.js';
 import { CreateMedicationDto } from './dto/create-medication.dto.js';
@@ -9,6 +10,7 @@ import { MedicationIntake } from './entities/medication-intake.entity.js';
 import { assertOrderedRange } from '../common/validators/ordered-range.js';
 
 @Controller('medications')
+@UseGuards(HealthConsentGuard)
 export class MedicationController {
   constructor(private readonly medicationService: MedicationService) {}
 
@@ -39,6 +41,7 @@ export class MedicationController {
 }
 
 @Controller('medication-intakes')
+@UseGuards(HealthConsentGuard)
 export class MedicationIntakeController {
   constructor(private readonly medicationService: MedicationService) {}
 

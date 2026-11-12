@@ -2,6 +2,7 @@ import { computed, DestroyRef, inject, Injectable, linkedSignal, Signal, signal,
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HeadacheService } from '../../services/headache.service';
 import { WorkoutService } from '../../services/workout.service';
+import { UserService } from '../../services/user.service';
 import { Headache } from '../../models/headache.model';
 import { Workout } from '../../models/workout.model';
 import { startOfWeek } from '../../utils/date';
@@ -34,6 +35,7 @@ export interface ChartPeriod {
 export class InsightsData {
   private headacheService = inject(HeadacheService);
   private workoutService = inject(WorkoutService);
+  private userService = inject(UserService);
 
   /** Period picked for every chart, or null for each chart's own default period. */
   range = signal<Period | null>(null);
@@ -55,22 +57,32 @@ export class InsightsData {
     stream: ({ params: from }) => this.workoutService.getWorkouts({ from: new Date(from) }),
   });
 
-  /** Every entry, only to tell whether there is enough history for the charts to mean something. */
-  private allHeadaches = rxResource({ stream: () => this.headacheService.getHeadaches() });
-  private allWorkouts = rxResource({ stream: () => this.workoutService.getWorkouts() });
+  /** Counts and first dates of all entries, to tell whether there is enough history for the charts to mean something. */
+  private history = rxResource({ stream: () => this.userService.historySummary() });
 
   /** How ready each category is, or undefined while the entries load. */
   readiness = computed<Record<InsightsCategory, Readiness> | undefined>(() => {
-    if (!this.allHeadaches.hasValue() || !this.allWorkouts.hasValue()) return undefined;
-    const headaches = this.allHeadaches.value();
-    const workouts = this.allWorkouts.value();
+    if (!this.history.hasValue()) return undefined;
+    const history = this.history.value();
     return {
-      headaches: readiness('headaches', headaches, workouts),
-      workouts: readiness('workouts', headaches, workouts),
-      correlations: readiness('correlations', headaches, workouts),
-      analysis: readiness('analysis', headaches, workouts),
+      headaches: readiness('headaches', history),
+      workouts: readiness('workouts', history),
+      correlations: readiness('correlations', history),
+      analysis: readiness('analysis', history),
     };
   });
+
+  /**
+   * True while data for the shown charts is loading, so the page shows one spinner instead of one per chart.
+   * A failed history summary doesn't count, or the spinner would never go away.
+   */
+  loading = computed(
+    () =>
+      (this.readiness() === undefined && !this.history.error()) ||
+      this.headaches.isLoading() ||
+      this.workouts.isLoading() ||
+      this.exercises.isLoading(),
+  );
 
   /** The exercise library, for each exercise's muscles. */
   exercises = rxResource({

@@ -11,9 +11,11 @@ import { MediaTile } from '../../../components/form-fields/media-tile/media-tile
 import { HeadacheService } from '../../../services/headache.service';
 import { matchPattern, PATTERN_NAMES, patternLabel } from '../../../utils/headache-patterns';
 import { INTAKE_EFFECT_LABELS, intakeLabel } from '../../../utils/medication';
+import { ErrorMessage } from '../../../components/error-message/error-message';
+import { headacheLocationUrl } from '../../../utils/image-urls';
 
 @Component({
-  imports: [DatePipe, RouterLink, MatCardModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
+  imports: [ErrorMessage, DatePipe, RouterLink, MatCardModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
   selector: 'app-headache-view',
   styleUrl: './headache-view.scss',
   templateUrl: './headache-view.html',
@@ -21,6 +23,7 @@ import { INTAKE_EFFECT_LABELS, intakeLabel } from '../../../utils/medication';
 export class HeadacheView {
   private headacheService = inject(HeadacheService);
   id = inject(ActivatedRoute).snapshot.paramMap.get('id')!;
+  protected readonly locationImage = headacheLocationUrl;
 
   headache = rxResource({
     stream: () => this.headacheService.getHeadacheById(this.id),

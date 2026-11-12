@@ -1,15 +1,15 @@
-# Correlache: Privacy Policy
+# CorrelAche: Privacy Policy
 
 Last updated: 2026-11-05
 
 ## 1. Who we are
 
-Correlache ("the App", "we", "us") is a personal diary for logging headaches and workouts side by side, so you can look for patterns between them.
+CorrelAche ("the App", "we", "us") is a personal diary for logging headaches and workouts side by side, so you can look for patterns between them.
 
 **Data controller:** Laura Greta Kotlinska, a student, as part of YRGO.
 **Contact:** laura.devhub@gmail.com
 
-Correlache is a **student project**, not a commercial service. There is no support team and no uptime guarantee. Please don't rely on it as your only record of your health.
+CorrelAche is a **student project**, not a commercial service. There is no support team and no uptime guarantee. Please don't rely on it as your only record of your health.
 
 ## 2. What data we collect
 
@@ -18,6 +18,7 @@ Correlache is a **student project**, not a commercial service. There is no suppo
 - Username
 - Email address
 - Password, stored only as a salted hash (we cannot read your password)
+- The date and time you gave explicit consent to processing your health data
 
 ### 2.2 Health data (special category data)
 
@@ -51,7 +52,7 @@ Workouts you log manually: the exercises, sets, reps, weight and similar details
 | Letting you log and view headaches and workouts           | Health data, workout data  | Explicit consent (Art. 9(2)(a))                         |
 | Showing patterns between your headaches and workouts      | Health data, workout data  | Explicit consent (Art. 9(2)(a))                         |
 
-Headache records are health data, which GDPR treats as a special category. We rely on your **explicit consent**, which you give when you create an account and save headache entries. You can withdraw it at any time by deleting your entries or your account (Section 7). Withdrawing consent does not affect processing that happened before.
+Headache records are health data, which GDPR treats as a special category. We rely on your **explicit consent**, which you give by ticking a separate consent box when you create an account. We record when you gave it. If your account was created before we recorded consent, you are asked for it the next time you log in, and you can't use the App until you give it. You can withdraw it at any time by deleting your entries or your account (Section 7). Withdrawing consent does not affect processing that happened before.
 
 ## 4. How your data is stored and secured
 
@@ -77,11 +78,11 @@ Headache records are health data, which GDPR treats as a special category. We re
 
 Under GDPR you have the right to:
 
-- **Access** the data we hold about you
+- **Access** the data we hold about you (Settings → Download my data)
 - **Rectify** inaccurate data (you can edit your entries in the App)
 - **Erase** your data (Settings → Delete account)
 - **Restrict or object** to processing
-- **Data portability**. The App has no export feature yet, so email us and we will send you your data in a common format (such as CSV or JSON)
+- **Data portability**. Settings → Download my data gives you everything we hold about you as a JSON file
 - **Withdraw consent** at any time
 - **Complain** to your national data protection authority
 
@@ -89,7 +90,7 @@ To use any of these rights, email laura.devhub@gmail.com.
 
 ## 8. Children
 
-Correlache is not intended for children. We do not knowingly collect data from anyone under 13. If you believe a child has signed up, contact us and we will delete the account.
+CorrelAche is not intended for children. We do not knowingly collect data from anyone under 13. If you believe a child has signed up, contact us and we will delete the account.
 
 ## 9. Changes to this policy
 

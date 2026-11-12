@@ -1,6 +1,6 @@
-# Correlache - Headache and workout diary
+# CorrelAche - Headache and workout diary
 
-Correlache is a personal diary for logging headaches and workouts in one place. Record headache episodes (times, locations, symptoms, triggers and relief measures) next to your training, and look back over paged weeks to spot patterns between the two.
+CorrelAche is a personal diary for logging headaches and workouts in one place. Record headache episodes (times, locations, symptoms, triggers and relief measures) next to your training, and look back over paged weeks to spot patterns between the two.
 
 ## Prerequisites
 

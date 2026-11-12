@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>Headache patterns</mat-card-title>
     @if (headaches.hasValue()) {
-      <app-chart-info [content]="info" />
+      <app-info-button heading="How to read this chart" label="How to read the headache patterns chart" [content]="info" />
     }
   </mat-card-header>
   <mat-card-content>
@@ -33,9 +33,7 @@
         </p>
       }
     } @else if (headaches.error()) {
-      <p>Couldn't load headache data.</p>
-    } @else if (headaches.isLoading()) {
-      <mat-progress-bar mode="indeterminate" />
+      <app-error-message message="Couldn't load headache data." compact />
     }
   </mat-card-content>
 </mat-card>

@@ -1,9 +1,11 @@
 import { Component, inject, signal, viewChildren } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, merge, Subject } from 'rxjs';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, merge, Subject, tap } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { ErrorMessage } from '../../../components/error-message/error-message';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { MatButtonModule } from '@angular/material/button';
 import { Button } from '../../../components/button/button';
@@ -45,7 +47,7 @@ type SetGroup = ReturnType<typeof createSetGroup>;
 
 
 @Component({
-  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule, MatFormFieldModule, MatSelectModule, FormErrorSummary],
+  imports: [RouterLink, ReactiveFormsModule, MatButtonModule, PageHeader, Button, DateTimePicker, OutlinedField, MatExpansionModule, MatIconModule, MatFormFieldModule, MatSelectModule, FormErrorSummary, MatProgressBar, ErrorMessage],
   selector: 'app-workout-form',
   styleUrl: './workout-form.scss',
   templateUrl: './workout-form.html',
@@ -80,6 +82,25 @@ export class WorkoutForm {
     return maxTimeFor(this.workoutForm.controls.startDate.value);
   }
 
+  /** Set when the edit form opens fresh rather than coming back from the exercise picker, so the saved workout is loaded. */
+  private loadSaved = signal(false);
+
+  /**
+   * The workout being edited, loaded into the draft service; idle when adding or when coming back from the picker.
+   * The form only shows once it has loaded, so a save can never write the defaults, or a new workout's draft,
+   * over the workout.
+   */
+  protected readonly saved = rxResource({
+    params: () => (this.loadSaved() && this.workoutId ? this.workoutId : undefined),
+    stream: ({ params: id }) =>
+      this.workoutService.getWorkoutById(id).pipe(
+        tap((workout) => {
+          this.exerciseDraftService.startEdit(workout.id, workoutToDraft(workout));
+          this.restoreFromDraft();
+        }),
+      ),
+  });
+
   private setsByExercise = new Map<number, FormArray<SetGroup>>();
   /** Modes the user set or restored; an exercise without an entry uses the default for its equipment. */
   private modes = signal<Record<number, TrackingMode>>({});
@@ -109,13 +130,7 @@ export class WorkoutForm {
       this.restoreFromDraft();
       return;
     }
-    this.workoutService.getWorkoutById(this.workoutId).subscribe({
-      next: (workout) => {
-        draft.startEdit(workout.id, workoutToDraft(workout));
-        this.restoreFromDraft();
-      },
-      error: () => this.snackBar.open("Couldn't load this workout", 'Close', { panelClass: 'snackbar-error' }),
-    });
+    this.loadSaved.set(true);
   }
 
   private restoreFromDraft() {
@@ -250,7 +265,8 @@ export class WorkoutForm {
   }
 
   onSubmit() {
-    if (this.isSubmitting()) {
+    // The form is hidden until then; this also stops a stray submit from saving over the workout
+    if (this.isSubmitting() || (this.loadSaved() && !this.saved.hasValue())) {
       return;
     }
     const exercises = this.exercises();

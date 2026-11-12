@@ -1,0 +1,10 @@
+:host {
+  display: inline-block;
+}
+
+// In a card header: sit at the right; negative margins keep the 40px button from making the header taller
+:host-context(.mat-mdc-card-header) {
+  align-self: center;
+  margin: -0.5em -0.5em -0.5em auto;
+  color: var(--mat-sys-on-surface-variant);
+}

@@ -3,15 +3,23 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../services/user.service';
 import { inject } from '@angular/core';
-import { catchError, map, of } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
+import { ConsentPrompt } from '../services/consent-prompt';
+import { signInRequiredQuery } from './sign-in-redirect';
 
 export const authGuard: CanActivateFn = () => {
   const userService = inject(UserService);
   const router = inject(Router);
   const snackBar = inject(MatSnackBar);
+  const consentPrompt = inject(ConsentPrompt);
 
   return userService.me().pipe(
-    map(() => true), // 200: session is valid, let them in
+    // 200: session is valid. Accounts without recorded consent must give it before using the app.
+    switchMap((me) =>
+      me.hasHealthDataConsent
+        ? of(true)
+        : consentPrompt.ask().pipe(map((consented) => consented || router.createUrlTree(['/']))),
+    ),
     catchError((err: HttpErrorResponse) => {
       // Only a 401 means "not logged in"; anything else is a real failure worth telling the user about.
       if (err.status !== 401) {
@@ -19,7 +27,8 @@ export const authGuard: CanActivateFn = () => {
           panelClass: 'snackbar-error',
         });
       }
-      return of(router.createUrlTree(['/']));
+      // On 401 the landing page opens the sign-in dialog
+      return of(router.createUrlTree(['/'], err.status === 401 ? { queryParams: signInRequiredQuery } : {}));
     }),
   );
 };

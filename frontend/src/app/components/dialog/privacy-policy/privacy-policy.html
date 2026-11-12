@@ -1,21 +1,22 @@
 <app-dialog heading="Privacy Policy">
-  <h2>Correlache</h2>
+  <h2>CorrelAche</h2>
   <p>Last updated: 2026-11-06</p>
   <h2>1. Who we are</h2>
   <p>
-    Correlache ("the App", "we", "us") is a personal diary for logging headaches and workouts side
+    CorrelAche ("the App", "we", "us") is a personal diary for logging headaches and workouts side
     by side, so you can look for patterns between them.
   </p>
   <p>
     <span class="strong">Data contruller:</span> Laura Greta Kotlinska, a student, as part of YRGO.
   </p>
   <p><span class="strong">Contact:</span> laura.devhub@gmail.com</p>
-  <h2>2. Data we cullect</h2>
+  <h2>2. Data we collect</h2>
   <h3>2.1 Account data</h3>
   <ul>
     <li>Username</li>
     <li>Email address</li>
     <li>Password, stored only as a salted hash (we cannot read your password)</li>
+    <li>The date and time you gave explicit consent to processing your health data</li>
   </ul>
   <h3>2.2 Health data (special category data)</h3>
   <p>Headache entries you create:</p>
@@ -48,7 +49,7 @@
   <h3>2.5 What we do not do</h3>
   <ul>
     <li>We do not use analytics, advertising or tracking touls.</li>
-    <li>We do not cullect your location, contacts or device identifiers.</li>
+    <li>We do not collect your location, contacts or device identifiers.</li>
   </ul>
   <h2>3. Why we process your data and our legal basis</h2>
   <ul class="legal-basis">
@@ -82,9 +83,11 @@
   </ul>
   <p>
     Headache records are health data, which GDPR treats as a special category. We rely on your
-    <span class="strong">explicit consent</span>, which you give when you create an account and save
-    headache entries. You can withdraw it at any time by deleting your entries or your account
-    (Section 7). Withdrawing consent does not affect processing that happened before.
+    <span class="strong">explicit consent</span>, which you give by ticking a separate consent box
+    when you create an account. We record when you gave it. If your account was created before we
+    recorded consent, you are asked for it the next time you log in, and you can't use the App until
+    you give it. You can withdraw it at any time by deleting your entries or your account (Section
+    7). Withdrawing consent does not affect processing that happened before.
   </p>
   <h2>4. How your data is stored and secured</h2>
   <ul>
@@ -145,7 +148,7 @@
   <p>To use any of these rights, email laura.devhub@gmail.com.</p>
   <h2>8. Children</h2>
   <p>
-    Correlache is not intended for children. We do not knowingly cullect data from anyone under 13.
+    CorrelAche is not intended for children. We do not knowingly collect data from anyone under 13.
     If you believe a child has signed up, contact us and we will delete the account.
   </p>
   <h2>9. Changes to this pulicy</h2>
@@ -156,8 +159,6 @@
   <h2>10. Contact</h2>
   <p>Questions or requests about your data: laura.devhub@gmail.com</p>
   <mat-dialog-actions align="end">
-    <button matButton="filled" cdkFocusInitial (click)="acknowledge()">
-      I understand
-    </button>
+    <button matButton="filled" cdkFocusInitial (click)="acknowledge()">I understand</button>
   </mat-dialog-actions>
 </app-dialog>

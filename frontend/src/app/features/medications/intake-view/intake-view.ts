@@ -10,9 +10,10 @@ import { DetailHeader } from '../../../components/detail-header/detail-header';
 import { HeadacheService } from '../../../services/headache.service';
 import { MedicationService } from '../../../services/medication.service';
 import { INTAKE_EFFECT_LABELS, MEDICATION_CLASS_LABELS, MEDICATION_USE_LABELS } from '../../../utils/medication';
+import { ErrorMessage } from '../../../components/error-message/error-message';
 
 @Component({
-  imports: [DatePipe, RouterLink, MatCardModule, MatIcon, MatProgressBar, DetailHeader],
+  imports: [ErrorMessage, DatePipe, RouterLink, MatCardModule, MatIcon, MatProgressBar, DetailHeader],
   selector: 'app-intake-view',
   styleUrl: './intake-view.scss',
   templateUrl: './intake-view.html',

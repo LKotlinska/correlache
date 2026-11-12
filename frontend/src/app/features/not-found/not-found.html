@@ -1,0 +1,12 @@
+<main class="not-found">
+  <span class="error-nr">404</span>
+  <h1>Page not found</h1>
+  <p>Oops... This link doesn't lead anywhere.</p>
+  @if (signedIn.hasValue()) {
+    @if (signedIn.value()) {
+      <a matButton="filled" routerLink="/user">Go to your diary</a>
+    } @else {
+      <a matButton="filled" routerLink="/">Go to the start page</a>
+    }
+  }
+</main>

@@ -1,8 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Dialog } from '../dialog';
 import { MatAnchor, MatButton } from '@angular/material/button';
-import { DialogKey, DialogService } from '../dialog.service';
 
 @Component({
   imports: [MatDialogModule, Dialog, MatAnchor, MatButton],
@@ -11,18 +10,10 @@ import { DialogKey, DialogService } from '../dialog.service';
   templateUrl: './privacy-policy.html',
 })
 export class PrivacyPolicy {
-  private dialogService = inject(DialogService);
   private dialogRef = inject(MatDialogRef<PrivacyPolicy>);
   
-  // Opened from settings (signed in): just close instead of returning to registration
-  private data = inject<{ standalone?: boolean } | null>(MAT_DIALOG_DATA, { optional: true });
-
+  /** Always opened on top of whatever opened it (signup, settings, consent), so closing returns there. */
   acknowledge() {
-    if (this.data?.standalone) this.dialogRef.close();
-    else this.switchDialog('register');
-  }
-
-  switchDialog(key: DialogKey) {
-    this.dialogService.switch(this.dialogRef, key)
+    this.dialogRef.close();
   }
 }

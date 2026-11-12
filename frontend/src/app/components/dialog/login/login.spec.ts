@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { UserService } from '../../../services/user.service';
@@ -40,6 +40,28 @@ describe('Login', () => {
     expect(component).toBeTruthy();
   });
 
+  it('shows no notice when opened without data', () => {
+    expect(fixture.nativeElement.querySelector('.form-notice')).toBeNull();
+  });
+
+  it('shows the notice passed in dialog data', async () => {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [Login],
+      providers: [
+        { provide: UserService, useValue: userService },
+        { provide: MatDialogRef, useValue: dialogRef },
+        { provide: Router, useValue: router },
+        { provide: MAT_DIALOG_DATA, useValue: { notice: 'Please sign in to continue.' } },
+      ],
+    }).compileComponents();
+
+    const withNotice = TestBed.createComponent(Login);
+    await withNotice.whenStable();
+
+    expect(withNotice.nativeElement.querySelector('.form-notice').textContent).toContain('Please sign in to continue.');
+  });
+
   it('does not call the service and marks fields touched when the form is invalid', () => {
     component.onSubmit();
 
@@ -58,7 +80,7 @@ describe('Login', () => {
       password: 'supersecret',
     });
     expect(dialogRef.close).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/user/insights']);
+    expect(router.navigate).toHaveBeenCalledWith(['/user/diary']);
   });
 
   it('shows a credentials message and re-enables submit on 401', () => {

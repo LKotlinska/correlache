@@ -1,5 +1,8 @@
 <app-dialog heading="Sign in">
   <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+    @if (notice) {
+      <p class="form-notice" role="status">{{ notice }}</p>
+    }
     <app-outlined-field
       label="Email"
       type="email"

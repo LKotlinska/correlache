@@ -35,8 +35,10 @@ body {
   color-scheme: light;
   background-color: var(--mat-sys-surface);
   color: $text-strong;
-  font: var(--mat-sys-body-medium);
-  margin: 0;
+  font-family: var(--mat-sys-body-medium-font);
+  font-size: var(--mat-sys-body-medium-size);
+  font-weight: var(--mat-sys-body-medium-weight);
+  line-height: var(--mat-sys-body-medium-line-height);  margin: 0;
   height: 100%;
 
   .mat-mdc-form-field {
@@ -59,6 +61,7 @@ body {
   .nav-title {
     font-weight: 600;
     font-size: 1.5em;
+    margin: 0.45em 0;
   }
 
   .nav-img {
@@ -97,3 +100,39 @@ body {
   }
 }
 /* You can add global styles to this file, and also import other style files */
+
+// Link-styled anchor that opens a dialog instead of navigating (call $event.preventDefault())
+.text-link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: $brand-primary;
+}
+
+// Wrapper for a required checkbox with a wrapping label and an error line below it
+.checkbox-field {
+  margin: 1em 0;
+
+  // Pin the box to the first line of the label instead of centring it
+  .mat-internal-form-field {
+    align-items: flex-start;
+  }
+
+  // The box sits in a 40px state layer; pad the label so its first line lines up with the box
+  .mat-internal-form-field-label {
+    padding-top: calc((var(--mat-checkbox-state-layer-size, 40px) - 1lh) / 2);
+  }
+
+  // Same condition as the error line: invalid and touched (or form submitted)
+  mat-checkbox.ng-invalid.ng-touched {
+    --mat-checkbox-unselected-icon-color: var(--mat-sys-error);
+    --mat-checkbox-unselected-hover-icon-color: var(--mat-sys-error);
+    --mat-checkbox-unselected-focus-icon-color: var(--mat-sys-error);
+    --mat-checkbox-unselected-pressed-icon-color: var(--mat-sys-error);
+  }
+
+  .checkbox-error {
+    margin: 0.25em 0 0 0.75em;
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-error);
+  }
+}
