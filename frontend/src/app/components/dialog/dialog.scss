@@ -5,3 +5,8 @@
   max-height: inherit;
   min-height: 0;
 }
+
+// Material sets font-size on the dialog title itself, so set its size token instead
+:host(.compact-heading) {
+  --mat-dialog-subhead-size: 1.5em;
+}

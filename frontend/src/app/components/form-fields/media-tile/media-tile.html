@@ -26,8 +26,8 @@
     <app-info-button
       class="floating-btn"
       icon="help"
-      panelClass="exercise-animation-dialog"
-      [heading]="title()"
+      compactHeading
+      [heading]="title() | titlecase"
       [label]="'How to do ' + title()"
       [content]="animationContent"
     />

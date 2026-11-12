@@ -19,7 +19,7 @@ import { MatBadge } from '@angular/material/badge';
 import { DialogService } from '../../../components/dialog/dialog.service';
 import { ExerciseFilters, ExerciseFilterSelection, ExerciseFiltersData } from './exercise-filters/exercise-filters';
 import { ErrorMessage } from '../../../components/error-message/error-message';
-import { exerciseAnimationUrl, exerciseStillUrl } from '../../../utils/exercise-media';
+import { exerciseAnimationUrl, exerciseStillUrl } from '../../../utils/image-urls';
 
 /** Distinct options picked out of `list` by `pick`, sorted by name. */
 function distinctSorted<T>(list: T[], pick: (item: T) => LookupOption): LookupOption[] {
@@ -57,8 +57,8 @@ export class ExerciseForm {
   // must match the row height and columns set in exercise-form.scss
   readonly columns = 2;
   readonly rowHeight = 245;
-  readonly stillUrl = exerciseStillUrl;
-  readonly animationUrl = exerciseAnimationUrl;
+  protected readonly stillUrl = exerciseStillUrl;
+  protected readonly animationUrl = exerciseAnimationUrl;
 
   searchControl = new FormControl('', { nonNullable: true });
   searchQuery = toSignal(this.searchControl.valueChanges, { initialValue: '' });

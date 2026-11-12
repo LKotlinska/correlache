@@ -9,7 +9,7 @@
 </button>
 
 <ng-template #dialog>
-  <app-dialog [heading]="heading()">
+  <app-dialog [heading]="heading()" [compactHeading]="compactHeading()">
     <ng-container [ngTemplateOutlet]="content()" />
   </app-dialog>
 </ng-template>

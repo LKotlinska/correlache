@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>Headache after load spikes</mat-card-title>
     @if (workouts.hasValue() && headaches.hasValue() && hasComparison()) {
-      <app-info-button [content]="info" />
+      <app-info-button heading="How to read this chart" label="How to read the headache after load spikes chart" [content]="info" />
     }
   </mat-card-header>
   <mat-card-content>

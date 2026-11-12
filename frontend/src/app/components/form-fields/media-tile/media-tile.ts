@@ -1,9 +1,10 @@
 import { Component, input, model } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { InfoButton } from '../../info-button/info-button';
 
 @Component({
-  imports: [InfoButton, MatIcon],
+  imports: [InfoButton, MatIcon, TitleCasePipe],
   selector: 'app-media-tile',
   styleUrl: './media-tile.scss',
   templateUrl: './media-tile.html',

@@ -35,6 +35,7 @@ import { MedicationService } from '../../../services/medication.service';
 import { IntakeFields } from '../../../components/form-fields/intake-fields/intake-fields';
 import { createIntakeGroup, defaultTakenAt, IntakeGroup, IntakeGroupValue, intakeGroupToPayload, intakeProblems, intakeToGroupValue, isPreventive } from '../../../utils/medication';
 import { combineDateTime } from '../../../utils/combine-date-time';
+import { headacheLocationUrl } from '../../../utils/image-urls';
 
 /** Indexes of the steps that hold fields that can be invalid. */
 const STEP_WHEN = 0;
@@ -76,6 +77,7 @@ export class HeadacheForm {
   isEdit = this.headacheId !== null;
   options = this.headacheService.getOptions();
   isSubmitting = signal(false);
+  protected readonly locationImage = headacheLocationUrl;
   /** Latest selectable date: headaches can't be logged in the future. */
   today = new Date();
 

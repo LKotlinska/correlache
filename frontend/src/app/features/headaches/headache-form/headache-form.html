@@ -63,8 +63,8 @@
               @for (loc of opts.headacheLocations; track loc.id) {
                 <app-media-tile
                   [title]="loc.name"
-                  [image]="'/images/headache_location/' + loc.image"
-                  [altText]="'Headache location:' + loc.name"
+                  [image]="locationImage(loc.image)"
+                  [altText]="'Headache location: ' + loc.name"
                   [checked]="isSelected(loc.id)"
                   (checkedChange)="toggleLocation(loc.id, $event)"
                 />

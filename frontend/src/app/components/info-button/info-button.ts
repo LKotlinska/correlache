@@ -1,4 +1,4 @@
-import { Component, inject, input, TemplateRef, viewChild } from '@angular/core';
+import { booleanAttribute, Component, inject, input, TemplateRef, viewChild } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,16 +18,17 @@ import { Dialog } from '../dialog/dialog';
 export class InfoButton {
   /** The dialog body, rendered inside the dialog. */
   content = input.required<TemplateRef<unknown>>();
-  heading = input('How to read this chart');
+  heading = input.required<string>();
+  /** Accessible name of the button; it shows only an icon. */
+  label = input.required<string>();
   icon = input('info');
-  label = input('How to read this');
-  /** Class added to the dialog's overlay pane, for global styling of a specific dialog. */
-  panelClass = input<string>();
+  /** Smaller dialog heading, for long names. */
+  compactHeading = input(false, { transform: booleanAttribute });
 
   private dialog = inject(MatDialog);
   private template = viewChild.required<TemplateRef<unknown>>('dialog');
 
   open(): void {
-    this.dialog.open(this.template(), { panelClass: this.panelClass() });
+    this.dialog.open(this.template());
   }
 }

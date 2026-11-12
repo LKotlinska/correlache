@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
 import { inject, Service } from '@angular/core';
-import { authUserPayload, CreateUserPayload, MeResponse } from '../models/user.model';
+import { authUserPayload, CreateUserPayload, HistorySummary, MeResponse } from '../models/user.model';
 
 @Service()
 export class UserService {
@@ -28,6 +28,11 @@ export class UserService {
         return this.http.get('/api/user/me/export', { responseType: 'blob' }).pipe(
             catchError((err: HttpErrorResponse) => from(parseBlobError(err)).pipe(switchMap((e) => throwError(() => e)))),
         );
+    }
+
+    /** How many headaches and workouts the user has logged and since when, without loading them. */
+    historySummary() {
+        return this.http.get<HistorySummary>('/api/user/me/history');
     }
 
     /** Temporary, for public testing: replaces the user's data with a generated example year. */

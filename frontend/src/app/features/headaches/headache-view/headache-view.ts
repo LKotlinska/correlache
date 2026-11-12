@@ -12,6 +12,7 @@ import { HeadacheService } from '../../../services/headache.service';
 import { matchPattern, PATTERN_NAMES, patternLabel } from '../../../utils/headache-patterns';
 import { INTAKE_EFFECT_LABELS, intakeLabel } from '../../../utils/medication';
 import { ErrorMessage } from '../../../components/error-message/error-message';
+import { headacheLocationUrl } from '../../../utils/image-urls';
 
 @Component({
   imports: [ErrorMessage, DatePipe, RouterLink, MatCardModule, MatIcon, MatProgressBar, ChipList, MediaTile, DetailHeader],
@@ -22,6 +23,7 @@ import { ErrorMessage } from '../../../components/error-message/error-message';
 export class HeadacheView {
   private headacheService = inject(HeadacheService);
   id = inject(ActivatedRoute).snapshot.paramMap.get('id')!;
+  protected readonly locationImage = headacheLocationUrl;
 
   headache = rxResource({
     stream: () => this.headacheService.getHeadacheById(this.id),
