@@ -1,15 +1,15 @@
-# Correlache: Privacy Policy
+# CorrelAche: Privacy Policy
 
 Last updated: 2026-11-05
 
 ## 1. Who we are
 
-Correlache ("the App", "we", "us") is a personal diary for logging headaches and workouts side by side, so you can look for patterns between them.
+CorrelAche ("the App", "we", "us") is a personal diary for logging headaches and workouts side by side, so you can look for patterns between them.
 
 **Data controller:** Laura Greta Kotlinska, a student, as part of YRGO.
 **Contact:** laura.devhub@gmail.com
 
-Correlache is a **student project**, not a commercial service. There is no support team and no uptime guarantee. Please don't rely on it as your only record of your health.
+CorrelAche is a **student project**, not a commercial service. There is no support team and no uptime guarantee. Please don't rely on it as your only record of your health.
 
 ## 2. What data we collect
 
@@ -90,7 +90,7 @@ To use any of these rights, email laura.devhub@gmail.com.
 
 ## 8. Children
 
-Correlache is not intended for children. We do not knowingly collect data from anyone under 13. If you believe a child has signed up, contact us and we will delete the account.
+CorrelAche is not intended for children. We do not knowingly collect data from anyone under 13. If you believe a child has signed up, contact us and we will delete the account.
 
 ## 9. Changes to this policy
 

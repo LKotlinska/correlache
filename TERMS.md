@@ -1,18 +1,18 @@
-# Correlache: Terms of Service
+# CorrelAche: Terms of Service
 
 Last updated: 2026-11-06
 
 ## 1. About the App
 
-Correlache ("the App", "we", "us") is a personal diary for logging headaches and workouts side by side, so you can look for patterns between them.
+CorrelAche ("the App", "we", "us") is a personal diary for logging headaches and workouts side by side, so you can look for patterns between them.
 
-Correlache is a **student project** made as part of an examination at YRGO. It is not a commercial service.
+CorrelAche is a **student project** made as part of an examination at YRGO. It is not a commercial service.
 
 **Contact:** laura.devhub@gmail.com
 
 ## 2. Not medical advice
 
-**Correlache is a diary, not a medical device.** It does not diagnose, treat, prevent or give advice about any medical condition.
+**CorrelAche is a diary, not a medical device.** It does not diagnose, treat, prevent or give advice about any medical condition.
 
 - Patterns and insights shown in the App are simple comparisons of what you logged. They do not show that one thing causes another.
 - Do not use the App to make decisions about your health, medication or treatment. Talk to a doctor or other qualified healthcare professional.
