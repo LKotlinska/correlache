@@ -3,15 +3,22 @@
   @if (medications.isLoading()) {
     <mat-progress-bar mode="indeterminate" />
   } @else if (medications.error()) {
-    <app-error-message message="Couldn't load your medications." retryable (retry)="medications.reload()" />
+    <app-error-message
+      message="Couldn't load your medications."
+      retryable
+      (retry)="medications.reload()"
+    />
   }
   <ul class="settings-list">
     <li>
-      <button type="button" class="primary" (click)="openMedication()">Add medication</button>
+      <button type="button" class="action-btn" (click)="openMedication()">
+        <mat-icon>add</mat-icon>
+        Add medication
+      </button>
     </li>
     @for (medication of medications.value() ?? []; track medication.id) {
       <li class="medication-item">
-        <button type="button" (click)="openMedication(medication)">
+        <button class="list-item" type="button" (click)="openMedication(medication)">
           <span class="medication-name">{{ medication.name }}</span>
           <span class="medication-details">{{ medicationDetails(medication) }}</span>
         </button>
@@ -31,23 +38,43 @@
 <section class="settings-section">
   <h2>Your account</h2>
   <ul class="settings-list">
-    <li><button class="destructive" type="button" (click)="signOut()">Sign out</button></li>
     <li>
-      <button type="button" [disabled]="exporting()" (click)="downloadData()">Download my data</button>
+      <button class="action-btn" type="button" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        Sign out
+      </button>
+    </li>
+    <li>
+      <button class="action-btn" type="button" [disabled]="exporting()" (click)="downloadData()">
+        <mat-icon>download</mat-icon>
+        Download my data
+      </button>
     </li>
     <!-- Temporary, for public testing -->
     <li>
-      <button type="button" [disabled]="loadingExample()" (click)="confirmLoadExampleData()">Load example data</button>
+      <button
+        class="action-btn"
+        type="button"
+        [disabled]="loadingExample()"
+        (click)="confirmLoadExampleData()"
+      >
+        <mat-icon>dataset</mat-icon>
+        Load example data
+      </button>
     </li>
     <li>
-      <button type="button" (click)="confirmDeleteAccount()">Delete account and data</button>
+      <button class="action-btn destructive" type="button" (click)="confirmDeleteAccount()">
+        <mat-icon>delete_forever</mat-icon>
+        Delete account and data
+      </button>
     </li>
   </ul>
 </section>
 <section class="settings-section">
-  <h2>About Correlache</h2>
+  <h2>About CorrelAche</h2>
   <ul class="settings-list">
-    <li><button type="button" (click)="openDialog('terms')">Terms and conditions</button></li>
-    <li><button type="button" (click)="openDialog('privacy')">Privacy policy</button></li>
+    <li><button type="button" (click)="openDialog('about')">About</button></li>
+    <li><button type="button" (click)="openDialog('terms')">Terms and Conditions</button></li>
+    <li><button type="button" (click)="openDialog('privacy')">Privacy Policy</button></li>
   </ul>
 </section>

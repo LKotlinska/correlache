@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime } from 'rxjs';
+import { debounceTime, tap } from 'rxjs';
 import { DraftStorage, HEADACHE_DRAFT_KEY } from '../../../services/draft-storage';
 import { DraftController } from '../../../services/draft-controller';
 import { FormArray, FormGroup, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
@@ -25,6 +25,8 @@ import { toggleId } from '../../../utils/toggle-id';
 import { getErrorMessage } from '../../../utils/error-message';
 import { CreateHeadachePayload } from '../../../models/headache.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { ErrorMessage } from '../../../components/error-message/error-message';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeadacheDetail } from '../../../models/headache.model';
@@ -33,6 +35,7 @@ import { MedicationService } from '../../../services/medication.service';
 import { IntakeFields } from '../../../components/form-fields/intake-fields/intake-fields';
 import { createIntakeGroup, defaultTakenAt, IntakeGroup, IntakeGroupValue, intakeGroupToPayload, intakeProblems, intakeToGroupValue, isPreventive } from '../../../utils/medication';
 import { combineDateTime } from '../../../utils/combine-date-time';
+import { headacheLocationUrl } from '../../../utils/image-urls';
 
 /** Indexes of the steps that hold fields that can be invalid. */
 const STEP_WHEN = 0;
@@ -56,6 +59,8 @@ const STEP_MEDICATIONS = 3;
     MatIcon,
     MatExpansionModule,
     FormErrorSummary,
+    MatProgressBar,
+    ErrorMessage,
 ],
   selector: 'app-headache-form',
   styleUrl: './headache-form.scss',
@@ -72,6 +77,7 @@ export class HeadacheForm {
   isEdit = this.headacheId !== null;
   options = this.headacheService.getOptions();
   isSubmitting = signal(false);
+  protected readonly locationImage = headacheLocationUrl;
   /** Latest selectable date: headaches can't be logged in the future. */
   today = new Date();
 
@@ -89,6 +95,15 @@ export class HeadacheForm {
     intakes: new FormArray<IntakeGroup>([]),
   }, { validators: [endNotBeforeStart, notInFuture] })
 
+  /**
+   * The headache being edited; idle when adding. The form only shows once it has loaded, so a save can never
+   * overwrite the headache with the form's defaults.
+   */
+  protected readonly saved = rxResource({
+    params: () => this.headacheId ?? undefined,
+    stream: ({ params: id }) => this.headacheService.getHeadacheById(id).pipe(tap((h) => this.fillForm(h))),
+  });
+
   /** Archived medications are included so a saved dose still shows its medication. */
   private loadedMedications = rxResource({ stream: () => this.medicationService.getMedications(true) });
   private addedMedications = signal<Medication[]>([]);
@@ -103,13 +118,7 @@ export class HeadacheForm {
   showErrors = signal(false);
 
   constructor() {
-    if (this.headacheId) {
-      this.headacheService.getHeadacheById(this.headacheId).subscribe({
-        next: (headache) => this.fillForm(headache),
-        error: () => this.snackBar.open("Couldn't load this headache", 'Close', { panelClass: 'snackbar-error' }),
-      });
-      return;
-    }
+    if (this.headacheId) return;
     // New headaches keep a draft in sessionStorage; editing is prefilled from the server instead
     const draft = this.draft.restore<Record<string, unknown> & { intakes?: IntakeGroupValue[] }>();
     if (draft) {
@@ -262,7 +271,8 @@ export class HeadacheForm {
   }
 
   onSubmit() {
-    if (this.isSubmitting()) {
+    // The form is hidden until then; this also stops a stray submit from saving the defaults over the headache
+    if (this.isSubmitting() || (this.isEdit && !this.saved.hasValue())) {
       return;
     }
     if (this.headacheForm.invalid) {

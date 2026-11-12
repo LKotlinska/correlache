@@ -4,6 +4,11 @@
   display: block;
 }
 
+.tile {
+  position: relative;
+  height: 100%;
+}
+
 
 .checkbox-card {
   position: relative;
@@ -73,21 +78,19 @@
     font-size: var(--mat-sys-body-medium-size);
     text-transform: capitalize;
   }
-  
-  .floating-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0.15em;
-  }
+}
 
+.floating-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0.15em;
 }
-.exercise-title {
-  text-transform: capitalize;
-  // Material sets font-size on the dialog title itself, so set its size token instead
-  --mat-dialog-subhead-size: 1.5em;
-}
+
 .exercise-gif {
   display: block;
   margin-inline: auto;
+  // width/height attributes reserve the space before it loads; these let it shrink on narrow screens
+  max-width: 100%;
+  height: auto;
 }

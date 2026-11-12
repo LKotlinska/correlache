@@ -3,7 +3,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
-import { ChartInfo } from '../../chart-info/chart-info';
+import { InfoButton } from '../../../../components/info-button/info-button';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { matchPattern, PATTERN_NAMES } from '../../../../utils/headache-patterns';
@@ -14,7 +14,7 @@ const MIXED = 'A mix of patterns';
 const UNCLEAR = 'No clear pattern';
 
 @Component({
-  imports: [ErrorMessage, ChartInfo, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
+  imports: [ErrorMessage, InfoButton, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
   selector: 'app-headache-patterns',
   styleUrl: './headache-patterns.scss',
   templateUrl: './headache-patterns.html',

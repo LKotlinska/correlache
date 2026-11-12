@@ -5,6 +5,7 @@ import { UserService } from '../services/user.service';
 import { inject } from '@angular/core';
 import { catchError, map, of, switchMap } from 'rxjs';
 import { ConsentPrompt } from '../services/consent-prompt';
+import { signInRequiredQuery } from './sign-in-redirect';
 
 export const authGuard: CanActivateFn = () => {
   const userService = inject(UserService);
@@ -26,7 +27,8 @@ export const authGuard: CanActivateFn = () => {
           panelClass: 'snackbar-error',
         });
       }
-      return of(router.createUrlTree(['/']));
+      // On 401 the landing page opens the sign-in dialog
+      return of(router.createUrlTree(['/'], err.status === 401 ? { queryParams: signInRequiredQuery } : {}));
     }),
   );
 };

@@ -18,7 +18,7 @@ export class ExampleDataController {
 
   /** Replaces the user's workouts, headaches and medications with the example year. */
   @Post()
-  // Each call writes a few thousand rows, so it shares the auth routes' limit (5 per minute per IP)
+  // Each call writes a few thousand rows, so it's limited like the auth routes (5 per minute per IP, counted per route)
   @UseGuards(ThrottlerGuard)
   load(@CurrentUser() user: User): Promise<ExampleDataSummary> {
     return this.dataSource.transaction((manager) => replaceWithExampleData(manager, user.id, new Date()));

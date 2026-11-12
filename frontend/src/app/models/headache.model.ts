@@ -8,7 +8,8 @@ export interface LookupOption {
 export interface LocationLookupOption {
     id: number;
     name: string;
-    image: string;   
+    /** File name of its picture, or null when it has none. */
+    image: string | null;
 }
 
 export interface HeadacheOptions {

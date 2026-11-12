@@ -6,7 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { debounceTime, map, merge, startWith } from 'rxjs';
+import { debounceTime, map, merge, startWith, tap } from 'rxjs';
+import { ErrorMessage } from '../../../components/error-message/error-message';
 import { PageHeader } from '../../../components/page-header/page-header';
 import { Button } from '../../../components/button/button';
 import { IntakeFields } from '../../../components/form-fields/intake-fields/intake-fields';
@@ -41,6 +42,7 @@ export const NO_HEADACHE = 'none';
     PageHeader,
     Button,
     IntakeFields,
+    ErrorMessage,
   ],
   selector: 'app-intake-form',
   styleUrl: './intake-form.scss',
@@ -69,8 +71,29 @@ export class IntakeForm {
   medications = computed(() => [...(this.loadedMedications.value() ?? []), ...this.addedMedications()]);
   hasNoMedications = computed(() => this.loadedMedications.hasValue() && this.medications().length === 0);
 
-  /** The headache a saved dose is already linked to. */
-  private linkedHeadache = signal<Headache | null>(null);
+  /**
+   * The dose being edited; idle when adding. The form only shows once it has loaded, so a save can never
+   * overwrite the dose with the form's defaults.
+   */
+  protected readonly saved = rxResource({
+    params: () => this.intakeId ?? undefined,
+    stream: ({ params: id }) =>
+      this.medicationService.getIntakeById(id).pipe(
+        tap((intake) => {
+          this.group.patchValue(intakeToGroupValue(intake));
+          if (intake.headacheId) this.headacheChoice.setValue(intake.headacheId);
+        }),
+      ),
+  });
+
+  /** The headache the saved dose is linked to, or null. */
+  private linkedHeadacheId = computed(() => (this.saved.hasValue() ? this.saved.value().headacheId : null));
+
+  /** That headache, to show it as a choice. */
+  private linkedHeadache = rxResource({
+    params: () => this.linkedHeadacheId() ?? undefined,
+    stream: ({ params: id }) => this.headacheService.getHeadacheById(id),
+  });
 
   /** When the dose was taken, once both date and time are filled in. */
   private takenAt = toSignal(
@@ -103,25 +126,10 @@ export class IntakeForm {
   /** Headaches to choose from: the one already linked, then those that overlap the dose. None for a preventive. */
   headacheOptions = computed<Headache[]>(() => {
     if (this.preventive()) return [];
-    const linked = this.linkedHeadache();
+    const linked = this.linkedHeadache.hasValue() ? this.linkedHeadache.value() : null;
     const overlapping = (this.overlapping.value() ?? []).filter((h) => h.id !== linked?.id);
     return linked ? [linked, ...overlapping] : overlapping;
   });
-
-  constructor() {
-    if (this.intakeId) {
-      this.medicationService.getIntakeById(this.intakeId).subscribe({
-        next: (intake) => {
-          this.group.patchValue(intakeToGroupValue(intake));
-          if (intake.headacheId) {
-            this.headacheChoice.setValue(intake.headacheId);
-            this.headacheService.getHeadacheById(intake.headacheId).subscribe((h) => this.linkedHeadache.set(h));
-          }
-        },
-        error: () => this.snackBar.open("Couldn't load this dose", 'Close', { panelClass: 'snackbar-error' }),
-      });
-    }
-  }
 
   onMedicationAdded(medication: Medication) {
     this.addedMedications.update((list) => [...list, medication]);
@@ -138,16 +146,19 @@ export class IntakeForm {
   }
 
   onSubmit() {
-    if (this.isSubmitting()) return;
+    // The form is hidden until then; this also stops a stray submit from saving over the dose
+    if (this.isSubmitting() || (this.isEdit && !this.saved.hasValue())) return;
     if (this.group.invalid) {
       this.group.markAllAsTouched();
       this.showErrors.set(true);
       return;
     }
     const { id: _, ...fields } = intakeGroupToPayload(this.group);
-    // Only a headache still on offer counts: changing the time or picking a preventive can take the chosen one away
+    // The saved link counts even before (or without) its headache loading to be shown; another headache only while
+    // still on offer, as changing the time can take it away. Preventives are never linked.
     const choice = this.headacheChoice.value;
-    const headacheId = this.headacheOptions().some((h) => h.id === choice) ? choice : null;
+    const offered = choice === this.linkedHeadacheId() || this.headacheOptions().some((h) => h.id === choice);
+    const headacheId = offered && !this.preventive() ? choice : null;
     const payload = { ...fields, headacheId };
 
     this.isSubmitting.set(true);

@@ -1,4 +1,5 @@
 import { InsightsCategory } from './insights';
+import { HistorySummary } from '../../models/user.model';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -32,24 +33,21 @@ export function weeksSince(since: number | undefined, now = Date.now()): number 
   return since === undefined ? 0 : Math.max(0, Math.floor((now - since) / WEEK_MS));
 }
 
-export function readiness(
-  category: InsightsCategory,
-  headaches: { startedAt: string }[],
-  workouts: { startedAt: string }[],
-  now = Date.now(),
-): Readiness {
+export function readiness(category: InsightsCategory, { headaches, workouts }: HistorySummary, now = Date.now()): Readiness {
   const threshold = THRESHOLDS[category];
   const needed = [
-    ...(threshold.headaches ? headaches : []),
-    ...(threshold.workouts ? workouts : []),
-  ].map(e => new Date(e.startedAt).getTime());
+    ...(threshold.headaches ? [headaches.firstStartedAt] : []),
+    ...(threshold.workouts ? [workouts.firstStartedAt] : []),
+  ]
+    .filter((first): first is string => first !== null)
+    .map(first => Date.parse(first));
   const weeks = weeksSince(needed.length ? Math.min(...needed) : undefined, now);
 
   return {
-    headaches: headaches.length,
-    workouts: workouts.length,
+    headaches: headaches.count,
+    workouts: workouts.count,
     weeks,
     threshold,
-    ready: headaches.length >= threshold.headaches && workouts.length >= threshold.workouts && weeks >= threshold.weeks,
+    ready: headaches.count >= threshold.headaches && workouts.count >= threshold.workouts && weeks >= threshold.weeks,
   };
 }

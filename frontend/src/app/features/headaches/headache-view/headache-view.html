@@ -105,7 +105,7 @@
             @for (loc of h.locations; track loc.id) {
               <app-media-tile
                 [title]="loc.name"
-                [image]="'/images/headache_location/' + loc.image"
+                [image]="locationImage(loc.image)"
                 [altText]="'Headache location: ' + loc.name"
                 [readonly]="true"
               />
