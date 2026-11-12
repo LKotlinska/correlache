@@ -3,27 +3,31 @@ import { NgTemplateOutlet } from '@angular/common';
 import { MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
-import { Dialog } from '../../../components/dialog/dialog';
+import { Dialog } from '../dialog/dialog';
 
 /**
- * Info button for a chart card header that opens a "How to read this chart" dialog.
- * Place it inside mat-card-header; it pushes itself to the right edge.
+ * Icon button that opens a dialog showing the given template.
+ * Inside a mat-card-header it pushes itself to the right edge.
  */
 @Component({
   imports: [Dialog, MatIcon, MatIconButton, NgTemplateOutlet],
-  selector: 'app-chart-info',
-  styleUrl: './chart-info.scss',
-  templateUrl: './chart-info.html',
+  selector: 'app-info-button',
+  styleUrl: './info-button.scss',
+  templateUrl: './info-button.html',
 })
-export class ChartInfo {
+export class InfoButton {
   /** The dialog body, rendered inside the dialog. */
   content = input.required<TemplateRef<unknown>>();
   heading = input('How to read this chart');
+  icon = input('info');
+  label = input('How to read this');
+  /** Class added to the dialog's overlay pane, for global styling of a specific dialog. */
+  panelClass = input<string>();
 
   private dialog = inject(MatDialog);
   private template = viewChild.required<TemplateRef<unknown>>('dialog');
 
   open(): void {
-    this.dialog.open(this.template());
+    this.dialog.open(this.template(), { panelClass: this.panelClass() });
   }
 }

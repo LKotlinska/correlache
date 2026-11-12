@@ -46,6 +46,15 @@ body {
   }
 
   .snackbar-success { --mat-snack-bar-container-color: #2e7d32; --mat-snack-bar-supporting-text-color: #fff; }
+  // Exercise animation dialog, opened by MediaTile via InfoButton
+  .exercise-animation-dialog {
+    // Material sets font-size on the dialog title itself, so set its size token instead
+    --mat-dialog-subhead-size: 1.5em;
+    .mat-mdc-dialog-title {
+      text-transform: capitalize;
+    }
+  }
+
   .snackbar-error   { --mat-snack-bar-container-color: #c62828; --mat-snack-bar-supporting-text-color: #fff; }
 
   .visually-hidden {

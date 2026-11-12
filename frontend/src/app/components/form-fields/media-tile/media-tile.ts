@@ -1,11 +1,9 @@
-import { Component, inject, input, model, TemplateRef, viewChild } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, input, model } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { Dialog } from '../../dialog/dialog';
+import { InfoButton } from '../../info-button/info-button';
 
 @Component({
-  imports: [Dialog, MatIcon, MatIconButton],
+  imports: [InfoButton, MatIcon],
   selector: 'app-media-tile',
   styleUrl: './media-tile.scss',
   templateUrl: './media-tile.html',
@@ -23,13 +21,6 @@ export class MediaTile {
   readonly = input(false);
 
   checked = model(false);
-
-  private dialog = inject(MatDialog);
-  private animationDialog = viewChild.required<TemplateRef<unknown>>('animationDialog');
-
-  openAnimation() {
-    this.dialog.open(this.animationDialog());
-  }
 
   toggle(event: Event) {
     this.checked.set((event.target as HTMLInputElement).checked);

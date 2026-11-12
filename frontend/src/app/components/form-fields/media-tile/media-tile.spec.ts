@@ -12,6 +12,9 @@ describe('MediaTile', () => {
 
     fixture = TestBed.createComponent(MediaTile);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('image', null);
+    fixture.componentRef.setInput('altText', 'Squat');
+    fixture.componentRef.setInput('title', 'Squat');
     await fixture.whenStable();
   });
 

@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>Possible headache suspects</mat-card-title>
     @if (hasData() && canCompare()) {
-      <app-chart-info [content]="info" />
+      <app-info-button [content]="info" />
     }
   </mat-card-header>
   <mat-card-content>

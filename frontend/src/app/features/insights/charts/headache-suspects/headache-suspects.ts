@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { ChartInfo } from '../../chart-info/chart-info';
+import { InfoButton } from '../../../../components/info-button/info-button';
 import { InsightsData } from '../../insights-data';
 import { Period } from '../../period';
 import { alwaysDone, Feature, MIN_WORKOUTS, rankSuspects, Session, Suspect } from '../../suspects';
@@ -18,7 +18,7 @@ const MIN_SHOWN = 0.6;
 const LIKELY = 0.8;
 
 @Component({
-  imports: [ErrorMessage, ChartInfo, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
+  imports: [ErrorMessage, InfoButton, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
   selector: 'app-headache-suspects',
   styleUrl: './headache-suspects.scss',
   templateUrl: './headache-suspects.html',

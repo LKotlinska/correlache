@@ -41,11 +41,11 @@
           @for (exercise of row; track exercise.id) {
             <app-media-tile
               class="media-tile"
-              [image]="exercise.imageName ? '/images/exercises/stills/' + exercise.imageName : null"
+              [image]="stillUrl(exercise.imageName)"
               [altText]="exercise.name"
               [title]="exercise.name"
               [subtitle]="exercise.bodyPart.name"
-              [animation]="exercise.gifName ? '/images/exercises/' + exercise.gifName : null"
+              [animation]="animationUrl(exercise.gifName)"
               [checked]="isSelected(exercise.id)"
               (checkedChange)="toggleExercise(exercise.id, $event)"
             />
