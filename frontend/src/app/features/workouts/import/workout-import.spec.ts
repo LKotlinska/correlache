@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { of, throwError } from 'rxjs';
 import { DialogService } from '../../../components/dialog/dialog.service';
 import { Exercise } from '../../../models/workout.model';
 import { WorkoutService } from '../../../services/workout.service';
@@ -33,16 +34,18 @@ const EXPORT = [
 describe('WorkoutImport', () => {
   let fixture: ComponentFixture<WorkoutImport>;
   let component: WorkoutImport;
+  let importWorkouts: ReturnType<typeof vi.fn>;
 
   const status = () =>
     (fixture.nativeElement as HTMLElement).querySelector('[role="status"]')?.textContent?.trim();
 
   beforeEach(async () => {
+    importWorkouts = vi.fn(() => of({ imported: 1, skipped: 0 }));
     TestBed.configureTestingModule({
       imports: [WorkoutImport],
       providers: [
         provideRouter([]),
-        { provide: WorkoutService, useValue: { getExercises: () => of(library) } },
+        { provide: WorkoutService, useValue: { getExercises: () => of(library), importWorkouts } },
         { provide: DialogService, useValue: { open: vi.fn() } },
       ],
     });
@@ -94,5 +97,80 @@ describe('WorkoutImport', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain(
       'This file does not look like a Lyfta export.',
     );
+  });
+
+  describe('saving', () => {
+    const importButton = () =>
+      [...(fixture.nativeElement as HTMLElement).querySelectorAll('button')].find((b) =>
+        ['Import workouts', 'Try again'].includes(b.textContent?.trim() ?? ''),
+      );
+    const decideAll = async () => {
+      component.choose('Incline Bench Press', library[1]);
+      component.skip('Run on Treadmill');
+      await fixture.whenStable();
+    };
+
+    it('can only start once every name is decided', async () => {
+      expect(importButton()?.disabled).toBe(true);
+      await decideAll();
+      expect(importButton()?.disabled).toBe(false);
+    });
+
+    it('sends the workouts and reports the result', async () => {
+      await decideAll();
+      await component.importWorkouts();
+      await fixture.whenStable();
+
+      expect(importWorkouts).toHaveBeenCalledWith(component.payloads());
+      expect(status()).toBe('Imported 1 workout.');
+      expect(
+        (fixture.nativeElement as HTMLElement).querySelector('a[href="/user/diary"]'),
+      ).not.toBeNull();
+    });
+
+    it('sends at most one batch of workouts per request', async () => {
+      const rows = Array.from(
+        { length: 21 },
+        (_, day) =>
+          `Upper A,2026-09-${String(day + 1).padStart(2, '0')} 09:00:00,01:00:00,Biceps Curl,,5.000,10,,,NORMAL_SET`,
+      );
+      component.file.set({ name: 'lyfta.csv', text: [EXPORT.split('\n')[0], ...rows].join('\n') });
+      importWorkouts.mockImplementation((batch: unknown[]) =>
+        of({ imported: batch.length, skipped: 0 }),
+      );
+      await fixture.whenStable();
+
+      await component.importWorkouts();
+
+      expect(importWorkouts.mock.calls.map(([batch]) => batch.length)).toEqual([20, 1]);
+      expect(component.saveState()).toEqual({ kind: 'done', imported: 21, skipped: 0 });
+    });
+
+    it('explains a failure and offers to try again', async () => {
+      await decideAll();
+      importWorkouts.mockReturnValueOnce(
+        throwError(
+          () =>
+            new HttpErrorResponse({ status: 400, error: { message: 'Unknown exercise id(s): 2' } }),
+        ),
+      );
+      await component.importWorkouts();
+      await fixture.whenStable();
+
+      expect(status()).toContain(
+        'The import stopped after saving 0 workouts: Unknown exercise id(s): 2',
+      );
+      expect(importButton()?.textContent?.trim()).toBe('Try again');
+
+      await component.importWorkouts();
+      expect(component.saveState()).toEqual({ kind: 'done', imported: 1, skipped: 0 });
+    });
+
+    it('starts over when another file is chosen', async () => {
+      await decideAll();
+      await component.importWorkouts();
+      component.file.set({ name: 'other.csv', text: EXPORT });
+      expect(component.saveState()).toEqual({ kind: 'idle' });
+    });
   });
 });

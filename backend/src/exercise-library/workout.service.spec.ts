@@ -11,7 +11,7 @@ import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 describe('WorkoutService', () => {
   let service: WorkoutService;
   let exerciseRepo: { find: ReturnType<typeof vi.fn> };
-  let workoutRepo: { delete: ReturnType<typeof vi.fn>; manager: unknown };
+  let workoutRepo: { delete: ReturnType<typeof vi.fn>; find: ReturnType<typeof vi.fn>; manager: unknown };
   let manager: {
     create: ReturnType<typeof vi.fn>;
     save: ReturnType<typeof vi.fn>;
@@ -40,6 +40,7 @@ describe('WorkoutService', () => {
     };
     workoutRepo = {
       delete: vi.fn().mockResolvedValue({ affected: 1 }),
+      find: vi.fn().mockResolvedValue([]),
       manager: { transaction: (fn: (m: unknown) => unknown) => fn(manager) },
     };
     const module: TestingModule = await Test.createTestingModule({
@@ -134,6 +135,46 @@ describe('WorkoutService', () => {
       workoutRepo.delete.mockResolvedValue({ affected: 0 });
 
       await expect(service.remove('user-1', 'w-1')).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('importMany', () => {
+    const at = (startedAt: string, title = 'Upper A'): CreateWorkoutDto => ({ ...dto, title, startedAt });
+    const savedTitles = () =>
+      manager.create.mock.calls.filter(([entity]) => entity === Workout).map(([, data]) => data.title);
+
+    it('saves every new workout in the batch', async () => {
+      const result = await service.importMany('user-1', [at('2026-10-02T09:26:19.000Z'), at('2026-10-12T07:56:14.000Z', 'Lower B')]);
+
+      expect(result).toEqual({ imported: 2, skipped: 0 });
+      expect(savedTitles()).toEqual(['Upper A', 'Lower B']);
+      // one lookup of existing workouts for the whole batch, limited to the user
+      expect(workoutRepo.find).toHaveBeenCalledTimes(1);
+      expect(workoutRepo.find.mock.calls[0][0].where.userId).toBe('user-1');
+    });
+
+    it('skips workouts the user already has with the same start and title', async () => {
+      workoutRepo.find.mockResolvedValue([{ title: 'Upper A', startedAt: new Date('2026-10-02T09:26:19.000Z') }]);
+
+      const result = await service.importMany('user-1', [
+        at('2026-10-02T09:26:19.000Z'),
+        // same start, different title: a different workout
+        at('2026-10-02T09:26:19.000Z', 'Lower B'),
+      ]);
+
+      expect(result).toEqual({ imported: 1, skipped: 1 });
+      expect(savedTitles()).toEqual(['Lower B']);
+    });
+
+    it('skips repeats within the batch, comparing trimmed titles', async () => {
+      const result = await service.importMany('user-1', [at('2026-10-02T09:26:19.000Z'), at('2026-10-02T09:26:19.000Z', ' Upper A ')]);
+      expect(result).toEqual({ imported: 1, skipped: 1 });
+    });
+
+    it('rejects the whole batch when an exercise id does not exist', async () => {
+      exerciseRepo.find.mockResolvedValue([{ id: 7, name: 'Bench press' }]);
+      await expect(service.importMany('user-1', [at('2026-10-02T09:26:19.000Z')])).rejects.toBeInstanceOf(BadRequestException);
+      expect(manager.save).not.toHaveBeenCalled();
     });
   });
 });

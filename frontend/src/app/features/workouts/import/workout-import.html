@@ -8,7 +8,12 @@
     </p>
     <input #fileInput type="file" accept=".csv,text/csv" hidden (change)="selectFile($event)" />
     <div class="file-row">
-      <button matButton="outlined" type="button" (click)="fileInput.click()">
+      <button
+        matButton="outlined"
+        type="button"
+        [disabled]="isSaving()"
+        (click)="fileInput.click()"
+      >
         <mat-icon>upload_file</mat-icon>
         {{ file() ? 'Choose another file' : 'Choose file' }}
       </button>
@@ -134,15 +139,53 @@
           </details>
         }
 
-        <p class="status" role="status">
-          @if (undecided().length > 0) {
-            {{ undecided().length }} {{ undecided().length === 1 ? 'name needs' : 'names need' }} an
-            exercise or a skip.
-          } @else if (payloads(); as payloads) {
-            Ready to import {{ payloads.length }}
-            {{ payloads.length === 1 ? 'workout' : 'workouts' }} with {{ payloadSets() }} sets.
+        <div class="import-bar">
+          @let state = saveState();
+          <p class="status" role="status">
+            @if (state.kind === 'saving') {
+              Importing… {{ state.saved }} of {{ state.total }} workouts saved.
+            } @else if (state.kind === 'done') {
+              Imported {{ state.imported }} {{ state.imported === 1 ? 'workout' : 'workouts' }}.
+              @if (state.skipped > 0) {
+                {{ state.skipped }} {{ state.skipped === 1 ? 'was' : 'were' }} already saved, so
+                {{ state.skipped === 1 ? 'it was' : 'they were' }} skipped.
+              }
+            } @else if (state.kind === 'failed') {
+              The import stopped after saving {{ state.imported }}
+              {{ state.imported === 1 ? 'workout' : 'workouts' }}: {{ state.message }} Trying again
+              skips the ones already saved.
+            } @else if (undecided().length > 0) {
+              {{ undecided().length }} {{ undecided().length === 1 ? 'name needs' : 'names need' }}
+              an exercise or a skip.
+            } @else if (payloads(); as payloads) {
+              @if (payloads.length === 0) {
+                Nothing to import: every exercise is skipped.
+              } @else {
+                Ready to import {{ payloads.length }}
+                {{ payloads.length === 1 ? 'workout' : 'workouts' }} with {{ payloadSets() }} sets.
+              }
+            }
+          </p>
+
+          @if (state.kind === 'saving') {
+            <mat-progress-bar
+              mode="determinate"
+              aria-label="Import progress"
+              [value]="(state.saved / state.total) * 100"
+            />
+          } @else if (state.kind === 'done') {
+            <a matButton="filled" routerLink="/user/diary">Go to diary</a>
+          } @else {
+            <button
+              matButton="filled"
+              type="button"
+              [disabled]="!payloads()?.length"
+              (click)="importWorkouts()"
+            >
+              {{ state.kind === 'failed' ? 'Try again' : 'Import workouts' }}
+            </button>
           }
-        </p>
+        </div>
       }
     } @else {
       <app-error-message message="This file has no workouts that could be read." />

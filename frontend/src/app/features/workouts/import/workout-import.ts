@@ -1,16 +1,20 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { MatButton } from '@angular/material/button';
+import { MatAnchor, MatButton } from '@angular/material/button';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { DialogService } from '../../../components/dialog/dialog.service';
 import { ErrorMessage } from '../../../components/error-message/error-message';
 import { PageHeader } from '../../../components/page-header/page-header';
-import { Exercise } from '../../../models/workout.model';
+import { CreateWorkoutPayload, Exercise, IMPORT_BATCH_SIZE } from '../../../models/workout.model';
 import { WorkoutService } from '../../../services/workout.service';
+import { getErrorMessage } from '../../../utils/error-message';
 import { matchExerciseNames, NameMatch } from './exercise-matching';
 import {
   ExercisePickerData,
@@ -30,14 +34,22 @@ import { NameMatchRow } from './name-match-row/name-match-row';
 
 type ParseOutcome = { ok: true; result: ImportParseResult } | { ok: false; message: string };
 
+type SaveState =
+  | { kind: 'idle' }
+  | { kind: 'saving'; saved: number; total: number }
+  | { kind: 'done'; imported: number; skipped: number }
+  | { kind: 'failed'; imported: number; message: string };
+
 /**
  * Reads a Lyfta CSV export in the browser, shows what is in it, and lets the user match each exported
- * exercise name to the library or skip it. Nothing is sent to the server on this page.
+ * exercise name to the library or skip it. Only the workouts that come out of that are sent to the
+ * server, in batches; the file itself never is.
  */
 @Component({
   imports: [
     DatePipe,
     ErrorMessage,
+    MatAnchor,
     MatButton,
     MatButtonToggle,
     MatButtonToggleGroup,
@@ -47,6 +59,7 @@ type ParseOutcome = { ok: true; result: ImportParseResult } | { ok: false; messa
     NameMatchRow,
     NgTemplateOutlet,
     PageHeader,
+    RouterLink,
   ],
   selector: 'app-workout-import',
   styleUrl: './workout-import.scss',
@@ -113,6 +126,38 @@ export class WorkoutImport {
     ),
   );
 
+  /** Starts over whenever another file is chosen */
+  readonly saveState = linkedSignal<unknown, SaveState>({
+    source: this.file,
+    computation: () => ({ kind: 'idle' }),
+  });
+  readonly isSaving = computed(() => this.saveState().kind === 'saving');
+
+  /**
+   * Saves the workouts in batches, one request at a time. The server skips workouts that are already
+   * saved, so trying again after a failure picks up where it stopped.
+   */
+  async importWorkouts() {
+    const payloads = this.payloads();
+    if (!payloads?.length || this.isSaving()) return;
+
+    let imported = 0;
+    let skipped = 0;
+    this.saveState.set({ kind: 'saving', saved: 0, total: payloads.length });
+    try {
+      for (const batch of inBatches(payloads, IMPORT_BATCH_SIZE)) {
+        const result = await firstValueFrom(this.workoutService.importWorkouts(batch));
+        imported += result.imported;
+        skipped += result.skipped;
+        this.saveState.set({ kind: 'saving', saved: imported + skipped, total: payloads.length });
+      }
+      this.saveState.set({ kind: 'done', imported, skipped });
+    } catch (error) {
+      if (!(error instanceof HttpErrorResponse)) throw error;
+      this.saveState.set({ kind: 'failed', imported, message: getErrorMessage(error) });
+    }
+  }
+
   async selectFile(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -159,4 +204,12 @@ export class WorkoutImport {
       return next;
     });
   }
+}
+
+function inBatches(workouts: CreateWorkoutPayload[], size: number): CreateWorkoutPayload[][] {
+  const batches: CreateWorkoutPayload[][] = [];
+  for (let start = 0; start < workouts.length; start += size) {
+    batches.push(workouts.slice(start, start + size));
+  }
+  return batches;
 }

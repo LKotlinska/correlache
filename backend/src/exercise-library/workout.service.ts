@@ -7,6 +7,7 @@ import { Workout } from './entities/workout.entity.js';
 import { WorkoutExercise } from './entities/workout-exercise.entity.js';
 import { WorkoutSet } from './entities/set.entity.js';
 import { ExerciseDto, ExerciseMuscleDto, LookupDto, WorkoutDetailDto } from './dto/exercise.dto.js';
+import { ImportWorkoutsResultDto } from './dto/import-workouts.dto.js';
 import { TRACKED_FIELDS } from './tracking-mode.js';
 import { exerciseVolume } from './volume.js';
 import { startedWithin } from '../common/date-range.js';
@@ -20,7 +21,7 @@ export class WorkoutService {
 
   /** Saves the workout with its exercises and sets in one transaction, so a failure never leaves a half-saved workout. */
   async create(userId: string, dto: CreateWorkoutDto): Promise<Pick<Workout, 'id' | 'title' | 'startedAt' | 'durationSeconds'>> {
-    const namesById = await this.findExerciseNames(dto);
+    const namesById = await this.findExerciseNames([dto]);
 
     return this.workoutRepo.manager.transaction(async (manager) => {
       const workout = await manager.save(manager.create(Workout, { userId, ...this.ownFields(dto) }));
@@ -31,7 +32,7 @@ export class WorkoutService {
 
   /** Replaces all of a workout's fields, exercises and sets with `dto`, throwing a 404 if it isn't the user's. */
   async update(userId: string, id: string, dto: CreateWorkoutDto): Promise<Pick<Workout, 'id' | 'title' | 'startedAt' | 'durationSeconds'>> {
-    const namesById = await this.findExerciseNames(dto);
+    const namesById = await this.findExerciseNames([dto]);
 
     return this.workoutRepo.manager.transaction(async (manager) => {
       const workout = await manager.findOne(Workout, { where: { id, userId } });
@@ -46,15 +47,44 @@ export class WorkoutService {
     });
   }
 
+  /**
+   * Saves a batch of imported workouts in one transaction: either all of the new ones are saved or none.
+   * Workouts the user already has with the same start and title are skipped, so importing the same
+   * file twice, or retrying after a failed batch, does not create duplicates.
+   */
+  async importMany(userId: string, dtos: CreateWorkoutDto[]): Promise<ImportWorkoutsResultDto> {
+    const namesById = await this.findExerciseNames(dtos);
+    const saved = await this.workoutRepo.find({
+      where: { userId, startedAt: In(dtos.map((dto) => new Date(dto.startedAt))) },
+      select: { title: true, startedAt: true },
+    });
+    const seen = new Set(saved.map((workout) => this.importKey(workout)));
+    // Also drops repeats within the batch
+    const toSave = dtos.filter((dto) => {
+      const key = this.importKey(this.ownFields(dto));
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    await this.workoutRepo.manager.transaction(async (manager) => {
+      for (const dto of toSave) {
+        const workout = await manager.save(manager.create(Workout, { userId, ...this.ownFields(dto) }));
+        await this.saveExercises(manager, workout.id, dto, namesById);
+      }
+    });
+    return { imported: toSave.length, skipped: dtos.length - toSave.length };
+  }
+
   /** Deletes the workout with its exercises and sets (cascade), throwing a 404 if it isn't the user's. */
   async remove(userId: string, id: string): Promise<void> {
     const { affected } = await this.workoutRepo.delete({ id, userId });
     if (!affected) throw new NotFoundException(`Workout ${id} not found`);
   }
 
-  /** Looks up the library names of the exercises in `dto`, throwing a 400 when any id does not exist. */
-  private async findExerciseNames(dto: CreateWorkoutDto): Promise<Map<number, string>> {
-    const ids = [...new Set(dto.exercises.map((e) => e.exerciseId))];
+  /** Looks up the library names of the exercises in `dtos`, throwing a 400 when any id does not exist. */
+  private async findExerciseNames(dtos: CreateWorkoutDto[]): Promise<Map<number, string>> {
+    const ids = [...new Set(dtos.flatMap((dto) => dto.exercises.map((e) => e.exerciseId)))];
     const library = await this.exerciseRepo.find({ where: { id: In(ids) }, select: { id: true, name: true } });
     const namesById = new Map(library.map((e) => [e.id, e.name]));
     const unknown = ids.filter((id) => !namesById.has(id));
@@ -64,6 +94,11 @@ export class WorkoutService {
 
   private ownFields(dto: CreateWorkoutDto) {
     return { title: dto.title.trim(), startedAt: new Date(dto.startedAt), durationSeconds: dto.durationSeconds };
+  }
+
+  // Same start to the second and same title, after the trimming ownFields does
+  private importKey({ title, startedAt }: Pick<Workout, 'title' | 'startedAt'>): string {
+    return `${Math.floor(startedAt.getTime() / 1000)} ${title}`;
   }
 
   private summary({ id, title, startedAt, durationSeconds }: Workout) {

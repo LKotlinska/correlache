@@ -5,6 +5,7 @@ import { User } from '../user/entities/user.entity.js';
 import { WorkoutService } from './workout.service.js';
 import { CreateWorkoutDto } from './dto/create-workout.dto.js';
 import { ExerciseDto } from './dto/exercise.dto.js';
+import { ImportWorkoutsDto, ImportWorkoutsResultDto } from './dto/import-workouts.dto.js';
 import { Workout } from './entities/workout.entity.js';
 import { assertOrderedRange } from '../common/validators/ordered-range.js';
 
@@ -16,6 +17,12 @@ export class WorkoutController {
   @Post()
   create(@CurrentUser() user: User, @Body() createWorkoutDto: CreateWorkoutDto) {
     return this.workoutService.create(user.id, createWorkoutDto);
+  }
+
+  /** Saves a batch of workouts from another app's export, skipping ones the user already has. */
+  @Post('import')
+  importWorkouts(@CurrentUser() user: User, @Body() dto: ImportWorkoutsDto): Promise<ImportWorkoutsResultDto> {
+    return this.workoutService.importMany(user.id, dto.workouts);
   }
 
   @Get('exercises')
