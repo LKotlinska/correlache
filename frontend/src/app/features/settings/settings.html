@@ -35,6 +35,10 @@
     <li>
       <button type="button" [disabled]="exporting()" (click)="downloadData()">Download my data</button>
     </li>
+    <!-- Temporary, for public testing -->
+    <li>
+      <button type="button" [disabled]="loadingExample()" (click)="confirmLoadExampleData()">Load example data</button>
+    </li>
     <li>
       <button type="button" (click)="confirmDeleteAccount()">Delete account and data</button>
     </li>
