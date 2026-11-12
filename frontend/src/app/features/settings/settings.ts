@@ -33,6 +33,7 @@ export class Settings {
   private userService = inject(UserService);
 
   exporting = signal(false);
+  loadingExample = signal(false);
 
   medications = rxResource({ stream: () => this.medicationService.getMedications() });
 
@@ -90,6 +91,34 @@ export class Settings {
         this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
       },
     });
+  }
+
+  /** Temporary, for public testing: replaces the user's data with a generated year once they confirm. */
+  confirmLoadExampleData() {
+    const data: ConfirmDialogData = {
+      heading: 'Load example data?',
+      message:
+        "This replaces all your headaches, workouts and medications with a made-up year of example data. Anything you've logged will be deleted. This can't be undone.",
+      confirmLabel: 'Replace my data',
+    };
+    this.dialogService
+      .open(ConfirmDialog, data)
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.loadingExample.set(true);
+        this.userService.loadExampleData().subscribe({
+          next: () => {
+            this.loadingExample.set(false);
+            this.medications.reload();
+            this.snackBar.open('Example data loaded', 'Close', { duration: 4000 });
+          },
+          error: (err: HttpErrorResponse) => {
+            this.loadingExample.set(false);
+            this.snackBar.open(getErrorMessage(err), 'Close', { panelClass: 'snackbar-error' });
+          },
+        });
+      });
   }
 
   signOut() {

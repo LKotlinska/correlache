@@ -13,6 +13,7 @@ import { dbConfig } from './db.config.js';
 import { HeadacheModule } from './headaches/headache.module.js'; 
 import { WorkoutModule } from './exercise-library/workout.module.js';
 import { MedicationModule } from './medications/medication.module.js';
+import { ExampleDataModule } from './database/example-user/example-data.module.js';
 
 // ESM has no __dirname
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -43,6 +44,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
     HeadacheModule,
     WorkoutModule,
     MedicationModule,
+    // Temporary, for public testing
+    ExampleDataModule,
   ],
   controllers: [AppController],
   providers: [AppService],

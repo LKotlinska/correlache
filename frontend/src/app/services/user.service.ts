@@ -30,6 +30,11 @@ export class UserService {
         );
     }
 
+    /** Temporary, for public testing: replaces the user's data with a generated example year. */
+    loadExampleData() {
+        return this.http.post<void>('/api/user/me/example-data', null);
+    }
+
     me() {
         return this.http.get<MeResponse>('/api/auth/me');
     }
