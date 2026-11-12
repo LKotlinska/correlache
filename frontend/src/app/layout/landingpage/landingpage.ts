@@ -7,9 +7,19 @@ import { filter, first } from 'rxjs';
 import { DialogKey, DialogService } from '../../components/dialog/dialog.service';
 import { SIGN_IN_PARAM, SIGN_IN_REQUIRED } from '../../guards/sign-in-redirect';
 import { MatIcon } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
-  imports: [MatButtonModule, MatDialogModule, MatIcon],
+  imports: [
+    MatButtonModule,
+    MatDialogModule,
+    MatIcon,
+    MatSidenavModule,
+    MatListModule,
+    MatDividerModule,
+  ],
   selector: 'app-landingpage',
   styleUrl: './landingpage.scss',
   templateUrl: './landingpage.html',
@@ -33,8 +43,15 @@ export class Landingpage {
       });
   }
 
-  openDialog(key: DialogKey) {
+  /** Closes the menu first (when opened from it), so the dialog takes focus over it. */
+  openDialog(key: DialogKey, menu?: MatSidenav) {
+    menu?.close();
     this.dialogService.open(key);
+  }
+
+  scrollTo(section: HTMLElement, menu?: MatSidenav) {
+    menu?.close();
+    section.scrollIntoView({ behavior: 'smooth' });
   }
 
   /** Drops the flag so a refresh or Back doesn't reopen the dialog. */
