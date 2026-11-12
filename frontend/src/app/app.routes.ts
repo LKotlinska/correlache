@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { Landingpage } from './layout/landingpage/landingpage';
 import { Dashboard } from './layout/dashboard/dashboard';
 import { authGuard } from './guards/auth-guard';
-import { NotFoundError } from 'rxjs';
 import { Headaches } from './features/headaches/headaches';
 import { Workouts } from './features/workouts/workouts';
 import { discardDraftGuard } from './guards/discard-draft.guard';
@@ -58,4 +57,6 @@ export const routes: Routes = [
             }
         ]
     },
+    // Last, so it only catches URLs no route above matches
+    { path: '**', loadComponent: () => import('./features/not-found/not-found').then(m => m.NotFound) },
 ];
