@@ -1,5 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, NavigationEnd, ParamMap, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  convertToParamMap,
+  NavigationEnd,
+  ParamMap,
+  Router,
+} from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { DialogService } from '../../components/dialog/dialog.service';
 import { signInRequiredQuery } from '../../guards/sign-in-redirect';
@@ -45,7 +51,9 @@ describe('Landingpage', () => {
   it('opens sign-in with a notice when redirected here while already showing', () => {
     queryParamMap.next(convertToParamMap(signInRequiredQuery));
 
-    expect(dialogService.open).toHaveBeenCalledWith('login', { notice: 'Please sign in to continue.' });
+    expect(dialogService.open).toHaveBeenCalledWith('login', {
+      notice: 'Please sign in to continue.',
+    });
   });
 
   it('clears the flag only once the redirect navigation has finished', () => {
@@ -59,5 +67,22 @@ describe('Landingpage', () => {
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
+  });
+
+  it('opens a dialog from the menu and closes the menu', async () => {
+    const host: HTMLElement = fixture.nativeElement;
+    host.querySelector<HTMLButtonElement>('[aria-label="Open menu"]')!.click();
+    await fixture.whenStable();
+    const menu = host.querySelector('#landing-menu')!;
+    expect(menu.classList).toContain('mat-drawer-opened');
+
+    const about = [...menu.querySelectorAll('button')].find(
+      (b) => b.textContent?.trim() === 'About',
+    )!;
+    about.click();
+    await fixture.whenStable();
+
+    expect(dialogService.open).toHaveBeenCalledWith('about');
+    expect(menu.classList).not.toContain('mat-drawer-opened');
   });
 });

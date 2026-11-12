@@ -1,5 +1,72 @@
 @use '../../../variables' as *;
 
+// The container grows with the page, so the window still scrolls;
+// fixedInViewport keeps the menu pinned to the screen
+.landing-menu {
+    width: min(20em, 85vw);
+    // header at the top, actions pinned to the bottom, links in between
+    .menu-body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        box-sizing: border-box;
+        padding: 1em;
+    }
+    .menu-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.25em 0 0.25em 0.5em;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .menu-title {
+            font-weight: 500;
+            font-size: 1.15em;
+            color: var(--mat-sys-on-surface);
+        }
+    }
+    .menu-label {
+        display: block;
+        padding: 1em 0.75em 0.5em;
+        font-weight: 500;
+        font-size: 0.9em;
+    }
+    .mat-mdc-list-item {
+        border-radius: 2em; // pill-shaped hover and focus highlight
+        overflow: hidden;
+    }
+    .menu-footer {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75em;
+        padding-top: 2em;
+        > .mat-mdc-button-base {
+            height: 3em;
+            border-radius: 2em;
+        }
+    }
+    .menu-links {
+        display: flex;
+        justify-content: center;
+        .mat-mdc-button-base {
+            min-width: 0;
+            flex: 1;
+            padding: 0 0.6em;
+            font-size: 1em;
+            font-weight: 400;
+        }
+    }
+}
+
+// keeps section headings clear of the fixed nav bar when scrolled to
+section {
+    scroll-margin-top: 4em;
+}
+
 .header-wrapper {
     position: relative;
     display: flex;
