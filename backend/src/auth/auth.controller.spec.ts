@@ -4,10 +4,12 @@ import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { User } from '../user/entities/user.entity.js';
 import { AUTH_COOKIE, authCookieOptions } from './auth-cookie.js';
+import { JwtCookieAuth } from './jwt-cookie-auth.provider.js';
 
 describe('AuthController', () => {
   let controller: AuthController;
   const authService = { register: vi.fn(), login: vi.fn(), logout: vi.fn() };
+  const jwtCookieAuth = { verify: vi.fn() };
   const res = { cookie: vi.fn(), clearCookie: vi.fn() };
 
   beforeEach(async () => {
@@ -15,7 +17,10 @@ describe('AuthController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: authService }],
+      providers: [
+        { provide: AuthService, useValue: authService },
+        { provide: JwtCookieAuth, useValue: jwtCookieAuth },
+      ],
     })
       // The real guard needs ThrottlerModule's storage; its behaviour belongs to e2e tests.
       .overrideGuard(ThrottlerGuard)
@@ -67,5 +72,20 @@ describe('AuthController', () => {
     const user = { id: '1', username: 'Jane', email: 'jane@example.com', health_data_consent_at: new Date() } as User;
 
     expect(controller.me(user).hasHealthDataConsent).toBe(true);
+  });
+
+  it('reports a valid auth cookie as signed in', async () => {
+    jwtCookieAuth.verify.mockResolvedValue({ id: '1' });
+
+    await expect(controller.session({ headers: { cookie: `${AUTH_COOKIE}=signed-token` } } as never)).resolves.toEqual({
+      authenticated: true,
+    });
+    expect(jwtCookieAuth.verify).toHaveBeenCalledWith('signed-token');
+  });
+
+  it('reports a missing or invalid auth cookie as signed out', async () => {
+    jwtCookieAuth.verify.mockResolvedValue(null);
+
+    await expect(controller.session({ headers: {} } as never)).resolves.toEqual({ authenticated: false });
   });
 });
