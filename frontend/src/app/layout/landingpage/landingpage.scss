@@ -1,5 +1,12 @@
 @use '../../../variables' as *;
 
+// Wave palette, back to front. Dark mode uses deep versions so the purple sections
+// don't glare against the dark page; $wave-deep is also the purple section's background.
+$wave-pale: light-dark(#e9e0f9, #2a2440);
+$wave-mid: light-dark(#8573bd, #4a3d80);
+$wave-deep: light-dark(#5c4893, #2f2459);
+$on-wave: light-dark(#ffffff, #ebebeb); // text on $wave-deep
+
 // The container grows with the page, so the window still scrolls;
 // fixedInViewport keeps the menu pinned to the screen
 .landing-menu {
@@ -94,6 +101,9 @@ section {
         .btn-container {
             display: flex;
             align-items: center;
+            .login {
+                --mat-button-text-label-text-color: #{$text-strong};
+            }
         }
     }
     .page-heading {
@@ -101,9 +111,11 @@ section {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        text-align: center;
         .hgroup{
             margin: 6em 0 1em;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0 1.5em;
         }
         .heading {
             text-transform: uppercase;
@@ -116,7 +128,7 @@ section {
             font-weight: 650;
             font-size: 2.5em;
             line-height: 1.1;
-            margin: 0.75em;
+            margin: 0.75em 0;
         }
         .subhead {
             font-weight: 500;
@@ -125,8 +137,8 @@ section {
         }
         .action-container {
             display: flex;
-            flex-direction: column;
             gap: 1em;
+            margin-bottom: 4em;
         }
     }
 }
@@ -153,9 +165,9 @@ section {
     .waves {
         bottom: 0;
         height: 13em;
-        .w1 { fill: #e9e0f9 }
-        .w2 { fill: #8573bd }
-        .w3 { fill: $brand-primary }
+        .w1 { fill: $wave-pale }
+        .w2 { fill: $wave-mid }
+        .w3 { fill: $wave-deep }
         &--front { pointer-events: none; }
     }
     .arcs {
@@ -174,7 +186,7 @@ section {
         right: 0;
         bottom: -2px; // overshoot into .page-wrapper so subpixel rounding can't leave a seam
         height: 5px;
-        background: $brand-primary;
+        background: $wave-deep;
     }
     .illu-img {
         position: absolute;
@@ -215,11 +227,10 @@ section {
 .page-wrapper {
     margin-top: -1px;
     min-height: 40svh;
-    background-color: $brand-primary;
+    background-color: $wave-deep;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    color: $on-brand-primary;
+    color: $on-wave;
     text-align: center;
     gap: $section-gap;
     .eyebrow {
@@ -228,7 +239,7 @@ section {
         text-transform: uppercase;
         letter-spacing: 0.15em;
         font-size: 0.7em;
-        color: $on-brand-primary;
+        color: $on-wave;
     }
     .bubbles {
         padding: 1em;
@@ -340,7 +351,7 @@ section {
         width: 100%;
         height: 7em;
         transform: scaleY(-1);
-        fill: $brand-primary;
+        fill: $wave-deep;
     }
 }
 
@@ -358,7 +369,7 @@ section {
         max-width: 26em;
         .section-heading { margin-bottom: 1em; }
         .doctor-text { margin: 0; line-height: 1.5; }
-        // static screenshot of the insights chart, styled like an insights card
+        // example insights chart, styled like an insights card
         .preview-card {
             margin: 2em 0 0;
             padding: 1em;
@@ -375,7 +386,7 @@ section {
             background: var(--mat-sys-surface-container);
             line-height: 1.5;
         }
-        .preview-img { display: block; width: 100%; height: auto; }
+        .preview-chart { position: relative; aspect-ratio: 345 / 249; } // Chart.js needs a sized box to fill
         .preview-caption { margin-top: 0.5em; font-size: 0.75em; text-align: center; }
     }
     // purple card with a lighter wave rising behind the button
@@ -387,8 +398,8 @@ section {
         box-sizing: border-box;
         padding: 2em 1.5em;
         border-radius: 1.25em;
-        background: $brand-primary;
-        color: $on-brand-primary;
+        background: $wave-deep;
+        color: $on-wave;
         > :not(.closing-wave) { position: relative; } // above the wave
         .closing-title {
             margin: 0 0 0.5em;
@@ -404,12 +415,12 @@ section {
             bottom: 0;
             width: 100%;
             height: 45%;
-            fill: #8573bd;
+            fill: $wave-mid;
         }
         // same Material button as the header, only the colours swapped
         .closing-cta {
-            --mat-button-filled-container-color: #{$on-brand-primary};
-            --mat-button-filled-label-text-color: #{$brand-primary};
+            --mat-button-filled-container-color: #{$on-wave};
+            --mat-button-filled-label-text-color: #{$wave-deep};
         }
     }
 }

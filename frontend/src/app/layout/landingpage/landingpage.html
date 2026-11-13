@@ -58,7 +58,7 @@
           <h1 class="nav-title">CorrelAche</h1>
         </div>
         <div class="btn-container">
-          <button matButton (click)="openDialog('login')">Sign in</button>
+          <button class="login" matButton (click)="openDialog('login')">Sign in</button>
           <button
             matIconButton
             type="button"
@@ -218,14 +218,16 @@
               In your more active weeks you had <strong>1.5</strong> headaches on average, compared
               with <strong>1.0</strong> in less active weeks.
             </p>
-            <img
-              class="preview-img"
-              src="workouts-vs-headaches.webp"
-              width="345"
-              height="249"
-              loading="lazy"
-              alt="Bar and line chart over eight weeks: workouts per week as bars, headaches per week as a line. The headache line rises in the weeks with more workouts."
-            />
+            <div class="preview-chart">
+              <canvas
+                baseChart
+                type="bar"
+                [data]="previewData"
+                [options]="previewOptions"
+                role="img"
+                aria-label="Bar and line chart over eight weeks: workouts per week as bars, headaches per week as a line. The headache line rises in the weeks with more workouts."
+              ></canvas>
+            </div>
             <figcaption class="preview-caption">Example data</figcaption>
           </figure>
         </section>
