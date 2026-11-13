@@ -1,10 +1,10 @@
 import { Component, computed, inject } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
-import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader } from '@angular/material/expansion';
 import { InfoButton } from '../../../../components/info-button/info-button';
 import { InsightsData } from '../../insights-data';
-import { alwaysDone, Feature, MIN_WORKOUTS, rankSuspects, Session, Suspect } from '../../suspects';
+import { alwaysDone, Count, Feature, MIN_WORKOUTS, rankSuspects, Session, Suspect } from '../../suspects';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
 /** Most suspects listed. */
@@ -13,9 +13,29 @@ const MAX_SHOWN = 5;
 const MIN_SHOWN = 0.6;
 /** Chance from which a suspect is called likely in the summary. */
 const LIKELY = 0.8;
+/** Chance from which a pattern is called strong, and from which moderate; anything shown below that is weak. */
+const STRONG = 0.9;
+const MODERATE = 0.75;
+
+/** How clear a suspect's pattern is, as a word and the number of filled signal bars beside it. */
+export interface Strength {
+  label: 'Strong' | 'Moderate' | 'Weak';
+  bars: 1 | 2 | 3;
+}
 
 @Component({
-  imports: [ErrorMessage, InfoButton, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatProgressBar, PercentPipe],
+  imports: [
+    ErrorMessage,
+    InfoButton,
+    MatAccordion,
+    MatCard,
+    MatCardContent,
+    MatCardHeader,
+    MatCardTitle,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    PercentPipe,
+  ],
   selector: 'app-headache-suspects',
   styleUrl: './headache-suspects.scss',
   templateUrl: './headache-suspects.html',
@@ -96,23 +116,36 @@ export class HeadacheSuspects {
     return exercises.length > 1 ? { skip: exercises[0].name, keep: exercises.slice(1).map(f => f.name) } : null;
   });
 
-  /** "Core (russian twist, dead bug)" for a muscle group, or the exercises joined for exercises done together. */
+  /**
+   * A short name that fits on a line or two: "Core" for a muscle group, "Jump rope + 4 more" for exercises done
+   * together. The full list is in {@link members}.
+   */
   name(suspect: Suspect): string {
-    const [first, ...rest] = suspect.features;
-    const exercises = rest.filter(f => f.kind === 'exercise').map(f => f.name);
-    if (first.kind === 'muscleGroup') return exercises.length ? `${first.name} (${exercises.join(', ')})` : first.name;
-    return [first.name, ...exercises].join(' + ');
+    const [first] = suspect.features;
+    if (first.kind === 'muscleGroup') return first.name;
+    const others = this.members(suspect).length - 1;
+    return others > 0 ? `${first.name} + ${others} more` : first.name;
   }
 
-  /** How sure, as a whole percent; never 0% or 100%, since the data can't make either certain. */
-  confidence(probability: number): string {
-    const percent = Math.round(probability * 100);
-    if (percent >= 100) return '>99%';
-    if (percent <= 0) return '<1%';
-    return `${percent}%`;
+  /** Every exercise in a suspect, for the full list in its open row; empty for a lone feature. */
+  members(suspect: Suspect): string[] {
+    if (suspect.features.length < 2) return [];
+    return suspect.features.filter(f => f.kind === 'exercise').map(f => f.name);
   }
 
-  rate({ workouts, withHeadache }: { workouts: number; withHeadache: number }): number {
+  /** The chance that headaches are more common with a suspect, as a word: easier to read than a second percentage. */
+  strength(probability: number): Strength {
+    if (probability >= STRONG) return { label: 'Strong', bars: 3 };
+    if (probability >= MODERATE) return { label: 'Moderate', bars: 2 };
+    return { label: 'Weak', bars: 1 };
+  }
+
+  /** "Headache after 5 of 8 workouts with it", read out in place of a bar. */
+  countLabel({ workouts, withHeadache }: Count, side: string): string {
+    return `Headache after ${withHeadache} of ${workouts} workouts ${side}`;
+  }
+
+  rate({ workouts, withHeadache }: Count): number {
     return workouts ? withHeadache / workouts : 0;
   }
 }
