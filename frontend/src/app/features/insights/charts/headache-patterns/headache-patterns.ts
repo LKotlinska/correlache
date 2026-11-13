@@ -5,11 +5,9 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
 import { InfoButton } from '../../../../components/info-button/info-button';
 import { InsightsData } from '../../insights-data';
-import { Period } from '../../period';
 import { matchPattern, PATTERN_NAMES } from '../../../../utils/headache-patterns';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 const MIXED = 'A mix of patterns';
 const UNCLEAR = 'No clear pattern';
 
@@ -25,8 +23,8 @@ export class HeadachePatterns {
   /** Headaches shared by the insights charts. */
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 3 months. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   /** Headaches from the first shown day until now. */

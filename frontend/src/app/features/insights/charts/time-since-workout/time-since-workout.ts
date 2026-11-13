@@ -5,10 +5,8 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { addDays } from '../../../../utils/date';
-import { Period } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Days before the first shown day searched for the workout before each headache. */
 const LOOKBACK_DAYS = 28;
 const HOUR_MS = 60 * 60 * 1000;
@@ -37,8 +35,8 @@ export class TimeSinceWorkout {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 8 weeks. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   /** Headaches from the first shown day until now. */

@@ -2,7 +2,11 @@
   <mat-card-header>
     <mat-card-title>Headache patterns</mat-card-title>
     @if (headaches.hasValue()) {
-      <app-info-button heading="How to read this chart" label="How to read the headache patterns chart" [content]="info" />
+      <app-info-button
+        heading="How to read this chart"
+        label="How to read the headache patterns chart"
+        [content]="info"
+      />
     }
   </mat-card-header>
   <mat-card-content>
@@ -27,9 +31,10 @@
       }
 
       @if (counts().warnings) {
-        <p class="warning">
-          {{ counts().warnings }} {{ counts().warnings === 1 ? 'headache has' : 'headaches have' }} symptoms that can
-          need a doctor's attention. If they are new, severe or getting worse, contact a doctor.
+        <p>
+          {{ counts().warnings }}
+          {{ counts().warnings === 1 ? 'headache has' : 'headaches have' }} symptoms that might need
+          a doctor's consultation. If they are new, severe or getting worse, contact a doctor.
         </p>
       }
     } @else if (headaches.error()) {
@@ -40,14 +45,14 @@
 
 <ng-template #info>
   <p>
-    Each headache is matched with common headache patterns, based only on what you logged: where
-    it hurt, symptoms, triggers, how long it lasted and how bad it was. It shows what yours
-    resemble, not a diagnosis.
+    Each headache is matched with common headache patterns, based only on what you logged: where it
+    hurt, symptoms, triggers, how long it lasted and how bad it was. It shows what yours resemble,
+    not a diagnosis.
   </p>
   @if (counts().tooLittle) {
     <p>
-      {{ counts().tooLittle }} {{ counts().tooLittle === 1 ? 'headache has' : 'headaches have' }}
-      no location or symptoms logged, so {{ counts().tooLittle === 1 ? "it isn't" : "they aren't" }}
+      {{ counts().tooLittle }} {{ counts().tooLittle === 1 ? 'headache has' : 'headaches have' }} no
+      location or symptoms logged, so {{ counts().tooLittle === 1 ? "it isn't" : "they aren't" }}
       shown.
     </p>
   }
