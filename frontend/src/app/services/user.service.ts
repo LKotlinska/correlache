@@ -23,6 +23,10 @@ export class UserService {
         return this.http.delete('/api/user/me');
     }
 
+    deleteData() {
+        return this.http.delete('/api/user/me/data')
+    }
+
     /** Everything stored about the current user, as a JSON file (GDPR art. 15 and 20). */
     exportData(): Observable<Blob> {
         return this.http.get('/api/user/me/export', { responseType: 'blob' }).pipe(

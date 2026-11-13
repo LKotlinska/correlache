@@ -4,6 +4,9 @@ import { User } from './entities/user.entity.js';
 import { IsNull, QueryFailedError, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/user.dto.js';
 import { hashPassword } from '../common/password.js';
+import { Workout } from '../exercise-library/entities/workout.entity.js';
+import { Headache } from '../headaches/entities/headache.entity.js';
+import { Medication } from '../medications/entities/medication.entity.js';
 
 const emailTaken = () =>
   new ConflictException({
@@ -81,6 +84,16 @@ export class UserService {
   /** Invalidates every token issued before now. */
   async revokeTokens(id: string): Promise<void> {
     await this.userRepository.increment({ id }, 'tokenVersion', 1);
+  }
+
+  /** Deletes the user's workouts, headaches and medications but keeps the account. */
+  async removeData(id: string): Promise<void> {
+    await this.userRepository.manager.transaction(async (manager) => {
+      // Exercises, sets, headache links and intakes go with them through ON DELETE CASCADE
+      await manager.delete(Workout, { userId: id });
+      await manager.delete(Headache, { userId: id });
+      await manager.delete(Medication, { userId: id });
+    });
   }
 }
 

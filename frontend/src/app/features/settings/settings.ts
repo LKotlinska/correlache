@@ -128,6 +128,14 @@ export class Settings {
   confirmDeleteAccount() {
     this.accountActions.confirmDeleteAccount().subscribe(() => this.router.navigate(['/']));
   }
+  
+  confirmDeleteData() {
+    this.accountActions.confirmDeleteData().subscribe(() => {
+      // The medications list on this page was just emptied server-side
+      this.medications.reload();
+      this.snackBar.open('Your data was deleted', 'Close', { duration: 4000 });
+    });
+  }
 }
 
 /** "2026-11-10" in the user's time zone. */
