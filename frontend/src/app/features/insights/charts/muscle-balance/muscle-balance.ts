@@ -6,10 +6,8 @@ import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
 import { MuscleRole } from '../../../../models/workout.model';
-import { Period } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'week', count: 4 };
 
 /** How much one set counts towards a muscle group, by the muscle's role in the exercise. */
 const ROLE_WEIGHT: Record<MuscleRole, number> = { primary: 1, secondary: 0.5 };
@@ -35,8 +33,8 @@ export class MuscleBalance {
 
   hasError = computed(() => !!this.workouts.error() || !!this.exercises.error());
 
-  /** The picked range, or the last 4 weeks. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   /** Workouts from the first shown day until now. */

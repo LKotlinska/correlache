@@ -5,10 +5,9 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { joinNames } from '../../../../utils/join-names';
-import { Period, periodMonths } from '../../period';
+import { periodMonths } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 
 @Component({
   imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
@@ -26,8 +25,8 @@ export class HeadachesPerMonth {
   /** Headaches shared by the insights charts. */
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 3 months, from the first day of its oldest month so every bar is a whole month. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'month');
+  /** The picked range, from the first day of its oldest month so every bar is a whole month. */
+  private shown = this.data.chartPeriod('month');
   periodLabel = this.shown.label;
 
   /** Headaches from the first day of the oldest shown month until now. */

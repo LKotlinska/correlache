@@ -4,10 +4,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { Period } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 const LOCATIONS_SHOWN = 6;
 
 @Component({
@@ -22,8 +20,8 @@ export class TopLocations {
   /** Headaches shared by the insights charts. */
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 3 months. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   /** Headaches from the first shown day until now. */

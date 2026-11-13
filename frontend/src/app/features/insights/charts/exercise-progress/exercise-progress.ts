@@ -9,10 +9,8 @@ import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { TrackingMode } from '../../../../models/workout.model';
 import { sessionValue } from '../../../../utils/exercise-metric';
-import { Period } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 
 /** What is plotted for each tracking mode: the best set of a session, or the session's average speed. */
 const METRICS: Record<TrackingMode, { label: string; unit: string }> = {
@@ -52,8 +50,8 @@ export class ExerciseProgress {
   /** Workouts shared by the insights charts. */
   workouts = this.data.workouts;
 
-  /** The picked range, or the last 6 months. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   /** Workouts from the first shown day until now, newest first. */

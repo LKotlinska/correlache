@@ -4,10 +4,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY, barChartHeight } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { Period } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workouts a muscle group needs before its rate is trusted. Groups below it are shown faded. */
 const MIN_WORKOUTS = 3;
 /** Height of one bar row in pixels, so the chart grows with the number of muscle groups. */
@@ -40,8 +38,8 @@ export class MuscleGroupHeadaches {
 
   hasError = computed(() => !!this.workouts.error() || !!this.headaches.error() || !!this.exercises.error());
 
-  /** The picked range, or the last 8 weeks. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   private linkedWorkouts = this.data.linkedWorkouts(this.shown.start);

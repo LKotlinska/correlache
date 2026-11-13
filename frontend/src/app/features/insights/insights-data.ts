@@ -6,7 +6,7 @@ import { UserService } from '../../services/user.service';
 import { Headache } from '../../models/headache.model';
 import { Workout } from '../../models/workout.model';
 import { startOfWeek } from '../../utils/date';
-import { Period, periodLabel, periodStart } from './period';
+import { Period, periodLabel, periodStart, RANGES } from './period';
 import { InsightsCategory } from './insights';
 import { Readiness, readiness } from './readiness';
 
@@ -20,7 +20,7 @@ interface Loaded {
   workouts: Workout[];
 }
 
-/** What a chart shows: the picked range or its own default period, with its label and first shown day. */
+/** What a chart shows: the picked range, with its label and first shown day. */
 export interface ChartPeriod {
   period: Signal<Period>;
   label: Signal<string>;
@@ -37,8 +37,8 @@ export class InsightsData {
   private workoutService = inject(WorkoutService);
   private userService = inject(UserService);
 
-  /** Period picked for every chart, or null for each chart's own default period. */
-  range = signal<Period | null>(null);
+  /** Period picked for every chart. */
+  range = signal<Period>(RANGES[0].period);
 
   /** First day each shown chart needs from each source. */
   private needs = {
@@ -90,11 +90,11 @@ export class InsightsData {
   });
 
   /**
-   * The picked range, or `fallback` while none is picked. Its first shown day is moved back to the start of
-   * its week or month for charts counting whole weeks or months.
+   * The picked range. Its first shown day is moved back to the start of its week or month for charts
+   * counting whole weeks or months.
    */
-  chartPeriod(fallback: Period, align: 'day' | 'week' | 'month' = 'day'): ChartPeriod {
-    const period = computed(() => this.range() ?? fallback);
+  chartPeriod(align: 'day' | 'week' | 'month' = 'day'): ChartPeriod {
+    const period = this.range.asReadonly();
     return {
       period,
       label: computed(() => periodLabel(period())),

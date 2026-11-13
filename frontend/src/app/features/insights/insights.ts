@@ -24,21 +24,11 @@ import { HardSessionHeadaches } from './charts/hard-session-headaches/hard-sessi
 import { DataNotice } from './data-notice/data-notice';
 import { Disclaimer } from './disclaimer/disclaimer';
 import { InsightsData } from './insights-data';
-import { Period } from './period';
+import { RANGES } from './period';
 import { ProgressSpinner } from '../../components/progress-spinner/progress-spinner';
 
 export type InsightsCategory = 'headaches' | 'workouts' | 'correlations' | 'analysis';
 export type InsightsFilter = 'all' | InsightsCategory;
-
-/** Time ranges that can be picked. 'default' leaves each chart on its own period. */
-const RANGES: { key: string; label: string; period: Period | null }[] = [
-  { key: 'default', label: 'Default', period: null },
-  { key: '4w', label: 'Last 4 weeks', period: { unit: 'week', count: 4 } },
-  { key: '8w', label: 'Last 8 weeks', period: { unit: 'week', count: 8 } },
-  { key: '3m', label: 'Last 3 months', period: { unit: 'month', count: 3 } },
-  { key: '6m', label: 'Last 6 months', period: { unit: 'month', count: 6 } },
-  { key: '12m', label: 'Last 12 months', period: { unit: 'month', count: 12 } },
-];
 
 const DISMISSED_KEY = 'insights-data-notice-dismissed';
 
@@ -94,7 +84,7 @@ export class Insights {
 
   filter = signal<InsightsFilter>('all');
 
-  rangeKey = signal('default');
+  rangeKey = signal(RANGES[0].key);
 
   readiness = this.data.readiness;
 

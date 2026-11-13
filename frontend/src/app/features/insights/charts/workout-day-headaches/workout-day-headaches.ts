@@ -5,10 +5,8 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { addDays, dayKey } from '../../../../utils/date';
-import { Period } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Fewest workout days and rest days needed before the rates are compared. */
 const MIN_DAYS = 5;
 /** Difference in percentage points below which the rates count as about the same. */
@@ -31,8 +29,8 @@ export class WorkoutDayHeadaches {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 8 weeks. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   /** Workouts and headaches from the first shown day until now. */

@@ -4,10 +4,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
-import { Period } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 /** Durations are rounded to this many minutes, so similar workouts share one bubble. */
 const ROUND_MINUTES = 5;
 /** Fewest workouts needed before the summary compares longer and shorter ones. */
@@ -26,8 +24,8 @@ export class IntensityVsPain {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 8 weeks. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   private linkedWorkouts = this.data.linkedWorkouts(this.shown.start);

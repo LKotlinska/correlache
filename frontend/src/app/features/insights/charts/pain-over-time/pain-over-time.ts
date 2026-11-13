@@ -5,10 +5,9 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { weekIndex } from '../../../../utils/date';
-import { Period, periodWeeks } from '../../period';
+import { periodWeeks } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 3 };
 /** Recent weeks compared against the rest of the period in the summary. */
 const RECENT_WEEKS = 4;
 
@@ -27,8 +26,8 @@ export class PainOverTime {
   /** Headaches shared by the insights charts. */
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 3 months, from the Monday of its oldest week so every week is whole. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'week');
+  /** The picked range, from the Monday of its oldest week so every week is whole. */
+  private shown = this.data.chartPeriod('week');
   periodLabel = this.shown.label;
 
   /** Monday of each shown week, oldest first, starting with the week holding the period's first day. */

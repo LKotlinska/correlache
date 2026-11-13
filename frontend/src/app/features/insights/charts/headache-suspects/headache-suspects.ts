@@ -4,12 +4,9 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { InfoButton } from '../../../../components/info-button/info-button';
 import { InsightsData } from '../../insights-data';
-import { Period } from '../../period';
 import { alwaysDone, Feature, MIN_WORKOUTS, rankSuspects, Session, Suspect } from '../../suspects';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-/** Longer than other charts: each exercise is only done in some workouts, so it needs a long history to compare. */
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 /** Most suspects listed. */
 const MAX_SHOWN = 5;
 /** Suspects below this chance are left out; at about 50% a feature makes no difference either way. */
@@ -37,8 +34,8 @@ export class HeadacheSuspects {
 
   hasError = computed(() => !!this.workouts.error() || !!this.headaches.error() || !!this.exercises.error());
 
-  /** The picked range, or the last 6 months. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   private linkedWorkouts = this.data.linkedWorkouts(this.shown.start);
