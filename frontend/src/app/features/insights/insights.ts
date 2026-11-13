@@ -24,7 +24,7 @@ import { HardSessionHeadaches } from './charts/hard-session-headaches/hard-sessi
 import { DataNotice } from './data-notice/data-notice';
 import { Disclaimer } from './disclaimer/disclaimer';
 import { InsightsData } from './insights-data';
-import { RANGES } from './period';
+import { DEFAULT_RANGE, RANGES } from './period';
 import { ProgressSpinner } from '../../components/progress-spinner/progress-spinner';
 
 export type InsightsCategory = 'headaches' | 'workouts' | 'correlations' | 'analysis';
@@ -84,7 +84,7 @@ export class Insights {
 
   filter = signal<InsightsFilter>('all');
 
-  rangeKey = signal(RANGES[0].key);
+  rangeKey = signal(DEFAULT_RANGE.key);
 
   readiness = this.data.readiness;
 

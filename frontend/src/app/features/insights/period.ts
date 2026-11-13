@@ -6,7 +6,7 @@ export interface Period {
   count: number;
 }
 
-/** Time ranges the insights picker offers. The first one is selected until the user picks another. */
+/** Time ranges the insights picker offers. */
 export const RANGES: { key: string; label: string; period: Period }[] = [
   { key: '4w', label: 'Last 4 weeks', period: { unit: 'week', count: 4 } },
   { key: '8w', label: 'Last 8 weeks', period: { unit: 'week', count: 8 } },
@@ -14,6 +14,12 @@ export const RANGES: { key: string; label: string; period: Period }[] = [
   { key: '6m', label: 'Last 6 months', period: { unit: 'month', count: 6 } },
   { key: '12m', label: 'Last 12 months', period: { unit: 'month', count: 12 } },
 ];
+
+/**
+ * Range selected until the user picks another. Long enough for the suspects and trend charts, which compare
+ * workouts with and without something, or recent weeks against earlier ones.
+ */
+export const DEFAULT_RANGE = RANGES.find(r => r.key === '6m')!;
 
 /** First day of the period: the first of its oldest month, or the Monday of its oldest week. */
 export function periodStart({ unit, count }: Period): Date {

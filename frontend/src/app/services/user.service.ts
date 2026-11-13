@@ -53,7 +53,7 @@ export class UserService {
     }
 
     session() {
-        return this.http.get<{ authenticated: boolean}>('api/auth/session');
+        return this.http.get<{ authenticated: boolean}>('/api/auth/session');
     }
 }
 

@@ -6,7 +6,7 @@ import { UserService } from '../../services/user.service';
 import { Headache } from '../../models/headache.model';
 import { Workout } from '../../models/workout.model';
 import { startOfWeek } from '../../utils/date';
-import { Period, periodLabel, periodStart, RANGES } from './period';
+import { Period, periodLabel, periodStart, DEFAULT_RANGE } from './period';
 import { InsightsCategory } from './insights';
 import { Readiness, readiness } from './readiness';
 
@@ -38,7 +38,7 @@ export class InsightsData {
   private userService = inject(UserService);
 
   /** Period picked for every chart. */
-  range = signal<Period>(RANGES[0].period);
+  range = signal<Period>(DEFAULT_RANGE.period);
 
   /** First day each shown chart needs from each source. */
   private needs = {
