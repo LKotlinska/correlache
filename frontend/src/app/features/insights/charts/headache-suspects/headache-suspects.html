@@ -2,7 +2,11 @@
   <mat-card-header>
     <mat-card-title>Possible headache suspects</mat-card-title>
     @if (hasData() && canCompare()) {
-      <app-info-button heading="How to read this chart" label="How to read the possible headache suspects chart" [content]="info" />
+      <app-info-button
+        heading="How to read this chart"
+        label="How to read the possible headache suspects chart"
+        [content]="info"
+      />
     }
   </mat-card-header>
   <mat-card-content>
@@ -11,9 +15,13 @@
         <div class="summary">
           @if (top(); as t) {
             <p>
-              <strong>{{ name(t) }}</strong> is most closely linked to your headaches:
-              <strong>{{ rate(t.exposed) | percent }}</strong> of workouts with it were followed by
-              one, against <strong>{{ rate(t.unexposed) | percent }}</strong> without.
+              <strong>{{ name(t) }}</strong> is most closely linked to your headaches: one followed
+              <strong>{{ t.exposed.withHeadache }} of {{ t.exposed.workouts }}</strong> workouts
+              with it, and
+              <strong>{{ t.unexposed.withHeadache }} of {{ t.unexposed.workouts }}</strong> without.
+              @if (suspects().length > 1) {
+                Open a suspect to see its numbers.
+              }
             </p>
           } @else {
             <p>No exercise or muscle group clearly stands out in {{ periodLabel() }}.</p>
@@ -21,43 +29,70 @@
         </div>
 
         @if (suspects().length) {
-          <ol class="suspects">
-            @for (s of suspects(); track s.features[0].key) {
-              <li>
-                <div class="row">
+          <mat-accordion class="suspects" displayMode="flat">
+            @for (s of suspects(); track s.features[0].key; let i = $index) {
+              <mat-expansion-panel [expanded]="i === 0">
+                <mat-expansion-panel-header>
                   <span class="name">{{ name(s) }}</span>
-                  <span class="rates"
-                    >{{ rate(s.exposed) | percent }}
-                    <span class="vs">vs</span>
-                    {{ rate(s.unexposed) | percent }}</span
+                  @let level = strength(s.probability);
+                  <span class="strength">
+                    <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true">
+                      @for (bar of [1, 2, 3]; track bar) {
+                        <rect
+                          [attr.x]="(bar - 1) * 5"
+                          [attr.y]="12 - bar * 4"
+                          width="3"
+                          [attr.height]="bar * 4"
+                          rx="1"
+                          [class.on]="bar <= level.bars"
+                        />
+                      }
+                    </svg>
+                    {{ level.label }}<span class="visually-hidden"> pattern</span>
+                  </span>
+                </mat-expansion-panel-header>
+
+                @if (members(s).length) {
+                  <p class="members">{{ members(s).join(', ') }}</p>
+                }
+                <p class="caption">How often a headache followed:</p>
+                <div class="bars">
+                  <span class="side">With</span>
+                  <div
+                    class="track"
+                    role="img"
+                    [attr.aria-label]="countLabel(s.exposed, 'with it')"
                   >
-                </div>
-                <p class="counts">
-                  <span
-                    ><strong>{{ s.exposed.withHeadache }} of {{ s.exposed.workouts }}</strong> with
-                    it</span
+                    <div class="fill with" [style.width.%]="rate(s.exposed) * 100"></div>
+                  </div>
+                  <span class="value"
+                    ><strong>{{ rate(s.exposed) | percent }}</strong>
+                    <span class="count"
+                      >· {{ s.exposed.withHeadache }} of {{ s.exposed.workouts }}</span
+                    ></span
                   >
-                  <span
-                    ><strong>{{ s.unexposed.withHeadache }} of {{ s.unexposed.workouts }}</strong>
-                    without</span
+
+                  <span class="side">Without</span>
+                  <div
+                    class="track"
+                    role="img"
+                    [attr.aria-label]="countLabel(s.unexposed, 'without it')"
                   >
-                </p>
-                <div class="confidence">
-                  <mat-progress-bar
-                    mode="determinate"
-                    [value]="s.probability * 100"
-                    [attr.aria-label]="
-                      'Pattern: ' + confidence(s.probability) + ' likely'
-                    "
-                  />
-                  <span class="sure">Pattern: {{ confidence(s.probability) }} likely</span>
+                    <div class="fill without" [style.width.%]="rate(s.unexposed) * 100"></div>
+                  </div>
+                  <span class="value"
+                    ><strong>{{ rate(s.unexposed) | percent }}</strong>
+                    <span class="count"
+                      >· {{ s.unexposed.withHeadache }} of {{ s.unexposed.workouts }}</span
+                    ></span
+                  >
                 </div>
                 @if (s.features.length > 1) {
                   <p class="together">Always done together, so these can't be told apart.</p>
                 }
-              </li>
+              </mat-expansion-panel>
             }
-          </ol>
+          </mat-accordion>
         }
 
         @if (experiment(); as e) {
@@ -87,13 +122,15 @@
 <ng-template #info>
   <p>
     Each row is one exercise or muscle group from your workouts. For each one, we split your
-    workouts into two piles: the ones where you did it, and the ones where you didn't. Then we
-    count how many in each pile were followed by a headache within 24 hours.
+    workouts into two piles: the ones where you did it, and the ones where you didn't. Then we count
+    how many in each pile were followed by a headache within 24 hours. Open a row to see the two
+    piles side by side.
   </p>
   <p>
-    <strong>"Pattern: % likely"</strong> shows how likely it is, from what you've logged so far, that
-    headaches are more common in workouts with that exercise. It points to a pattern, not to
-    what's behind your headaches, and it may change as you log more.
+    <strong>Strong, Moderate or Weak</strong> shows how clear the pattern is from what you've logged
+    so far: how sure we can be that headaches really are more common in workouts with it, rather
+    than by chance. It points to a pattern, not to what's behind your headaches, and it may change
+    as you log more.
   </p>
   <p>
     An exercise only shows up once you have at least {{ minWorkouts }} workouts with it and
@@ -107,8 +144,8 @@
   </p>
   <p>
     <strong>
-      This shows a pattern, not proof of what's behind your headaches. Sleep, food, stress and
-      other things you don't log here can play a part too.
+      This shows a pattern, not proof of what's behind your headaches. Sleep, food, stress and other
+      things you don't log here can play a part too.
     </strong>
   </p>
 </ng-template>

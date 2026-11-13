@@ -57,4 +57,10 @@ export class UserController {
         const { maxAge: _, ...options } = authCookieOptions();
         res.clearCookie(AUTH_COOKIE, options);
     }
+
+    @Delete('me/data')
+    @HttpCode(204)
+    async removeUserData(@CurrentUser() user: User): Promise<void> {
+        await this.userService.removeData(user.id)
+    }
 }

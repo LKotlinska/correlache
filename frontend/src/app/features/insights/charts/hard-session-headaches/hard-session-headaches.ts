@@ -5,13 +5,11 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InfoButton } from '../../../../components/info-button/info-button';
 import { InsightsData } from '../../insights-data';
-import { Period } from '../../period';
 import { addDays } from '../../../../utils/date';
 import { Count, MIN_WORKOUTS, probabilityHigher } from '../../suspects';
 import { BEST_LOOKBACK_DAYS, loadRatio, personalBests, SPIKE_RATIO } from '../../training-load';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 /** Chance from which headaches count as more common after these sessions, or below 1 minus it, less common. */
 const CLEAR = 0.8;
 
@@ -42,8 +40,8 @@ export class HardSessionHeadaches {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 6 months. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD);
+  /** The picked range. */
+  private shown = this.data.chartPeriod();
   periodLabel = this.shown.label;
 
   private linkedWorkouts = this.data.linkedWorkouts(this.shown.start);

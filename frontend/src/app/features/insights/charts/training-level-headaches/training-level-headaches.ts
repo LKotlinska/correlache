@@ -5,10 +5,9 @@ import { ChartConfiguration } from 'chart.js';
 import { baseChartOptions, CHART_COLOR } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { addDays, dayKey } from '../../../../utils/date';
-import { Period, periodWeeks } from '../../period';
+import { periodWeeks } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'month', count: 6 };
 /** Days before each week whose workouts set its training level. */
 const LOOKBACK_DAYS = 14;
 /** Fewest weeks a level needs before its average is trusted. Levels below it are shown faded. */
@@ -46,8 +45,8 @@ export class TrainingLevelHeadaches {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 6 months, from the Monday of its oldest week so every week is whole. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'week');
+  /** The picked range, from the Monday of its oldest week so every week is whole. */
+  private shown = this.data.chartPeriod('week');
   periodLabel = this.shown.label;
 
   /** Headaches from the Monday of the oldest shown week until now. */

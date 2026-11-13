@@ -19,6 +19,11 @@ export class JwtCookieAuth extends AuthenticationProvider<User, { sub: string }>
 
   async authenticate(context: ExecutionContext) {
     const token = tokenFromCookieHeader(this.header(context, 'cookie'));
+    const result = await this.verify(token);
+    return result;
+  }
+
+  async verify(token: string | undefined) {
     if (!token) return null;
 
     let payload: { sub: string, tv: number };

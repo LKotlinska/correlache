@@ -6,7 +6,7 @@ import { guestGuard } from './guest-guard';
 import { signInRequiredQuery } from './sign-in-redirect';
 
 describe('guestGuard', () => {
-  const userService = { me: vi.fn() };
+  const userService = { session: vi.fn() };
   const account = new UrlTree();
   const router = { createUrlTree: vi.fn() };
 
@@ -29,7 +29,7 @@ describe('guestGuard', () => {
   });
 
   it('sends a signed-in user to their account', async () => {
-    userService.me.mockReturnValue(of({ id: '1', hasHealthDataConsent: true }));
+    userService.session.mockReturnValue(of({ authenticated: true }));
 
     await expect(runGuard()).resolves.toBe(account);
     expect(router.createUrlTree).toHaveBeenCalledWith(['/user']);
@@ -37,17 +37,17 @@ describe('guestGuard', () => {
 
   it('skips the session check when authGuard already found no session', async () => {
     await expect(runGuard(signInRequiredQuery)).resolves.toBe(true);
-    expect(userService.me).not.toHaveBeenCalled();
+    expect(userService.session).not.toHaveBeenCalled();
   });
 
-  it('shows the landing page on 401', async () => {
-    userService.me.mockReturnValue(throwError(() => ({ status: 401 })));
+  it('shows the landing page when there is no session', async () => {
+    userService.session.mockReturnValue(of({ authenticated: false }));
 
     await expect(runGuard()).resolves.toBe(true);
   });
 
   it('shows the landing page when the session check fails', async () => {
-    userService.me.mockReturnValue(throwError(() => ({ status: 500 })));
+    userService.session.mockReturnValue(throwError(() => ({ status: 500 })));
 
     await expect(runGuard()).resolves.toBe(true);
   });

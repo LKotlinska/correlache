@@ -5,83 +5,134 @@
   margin-bottom: 0.5em;
 }
 
+// Flat rows split by a line, not stacked cards: the accordion sits inside the chart's own card
 .suspects {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  display: block;
 
-  li {
-    padding: 1em 0;
+  .mat-expansion-panel {
+    --mat-expansion-container-shape: 0;
+    --mat-expansion-container-background-color: transparent;
+    box-shadow: none;
 
-    & + li {
+    & + .mat-expansion-panel {
       border-top: 1px solid var(--mat-sys-outline-variant, #ccc);
+    }
+  }
+
+  .mat-expansion-panel-header {
+    --mat-expansion-header-collapsed-state-height: auto;
+    --mat-expansion-header-expanded-state-height: auto;
+    min-height: 56px;
+    height: auto;
+    gap: 0.75em;
+    padding: 0.5em 0;
+  }
+
+  // the header's content box, so the name can take the free space and the label stays right
+  ::ng-deep .mat-expansion-panel-header .mat-content {
+    align-items: center;
+    gap: 0.75em;
+  }
+
+  ::ng-deep .mat-expansion-panel-body {
+    font-size: 0.9em;
+    padding: 0 16px 16px;
+  }
+}
+
+.rank {
+  flex-shrink: 0;
+  width: 1.25em;
+  font-size: 0.93em;
+  opacity: 0.8;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05em;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.strength {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.2em 0.75em 0.2em 0.6em;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container, #f0ebf3);
+  font-size: 0.93em;
+  font-weight: 500;
+  white-space: nowrap;
+
+  rect {
+    fill: var(--mat-sys-outline-variant, #d8d3df);
+
+    &.on {
+      fill: var(--mat-sys-primary);
     }
   }
 }
 
-.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1em;
-  margin-bottom: 0.5em;
+.caption {
+  margin: 0 0 0.6em;
+  font-size: 0.93em;
+  opacity: 0.8;
 }
 
-.name {
-  font-size: 1.15em; // ~16px on the 14px body text
+.bars {
+  display: grid;
+  grid-template-columns: 4em minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.4em 0.75em;
+  font-size: 0.93em;
+  font-variant-numeric: tabular-nums;
+}
+
+.side {
+  opacity: 0.8;
+}
+
+.track {
+  height: 10px;
+  border-radius: 4px;
+  background: var(--mat-sys-surface-container-high, #f1eff4);
+}
+
+.fill {
+  height: 100%;
+  border-radius: 4px;
+
+  &.with {
+    background: var(--mat-sys-primary);
+  }
+
+  &.without {
+    background: var(--mat-sys-outline, #bdb8c4);
+  }
+}
+
+.value {
+  white-space: nowrap;
+  font-size: 0.9em;
+
+  .count {
+    opacity: 0.8;
+  }
+}
+
+.members {
+  margin: 0 0 0.75em;
   font-weight: 500;
   overflow-wrap: anywhere;
   text-transform: capitalize;
 }
 
-.rates {
-  flex-shrink: 0;
-  color: var(--mat-sys-primary);
-  font-size: 1.15em;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-
-  .vs {
-    font-size: 0.8em;
-    font-weight: 400;
-    opacity: 0.8;
-  }
-}
-
-.confidence {
-  display: flex;
-  align-items: center;
-  gap: 0.75em;
-  margin-top: 0.5em;
-
-  mat-progress-bar {
-    flex: 1;
-    border-radius: 999px;
-  }
-}
-
-.sure {
-  font-size: 0.93em;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  opacity: 0.9;
-}
-
-.counts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25em 1em;
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-}
-
 .together {
-  margin: 0.25em 0 0;
-  font-size: 0.93em;
-  font-style: italic;
+  margin: 0.6em 0 0;
+  font-size: 0.83em;
   opacity: 0.9;
 }
 

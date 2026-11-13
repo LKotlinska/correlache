@@ -5,10 +5,9 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../chart-defaults';
 import { InsightsData } from '../../insights-data';
 import { weekIndex } from '../../../../utils/date';
-import { Period, periodWeeks } from '../../period';
+import { periodWeeks } from '../../period';
 import { ErrorMessage } from '../../../../components/error-message/error-message';
 
-const DEFAULT_PERIOD: Period = { unit: 'week', count: 8 };
 
 @Component({
   imports: [ErrorMessage, BaseChartDirective, MatCard, MatCardHeader, MatCardTitle, MatCardContent],
@@ -26,8 +25,8 @@ export class WorkoutsVsHeadaches {
   workouts = this.data.workouts;
   headaches = this.data.headaches;
 
-  /** The picked range, or the last 8 weeks, from the Monday of its oldest week so every week is whole. */
-  private shown = this.data.chartPeriod(DEFAULT_PERIOD, 'week');
+  /** The picked range, from the Monday of its oldest week so every week is whole. */
+  private shown = this.data.chartPeriod('week');
   periodLabel = this.shown.label;
 
   /** Monday 00:00 of each shown week, oldest to newest. */

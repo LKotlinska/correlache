@@ -43,6 +43,22 @@ export class AccountActions {
       );
   }
 
+  confirmDeleteData(): Observable<void> {
+    const data: ConfirmDialogData = {
+      heading: "Delete data?",
+      message: "This permanently deletes all of your headaches, workouts and medications. This can't be undone.",
+      confirmLabel: "Delete",
+    };
+    return this.dialogService
+      .open(ConfirmDialog, data)
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.userService.deleteData().pipe(catchError((err: HttpErrorResponse) => this.fail(err)))),
+        map(() => this.clearDrafts()),
+      );
+  }
+
   /** Drafts live in sessionStorage, so without this the next person in this tab would see them. */
   private clearDrafts() {
     this.draftStorage.clear(HEADACHE_DRAFT_KEY);
