@@ -4,6 +4,7 @@ import { AuthenticationProvider, AuthenticationRegistry } from '@nestjs/authenti
 import { User } from '../user/entities/user.entity.js';
 import { UserService } from '../user/user.service.js';
 import { tokenFromCookieHeader } from './auth-cookie.js';
+import { isNullishCoalesce } from 'typescript';
 
 @Injectable()
 export class JwtCookieAuth extends AuthenticationProvider<User, { sub: string }> {
@@ -19,6 +20,11 @@ export class JwtCookieAuth extends AuthenticationProvider<User, { sub: string }>
 
   async authenticate(context: ExecutionContext) {
     const token = tokenFromCookieHeader(this.header(context, 'cookie'));
+    const result = await this.verify(token);
+    return result;
+  }
+
+  async verify(token: string | undefined) {
     if (!token) return null;
 
     let payload: { sub: string, tv: number };

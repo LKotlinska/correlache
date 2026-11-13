@@ -47,6 +47,10 @@ export class UserService {
     giveConsent() {
         return this.http.post<void>('/api/user/consent', { healthDataConsent: true });
     }
+
+    session() {
+        return this.http.get<{ authenticated: boolean}>('api/auth/session');
+    }
 }
 
 /**

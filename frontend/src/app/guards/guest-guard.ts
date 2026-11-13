@@ -14,9 +14,9 @@ export const guestGuard: CanActivateFn = (route) => {
   const userService = inject(UserService);
   const router = inject(Router);
 
-  return userService.me().pipe(
-    map(() => router.createUrlTree(['/user'])),
-    // 401 (or any other failure): treat as signed out and show the landing page
+  return userService.session().pipe(
+    map(({ authenticated }) => (authenticated ? router.createUrlTree(['/user']) : true)),
+      // Network or server failure: show the landing page
     catchError(() => of(true)),
   );
 };
