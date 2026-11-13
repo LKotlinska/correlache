@@ -1,14 +1,14 @@
 // Figma design palette
-$brand-primary: #5c4893;
-$primary-alt: #6750a4;
-$brand-tint: #ddddff;
-$text-strong: #49454f;
-$outline: #79747e;
+$brand-primary: light-dark(#5c4893, #8b6de7);
+$brand-tint: light-dark(#ddddff, #3a2f5c);
+$text-strong: light-dark(#49454f, #ebebeb);
+$outline: light-dark(#79747e, #938f99);
 $disabled: #a9a6a9;
-$surface: #fbf8fd;
-$surface-low: #f7f5f8;
-$surface-high: #e7e0ec;
-$white: #ffffff;
+$surface: light-dark(#fbf8fd, #141218);
+$surface-low: light-dark(#f7f5f8, #1d1b20);
+$surface-high: light-dark(#e7e0ec, #36343b);
+$surface-card: light-dark(#ffffff, #211f26); // cards, navs, chips, tiles
+$on-brand-primary: light-dark(#ffffff, #141414); // text/icons on $brand-primary
 
 $border-divider: 1px solid var(--mat-sys-surface-variant);
 $box-shadow: var(--mat-card-elevated-container-elevation, var(--mat-sys-level1));
@@ -19,6 +19,16 @@ $card-padding: 0.5em;
 $card-border: 0.75em;
 $section-gap: 4em;
 
-// Headache tone (diary items, intake link card, insights disclaimer)
-$headache-bg: #fff1ec;
-$headache-border: #f6d3c8;
+$headache-bg: light-dark(#fff1ec, #3b2620);
+$headache-border: light-dark(#f6d3c8, #6b4035);
+$headache-icon: light-dark(#f2d4cc, #4a2e26);
+
+// Medication tone
+$medication-bg: light-dark(#eef6f1, #1c2b23);
+$medication-border: light-dark(#c9e3d3, #2f4a3b);
+$medication-icon: light-dark(#cfe8d9, #2a4535);
+
+// Workout tone ("activity" in list items)
+$workout-bg: light-dark(#f1f0fa, #22213a);
+$workout-border: light-dark(#cfcff5, #3b3a66);
+$workout-icon: $brand-tint;

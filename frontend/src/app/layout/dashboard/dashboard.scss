@@ -1,4 +1,4 @@
-@use '../../../variables' as p;
+@use '../../../variables' as *;
 
 .dashboard-wrapper {
     height: 100vh; // fallback for old browsers
@@ -16,24 +16,26 @@
         display: flex;
         align-items: center;
         gap: 0.55em;
-        padding: p.$nav-padding;
-        border-bottom: p.$border-divider;
-        background-color: p.$white;
-        box-shadow: p.$box-shadow;
+        padding: $nav-padding;
+        border-bottom: $border-divider;
+        background-color: $on-brand-primary;
+        box-shadow: $box-shadow;
 
         .primary-icon {
             display: flex;
             padding: 0.2em;
             border-radius: 50%;
-            background-color: p.$brand-primary;
+            background-color: $brand-primary;
 
             .mat-icon {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                color: p.$white;
-                font-weight: 400;
+                color: $on-brand-primary;
+                // font-weight is ignored here: the global font-variation-settings wins, so set the axis (max 700)
+                font-variation-settings: 'wght' 500;
                 font-size: 1.4em;
+                line-height: 0;
             }
 
         }
@@ -118,7 +120,7 @@
     .nav-wrapper {
         flex-shrink: 0;
         padding: 0.35em 0;
-        border-top: p.$border-divider;
+        border-top: $border-divider;
         -webkit-box-shadow: 0px -2px 3px rgba(50, 50, 50, 0.75);
         -moz-box-shadow: 0px -2px 3px rgba(50, 50, 50, 0.75);
         box-shadow: 0px -2px 3px rgba(50, 50, 50, 0.45);

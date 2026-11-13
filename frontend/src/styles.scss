@@ -11,6 +11,7 @@
 
 html {
   height: 100%;
+  color-scheme: light dark;   // follow the OS setting
   @include mat.theme(
     (
       color: (
@@ -26,13 +27,14 @@ html {
   @include mat.theme-overrides(
     (
       primary: $brand-primary,
+      // pair with primary, otherwise it falls back to the azure palette (navy in dark mode)
+      on-primary: $on-brand-primary,
     )
   );
 }
 
 body {
 
-  color-scheme: light;
   background-color: var(--mat-sys-surface);
   color: $text-strong;
   font-family: var(--mat-sys-body-medium-font);
@@ -135,4 +137,9 @@ body {
     font: var(--mat-sys-body-small);
     color: var(--mat-sys-error);
   }
+}
+
+// Thinner strokes for every icon (Material Symbols weight axis: 100 thin – 700 bold, default 400)
+.mat-icon {
+  font-variation-settings: 'wght' 300;
 }

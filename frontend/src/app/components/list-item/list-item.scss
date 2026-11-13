@@ -47,25 +47,25 @@
     border-color: p.$headache-border;
 
     .icon-container {
-      background: #f2d4cc;
+      background: p.$headache-icon;
     }
   }
 
   &.medication {
-    background: #eef6f1;
-    border-color: #c9e3d3;
+    background: p.$medication-bg;
+    border-color: p.$medication-border;
 
     .icon-container {
-      background: #cfe8d9;
+      background: p.$medication-icon;
     }
   }
 
   &.activity {
-    background: #f1f0fa;
-    border-color: #cfcff5;
+    background: p.$workout-bg;
+    border-color: p.$workout-border;
 
     .icon-container {
-      background: p.$brand-tint;
+      background: p.$workout-icon;
     }
   }
 }

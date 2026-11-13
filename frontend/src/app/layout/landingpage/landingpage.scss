@@ -79,7 +79,7 @@ section {
         justify-content: space-between;
         gap: 0.5em;
         padding: $nav-padding;
-        background-color: $white;
+        background-color: $surface-card;
         box-shadow: $box-shadow;
         position: fixed;
         width: 100%;
@@ -192,7 +192,7 @@ section {
         gap: 0.25em;
         padding: 0.3em 0.7em;
         font-size: 0.75em;
-        background: $white;
+        background: $surface-card;
         border: 1px solid $outline;
         border-radius: 0.5em;
         mat-icon { font-size: 1.2em; width: 1.2em; height: 1.2em; }
@@ -219,7 +219,7 @@ section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: $white;
+    color: $on-brand-primary;
     text-align: center;
     gap: $section-gap;
     .eyebrow {
@@ -228,12 +228,12 @@ section {
         text-transform: uppercase;
         letter-spacing: 0.15em;
         font-size: 0.7em;
-        color: $white;
+        color: $on-brand-primary;
     }
     .bubbles {
         padding: 1em;
         margin: 0.75em;
-        background: $white;
+        background: $surface-card;
         color: $text-strong;
         p {
             margin: 0;
@@ -251,7 +251,7 @@ section {
 
     }
     .number {
-        background: $white;
+        background: $surface-card;
         border-radius: 50%;
         width: 2em;
         aspect-ratio: 1;
@@ -305,7 +305,7 @@ section {
             left: calc(1.1em - 1px); // centre of the 2.2em circle
             top: 2.6em;
             bottom: 0.4em;
-            border-left: 2px dotted $white;
+            border-left: 2px dotted $on-brand-primary;
             opacity: 0.8;
         }
     }
@@ -388,7 +388,7 @@ section {
         padding: 2em 1.5em;
         border-radius: 1.25em;
         background: $brand-primary;
-        color: $white;
+        color: $on-brand-primary;
         > :not(.closing-wave) { position: relative; } // above the wave
         .closing-title {
             margin: 0 0 0.5em;
@@ -408,7 +408,7 @@ section {
         }
         // same Material button as the header, only the colours swapped
         .closing-cta {
-            --mat-button-filled-container-color: #{$white};
+            --mat-button-filled-container-color: #{$on-brand-primary};
             --mat-button-filled-label-text-color: #{$brand-primary};
         }
     }
