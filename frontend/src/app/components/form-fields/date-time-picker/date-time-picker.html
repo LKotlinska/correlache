@@ -10,7 +10,7 @@
     />
     <mat-hint>MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
-    <mat-datepicker #datePicker></mat-datepicker>
+    <mat-datepicker #datePicker [startAt]="startAt()"></mat-datepicker>
   </mat-form-field>
   <mat-form-field appearance="outline">
     <mat-label>Pick a time</mat-label>

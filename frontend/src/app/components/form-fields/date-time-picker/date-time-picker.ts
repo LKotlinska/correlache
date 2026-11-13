@@ -26,6 +26,8 @@ export class DateTimePicker {
 
   /** Latest selectable date. */
   maxDate = input<Date | null>(null);
+  /** Date the calendar opens on while no date is picked. */
+  startAt = input<Date | null>(null);
   /** Optional predicate to disable individual dates. */
   dateFilter = input<(d: Date | null) => boolean>(() => true);
   timeMin = input<Date | null>(null);
