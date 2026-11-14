@@ -6,7 +6,7 @@ $outline: light-dark(#79747e, #938f99);
 $disabled: #a9a6a9;
 $surface: light-dark(#fbf8fd, #141218);
 $surface-low: light-dark(#f7f5f8, #1d1b20);
-$surface-high: light-dark(#e7e0ec, #36343b);
+$surface-high: light-dark(#e7e0ec, #363636);
 $surface-card: light-dark(#ffffff, #211f26); // cards, navs, chips, tiles
 $on-brand-primary: light-dark(#ffffff, #141414); // text/icons on $brand-primary
 
@@ -19,9 +19,9 @@ $card-padding: 0.5em;
 $card-border: 0.75em;
 $section-gap: 4em;
 
-$headache-bg: light-dark(#fff1ec, #3b2620);
+$headache-bg: light-dark(#fff1ec, #46261e);
 $headache-border: light-dark(#f6d3c8, #6b4035);
-$headache-icon: light-dark(#f2d4cc, #4a2e26);
+$headache-icon: light-dark(#f2d4cc, #5e3c33);
 
 // Medication tone
 $medication-bg: light-dark(#eef6f1, #1c2b23);
@@ -29,6 +29,6 @@ $medication-border: light-dark(#c9e3d3, #2f4a3b);
 $medication-icon: light-dark(#cfe8d9, #2a4535);
 
 // Workout tone ("activity" in list items)
-$workout-bg: light-dark(#f1f0fa, #22213a);
+$workout-bg: light-dark(#f1f0fa, #24233f);
 $workout-border: light-dark(#cfcff5, #3b3a66);
 $workout-icon: $brand-tint;
