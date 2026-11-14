@@ -10,6 +10,9 @@ import { MatIcon } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartData, ChartOptions } from 'chart.js';
+import { baseChartOptions, CHART_COLOR, CHART_COLOR_SECONDARY } from '../../features/insights/chart-defaults';
 
 @Component({
   imports: [
@@ -19,12 +22,52 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
     MatSidenavModule,
     MatListModule,
     MatDividerModule,
+    BaseChartDirective,
   ],
   selector: 'app-landingpage',
   styleUrl: './landingpage.scss',
   templateUrl: './landingpage.html',
 })
 export class Landingpage {
+  /** Example weeks for the "Workouts vs headaches" preview, drawn like the insights chart so it follows the colour scheme. */
+  previewData: ChartData<'bar' | 'line'> = {
+    labels: ['21 Sept', '28 Sept', '5 Oct', '12 Oct', '19 Oct', '26 Oct', '2 Nov', '9 Nov'],
+    datasets: [
+      {
+        type: 'bar',
+        label: 'Workouts',
+        data: [4, 6, 3, 2, 3, 2, 3, 1],
+        backgroundColor: CHART_COLOR,
+        borderRadius: 4,
+        order: 2,
+      },
+      {
+        type: 'line',
+        label: 'Headaches',
+        data: [1, 2, 2, 1, 2, 0, 0, 1],
+        borderColor: CHART_COLOR_SECONDARY,
+        backgroundColor: CHART_COLOR_SECONDARY,
+        pointRadius: 4,
+        tension: 0.3,
+        order: 1,
+      },
+    ],
+  };
+
+  /** Same axes and legend as the insights chart, but static: it's an illustration, not data to inspect. */
+  previewOptions: ChartOptions<'bar' | 'line'> = {
+    ...baseChartOptions,
+    events: [],
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } },
+    },
+    plugins: {
+      ...baseChartOptions.plugins,
+      legend: { display: true, position: 'bottom', labels: { usePointStyle: true } },
+    },
+  };
+
   private dialogService = inject(DialogService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);

@@ -22,7 +22,7 @@
   overflow: hidden;
   padding: 0.5em;
   border-radius: p.$card-border;
-  background-color: p.$white;
+  background-color: p.$surface-card;
 
   // Selected
   &:has(input:checked) {
