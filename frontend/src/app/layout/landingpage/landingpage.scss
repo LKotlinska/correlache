@@ -141,6 +141,11 @@ section {
             margin-bottom: 4em;
         }
     }
+    @media (min-width: 700px) {
+        .hgroup {
+            text-align: center;
+        }
+    }
 }
 
 .illustration {
@@ -243,7 +248,11 @@ section {
     }
     .bubbles {
         padding: 1em;
-        margin: 0.75em;
+        // centred column; the width calc keeps a 0.75em gutter on narrow screens
+        margin: 0.75em auto;
+        box-sizing: border-box;
+        width: calc(100% - 1.5em);
+        max-width: 30em;
         background: $surface-card;
         color: $text-strong;
         p {
@@ -277,7 +286,7 @@ section {
 
     .steps {
         list-style: none;
-        margin: 0;
+        margin: 0 auto; // centre the capped-width list; text inside stays left-aligned
         padding: 0 1em;
         max-width: 26em;
         box-sizing: border-box;
